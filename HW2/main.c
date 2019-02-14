@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
 
 	double *arr = malloc(POINTS*sizeof(double));
 	
-
+	free(arr);
 	MPI_Finalize();
 	return 0;
 }
