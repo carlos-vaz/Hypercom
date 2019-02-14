@@ -26,13 +26,13 @@ void func_gen(double * arr) {
 	double x = X_MIN;
 	for(int i=0; i<POINTS; i++) {
 		arr[i] = func_val(x);
-		x += DELTA:
+		x += DELTA;
 	}
 }
 
 int main(int argc, char* argv[]) {
 	int myrank, np;
-	MPI_Init(&argc, argv);
+	MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 	MPI_Comm_size(MPI_COMM_WORLD, &np);
 
