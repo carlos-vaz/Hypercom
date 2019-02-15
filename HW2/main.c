@@ -123,7 +123,7 @@ int main(int argc, char* argv[]) {
 		MPI_Get_count(&status, MPI_DOUBLE, &arr_sz);
 		printf("count after second probe: %d\n", arr_sz);
 		arr = malloc(arr_sz*sizeof(double));
-		printf("(%d) receiving %d chunks\n FROM PROCESS %d!!", myrank, arr_sz/per_proc, status->MPI_SOURCE);
+		printf("(%d) receiving %d chunks\n FROM PROCESS %d!!", myrank, arr_sz/per_proc, status.MPI_SOURCE);
 		MPI_Recv(arr, arr_sz, MPI_DOUBLE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 		propagate(arr, arr_sz, myshare);
 	}
