@@ -152,6 +152,8 @@ int main(int argc, char* argv[]) {
 	if(rank_of_parent != -1)
 		MPI_Send(&sum, 1, MPI_DOUBLE, rank_of_parent, 0, MPI_COMM_WORLD);
 
+	if(rank_of_parent ==-1)
+		printf("\t")'
 	printf("PROC %d REPORTS SUM = %lf\n", myrank, sum);
 
 	free(myshare);
