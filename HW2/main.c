@@ -103,7 +103,7 @@ int main(int argc, char* argv[]) {
 
 	// Check divisibility of labor
 	if(Points % np != 0 || Points == np) {
-		printf("Abort. Number of processes (%d) must divide number of points, and
+		printf("Abort. Number of processes (%d) must divide number of points, and \
 		cannot equal number of points (%d).\n", np, Points);
 		goto finish;
 	}
