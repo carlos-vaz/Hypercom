@@ -21,7 +21,7 @@ double func_val(double x) {
  * this function, and pass the chunks
  * to its friends
  */
-void func_gen(double * arr, X_min, X_max, Points) {
+void func_gen(double * arr, double X_min, double X_max, int Points) {
 	double x = X_MIN;
 	for(int i=0; i<POINTS; i++) {
 		arr[i] = func_val(x);
