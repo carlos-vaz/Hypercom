@@ -62,8 +62,10 @@ void propagate(double *arr, int count, double *myshare) {
 
 	// Send work to left and right
 	printf("(%d) sending to left (%d, %d chunks) and right (%d, %d chunks)\n", myrank, dest_rank_left, chunks_left, dest_rank_right, chunks_right);
-	MPI_Send(larr, chunks_left*per_proc, MPI_DOUBLE, dest_rank_left, 0, MPI_COMM_WORLD);
-	MPI_Send(rarr, chunks_right*per_proc, MPI_DOUBLE, dest_rank_right, 0, MPI_COMM_WORLD);
+	if(chunks_left > 0)
+		MPI_Send(larr, chunks_left*per_proc, MPI_DOUBLE, dest_rank_left, 0, MPI_COMM_WORLD);
+	if(chunks_right > 0)
+		MPI_Send(rarr, chunks_right*per_proc, MPI_DOUBLE, dest_rank_right, 0, MPI_COMM_WORLD);
 	
 	// Free big array
 	free(arr);
