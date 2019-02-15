@@ -63,7 +63,7 @@ void propagate(double *arr, int count, double *myshare) {
 
 	// Copy from array to sub-arrays
 	printf("arr[490]=%lf\n", arr[490]);
-	memcpy(larr, arr, rarr_sz*sizeof(double));
+	memcpy(larr, arr, larr_sz*sizeof(double));
 	memcpy(rarr, &arr[larr_sz+per_proc], rarr_sz*sizeof(double));
 	memcpy(myshare, &arr[larr_sz], per_proc*sizeof(double));
 
