@@ -78,12 +78,12 @@ int main(int argc, char* argv[]) {
 	if(argc!=3) {
 		printf("Abort. Need 3 arguments: \"mpirun -np [# procs] main [# Points] [X_min] [X_max]\"\n");
 		//printf("argv[1] = %d\n", *argv[1]);
-		printf("argv[1] = %d, argv[2] = %lf, argv[3] = %lf\n", *argv[1], *argv[2], *argv[3]);
+		printf("argv[1] = %d, argv[2] = %lf, argv[3] = %lf\n", (int)strtol(argv[1], NULL, 10), atof(argv[2]), atof(argv[3]));
 		goto finish;
 	}
-	int Points = *argv[1];
-	double X_min = *argv[2];
-	double X_max = *argv[3];
+	int Points = strtol(argv[1], NULL, 10);
+	double X_min = atof(argv[2]);
+	double X_max = atof(argv[3]);
 	double Delta = (X_max-X_min)/Points;
 
 	// Check divisibility of labor
