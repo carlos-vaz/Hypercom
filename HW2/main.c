@@ -41,7 +41,9 @@ void func_gen(double * arr, double X_min, double X_max, int Points) {
 void propagate(double *arr, int count, double *myshare) {
 	// Reached leaf-node process
 	if(count == per_proc) {
-		memcpy(myshare, arr, count*sizeof(double));
+		printf("leaf node (proc %d)", myrank);
+		memcpy(myshare, arr, per_proc*sizeof(double));
+		printf("myshare[%d] = %lf", per_proc-10, myshare[per_proc-10]);
 		free(arr);
 		return;
 	}
