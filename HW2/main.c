@@ -77,6 +77,8 @@ int main(int argc, char* argv[]) {
 	// Parse arguments
 	if(argc!=3) {
 		printf("Abort. Need 3 arguments: \"mpirun -np [# procs] main [# Points] [X_min] [X_max]\"\n");
+		//printf("argv[1] = %d\n", *argv[1]);
+		printf("argv[1] = %d, argv[2] = %lf, argv[3] = %lf\n", *argv[1], *argv[2], *argv[3]);
 		goto finish;
 	}
 	int Points = *argv[1];
@@ -87,8 +89,6 @@ int main(int argc, char* argv[]) {
 	// Check divisibility of labor
 	if(Points % np != 0) {
 		printf("Abort. Number of processes (%d) must divide number of points (%d).\n", np, Points);
-		printf("argv[1] = %d\n", *argv[1]);
-		printf("argv[1] = %d, argv[2] = %d, argv[3] = %d\n", *argv[1], *argv[2], *argv[3]);
 		goto finish;
 	}
 	per_proc = Points/np;
