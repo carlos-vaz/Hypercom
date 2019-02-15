@@ -129,7 +129,17 @@ int main(int argc, char* argv[]) {
 	for(int i=0; i<per_proc-1; i++)
 		sum += (myshare[i]+myshare[i+1])*Delta/2;
 
-	// If I am NOT leaf, first receive from my children
+	double * sums = NULL
+	if(myrank==0)
+		sums = malloc(np*sizeof(double));
+	MPI_Gather(&sum, 1 MPI_DOUBLE, sums, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	if(myrank==0) {
+		for(int i=1; i<np; i++)
+			sum += sums[i];
+		printf("PROC %d: SUM = %lf\n", myrank, sum);
+	}
+
+/*	// If I am NOT leaf, first receive from my children
 	double child_sum=0;
 	for(int i=0; i<children; i++) {
 		MPI_Recv(&child_sum, 1, MPI_DOUBLE, rank_of_children[i], 0, MPI_COMM_WORLD, &status);
@@ -146,7 +156,7 @@ int main(int argc, char* argv[]) {
 		printf("\t<-- Result. ELAPSED TIME: %f sec", (double)(stop.tv_usec-start.tv_usec)/1000000 + stop.tv_sec-start.tv_sec);
 	}
 	printf("\n");
-
+*/
 	free(myshare);
 
 	MPI_Finalize();
