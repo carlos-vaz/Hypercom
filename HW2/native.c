@@ -79,14 +79,7 @@ int main(int argc, char* argv[]) {
 		sums = malloc(np*sizeof(double));
 	MPI_Gather(&sum, 1, MPI_DOUBLE, sums, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
-	// Not Needed
-	if(myrank==0) {
-		printf("SUMS: ");
-		for(int i=0; i<np; i++)
-			printf("%lf, ", sums[i]);
-		printf("\n");
-	}
-
+	// Process 0: collect sums into final sum
 	if(myrank==0)
 		for(int i=1; i<np; i++)
 			sum += sums[i];
@@ -96,9 +89,8 @@ int main(int argc, char* argv[]) {
 	if(myrank==0) {
 		gettimeofday(&stop, NULL);
 		printf("PROC %d REPORTS SUM = %lf", myrank, sum);
-		printf("\t<-- Result. ELAPSED TIME: %f sec", (double)(stop.tv_usec-start.tv_usec)/1000000 + stop.tv_sec-start.tv_sec);
+		printf("\t<-- Result. ELAPSED TIME: %f sec\n", (double)(stop.tv_usec-start.tv_usec)/1000000 + stop.tv_sec-start.tv_sec);
 	}
-	printf("\n");
 
 	MPI_Finalize();
 	return 0;
