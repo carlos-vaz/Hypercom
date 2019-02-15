@@ -63,8 +63,8 @@ void propagate(double *arr, int count, double *myshare) {
 
 	// Copy from array to sub-arrays
 	memcpy(larr, arr, rarr_sz*sizeof(double));
-	memcpy(rarr, arr+(larr_sz+per_proc)*sizeof(double), rarr_sz);
-	memcpy(myshare, arr+(larr_sz)*sizeof(double), per_proc*sizeof(double));
+	memcpy(rarr, &(arr[larr_sz+per_proc]), rarr_sz*sizeof(double));
+	memcpy(myshare, &arr[larr_sz], per_proc*sizeof(double));
 
 	// Send work to left and right
 	printf("(%d) sending to left (%d, %d chunks) and right (%d, %d chunks)\n", myrank, dest_rank_left, chunks_left, dest_rank_right, chunks_right);
