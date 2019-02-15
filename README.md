@@ -1,1 +1,1 @@
-# Hypercom
+# Hy Performance Computing
