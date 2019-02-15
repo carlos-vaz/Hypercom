@@ -50,7 +50,7 @@ void propagate(double *arr, int count, double *myshare) {
 	int chunks = count/per_proc;
 	int chunks_left = chunks>>1;
 	int chunks_right = chunks-chunks_left-1;
-	int dest_rank_left  = myrank + (chunks_left-1)>>1 + 1;
+	int dest_rank_left  = myrank - (chunks_left-1)>>1 - 1;
 	int dest_rank_right = myrank + (chunks_right>>1)  + 1;
 
 	// Allocate left & right sub-arrays
