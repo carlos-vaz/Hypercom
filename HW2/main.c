@@ -42,6 +42,7 @@ void propagate(double *arr, int count, double *myshare) {
 	// Reached leaf-node process
 	if(count == per_proc) {
 		memcpy(myshare, arr, count*sizeof(double));
+		free(arr);
 		return;
 	}
 
@@ -119,7 +120,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	// This process' share of computation
-	double sum;
+	double sum=0;
 	for(int i=0; i<per_proc; i++)
 		sum += myshare[i];
 	printf("Process %d got sum = %lf.\n", myrank, sum);
