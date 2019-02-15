@@ -61,6 +61,7 @@ void propagate(double *arr, int count, double *myshare) {
 	memcpy(myshare, arr+bytes_larr, per_proc);
 
 	// Send work to left and right
+	printf("(%d) sending to left (%d) and right (%d)", myrank, dest_rank_left, dest_rank_right);
 	MPI_Send(larr, chunks_left*per_proc, MPI_DOUBLE, dest_rank_left, 0, MPI_COMM_WORLD);
 	MPI_Send(rarr, chunks_right*per_proc, MPI_DOUBLE, dest_rank_right, 0, MPI_COMM_WORLD);
 	
