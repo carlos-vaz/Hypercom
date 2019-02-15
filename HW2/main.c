@@ -57,6 +57,7 @@ void propagate(double *arr, int count, double *myshare) {
 	printf("X before shift: %d\n", X);
 	X>>1;
 	printf("X after shift: %d\n", X);
+	printf("X>>1: %d\n", X>>1);
 
 
 	// Allocate left & right sub-arrays
