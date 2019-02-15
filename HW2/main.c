@@ -20,15 +20,12 @@ double func_val(double x) {
 /* Store function values in array. 
  * Only one special process will call
  * this function, and pass the chunks
- * to its friends
+ * to its friends. 
  */
 void func_gen(double * arr, double X_min, double X_max, int Points) {
-	double x = X_min;
-	double Delta = (X_max-X_min)/Points;
-	for(int i=0; i<Points; i++) {
+	double x = X_min, Delta = (X_max-X_min)/Points;
+	for(int i=0; i<Points; i++, x += Delta)
 		arr[i] = func_val(x);
-		x += Delta;
-	}
 }
 
 /* Takes as input an array of size count and 
