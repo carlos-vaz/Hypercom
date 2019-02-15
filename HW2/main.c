@@ -90,6 +90,7 @@ int main(int argc, char* argv[]) {
 	MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 	MPI_Comm_size(MPI_COMM_WORLD, &np);
+	struct timeval stop, start;
 
 	// Parse arguments
 	if(argc!=4) {
@@ -99,7 +100,6 @@ int main(int argc, char* argv[]) {
 	int Points = strtol(argv[1], NULL, 10);
 	double X_min = atof(argv[2]);
 	double X_max = atof(argv[3]);
-	double Delta = (X_max-X_min)/Points;
 
 	// Check divisibility of labor
 	if(Points % np != 0) {
@@ -119,6 +119,8 @@ int main(int argc, char* argv[]) {
 
 	if(myrank == np>>1) {
 		// Middle process generates function data, then propagates down tree
+		// Middle process starts wall clock timer
+		gettimeofday(&start, NULL);
 		arr = malloc(Points*sizeof(double));
 		func_gen(arr, X_min, X_max, Points);
 		children = propagate(arr, Points, myshare);
@@ -136,6 +138,7 @@ int main(int argc, char* argv[]) {
 
 	// Perform the integration
 	double sum=0;
+	double Delta = (X_max-X_min)/Points;
 	for(int i=0; i<per_proc; i++)
 		sum += myshare[i]*Delta;
 
@@ -145,6 +148,13 @@ int main(int argc, char* argv[]) {
 		MPI_Recv(&child_sum, 1, MPI_DOUBLE, rank_of_children[i], 0, MPI_COMM_WORLD, &status);
 		sum += child_sum;
 	}
+
+	// Root process: display time elapsed
+	gettimeofday(&stop, NULL);
+	if(rank_of_parent == -1) {
+		printf("TIME ELAPSED: %lu\n", stop.tv_usec - start.tv_usec);
+
+	}
 	
 	// Send my sum to my parent (if I am not root)
 	if(rank_of_parent != -1)
@@ -152,7 +162,7 @@ int main(int argc, char* argv[]) {
 
 	printf("PROC %d REPORTS SUM = %lf", myrank, sum);
 	if(rank_of_parent ==-1)
-		printf("\t\t<-- Final");
+		printf("\t<-- Result. ELAPSED TIME: %lf ms", (stop.tv_usec-start.tv_usec)/1000000 + stop.tv_sec-start.tv_sec);
 	printf("\n");
 
 	free(myshare);
