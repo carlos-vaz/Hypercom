@@ -102,8 +102,9 @@ int main(int argc, char* argv[]) {
 	double X_max = atof(argv[3]);
 
 	// Check divisibility of labor
-	if(Points % np != 0) {
-		printf("Abort. Number of processes (%d) must divide number of points (%d).\n", np, Points);
+	if(Points % np != 0 || Points == np) {
+		printf("Abort. Number of processes (%d) must divide number of points, and
+		cannot equal number of points (%d).\n", np, Points);
 		goto finish;
 	}
 	per_proc = Points/np;
@@ -139,8 +140,8 @@ int main(int argc, char* argv[]) {
 	// Perform the integration
 	double sum=0;
 	double Delta = (X_max-X_min)/Points;
-	for(int i=0; i<per_proc; i++)
-		sum += myshare[i]*Delta;
+	for(int i=0; i<per_proc-1; i++)
+		sum += (myshare[i]+myshare[i+1])*Delta/2;
 
 	// If I am NOT leaf, first receive from my children
 	double child_sum=0;
