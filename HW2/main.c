@@ -22,10 +22,11 @@ double func_val(double x) {
  * to its friends
  */
 void func_gen(double * arr, double X_min, double X_max, int Points) {
-	double x = X_MIN;
-	for(int i=0; i<POINTS; i++) {
+	double x = X_min;
+	double Delta = (X_max-X_min)/Points;
+	for(int i=0; i<Points; i++) {
 		arr[i] = func_val(x);
-		x += DELTA;
+		x += Delta;
 	}
 }
 
