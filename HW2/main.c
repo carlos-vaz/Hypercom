@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <mpi.h>
 #include <stdlib.h>
@@ -75,12 +76,12 @@ int main(int argc, char* argv[]) {
 
 	// Parse arguments
 	if(argc!=3) {
-		print("Abort. Need 4 arguments: \"mpirun -np [# procs] [# Points] [X_min] [X_max]\"\n");
+		printf("Abort. Need 4 arguments: \"mpirun -np [# procs] [# Points] [X_min] [X_max]\"\n");
 		goto finish;
 	}
-	int Points = argv[1];
-	double X_min = argv[2];
-	double X_max = argv[3];
+	int Points = *argv[1];
+	double X_min = *argv[2];
+	double X_max = *argv[3];
 	double Delta = (X_max-X_min)/Points;
 
 	// Check divisibility of labor
