@@ -14,7 +14,7 @@ int myrank, np, per_proc, rank_of_children[2] = {-1,-1};
  * To swap function, modify this only. 
  */
 double func_val(double x) {
-	return 1;
+	return 4/(1+pow(x,2));
 }
 
 /* Store function values in array. 
