@@ -87,6 +87,7 @@ int main(int argc, char* argv[]) {
 	// Check divisibility of labor
 	if(Points % np != 0) {
 		printf("Abort. Number of processes (%d) must divide number of points (%d).\n", np, Points);
+		printf("argv[1] = %d, argv[2] = %d, argv[3] = %d", *argv[1], *argv[2], *argv[3]);
 		goto finish;
 	}
 	per_proc = Points/np;
