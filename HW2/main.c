@@ -91,8 +91,6 @@ int main(int argc, char* argv[]) {
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 	MPI_Comm_size(MPI_COMM_WORLD, &np);
 
-	printf("Process %d reporting for duty.\n", myrank);
-
 	// Parse arguments
 	if(argc!=4) {
 		printf("Abort. main needs 3 arguments: \"mpirun -np [# procs] main [# Points] [X_min] [X_max]\"\n");
