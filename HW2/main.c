@@ -71,8 +71,10 @@ void propagate(double *arr, int count, double *myshare) {
 	if(chunks_right > 0)
 		MPI_Send(rarr, chunks_right*per_proc, MPI_DOUBLE, dest_rank_right, 0, MPI_COMM_WORLD);
 	
-	// Free big array
+	// Free arrays
 	free(arr);
+	free(larr);
+	free(rarr);
 }
 
 int main(int argc, char* argv[]) {
