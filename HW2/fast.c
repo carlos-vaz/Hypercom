@@ -57,7 +57,7 @@ int propagate(double *arr, int count, double *myshare) {
 	double * send_arr = malloc(send_sz*sizeof(double));
 
 	// Copy from array to send arrays
-	memcpy(send_arr, &arr[per_proc], send_sz*sizeof(double));
+	memcpy(send_arr, &arr[count-send_sz], send_sz*sizeof(double));
 
 	// Send work to next node down the tree
 	MPI_Send(send_arr, send_sz, MPI_DOUBLE, dest, 0, MPI_COMM_WORLD);
