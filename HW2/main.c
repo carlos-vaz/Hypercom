@@ -77,7 +77,7 @@ int main(int argc, char* argv[]) {
 		print("Abort. Need 4 arguments: \"mpirun -np [# procs] [# Points] [X_min] [X_max]\"\n");
 		goto finish;
 	}
-	int Points = argv[1]
+	int Points = argv[1];
 	double X_min = argv[2];
 	double X_max = argv[3];
 	double Delta = (X_max-X_min)/Points;
@@ -98,7 +98,7 @@ int main(int argc, char* argv[]) {
 	if(myrank == np>>1) {
 		// Middle process generates function data
 		arr = malloc(Points*sizeof(double));
-		func_gen(arr);
+		func_gen(arr, X_min, X_max, Points);
 		propagate(arr, Points, myshare);
 	} else {
 		// Block until you receive a message
