@@ -40,8 +40,10 @@ void func_gen(double * arr, double X_min, double X_max, int Points) {
  */
 void propagate(double *arr, int count, double *myshare) {
 	// Reached leaf-node process
-	//if(count == per_proc)
-	//	return;
+	if(count == per_proc) {
+		memcpy(myshare, arr, count*sizeof(double));
+		return;
+	}
 
 	// Calculate partitions and destinations
 	int chunks = count/per_proc;
