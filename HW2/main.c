@@ -57,23 +57,23 @@ void propagate(double *arr, int count, double *myshare) {
 	int dest_rank_right = myrank + (chunks_right>>1)  + 1;
 
 	// Allocate left & right sub-arrays
-	int bytes_larr = chunks_left*per_proc, bytes_rarr = chunks_right*per_proc;
-	double * larr = malloc(bytes_larr*sizeof(double));
-	double * rarr = malloc(bytes_rarr*sizeof(double));
+	int larr_sz = chunks_left*per_proc, rarr_sz = chunks_right*per_proc;
+	double * larr = malloc(larr_sz*sizeof(double));
+	double * rarr = malloc(rarr_sz*sizeof(double));
 
 	// Copy from array to sub-arrays
-	memcpy(larr, arr, bytes_rarr);
-	memcpy(rarr, arr+bytes_larr+per_proc, bytes_rarr);
-	memcpy(myshare, arr+bytes_larr, per_proc);
+	memcpy(larr, arr, rarr_sz*sizeof(double));
+	memcpy(rarr, arr+(larr_sz+per_proc)*sizeof(double), rarr_sz);
+	memcpy(myshare, arr+(larr_sz)*sizeof(double), per_proc*sizeof(double));
 
 	// Send work to left and right
 	printf("(%d) sending to left (%d, %d chunks) and right (%d, %d chunks)\n", myrank, dest_rank_left, chunks_left, dest_rank_right, chunks_right);
 	if(chunks_left > 0) {
-		printf("(%d) sending larr. bytes_larr = %d, larr[%d] = %lf", myrank, bytes_larr, per_proc-10, larr[per_proc-10]);
-		MPI_Send(larr, chunks_left*per_proc, MPI_DOUBLE, dest_rank_left, 0, MPI_COMM_WORLD);
+		printf("(%d) sending larr. larr_sz = %d, larr[%d] = %lf", myrank, larr_sz, per_proc-10, larr[per_proc-10]);
+		MPI_Send(larr, larr_sz, MPI_DOUBLE, dest_rank_left, 0, MPI_COMM_WORLD);
 	}
 	if(chunks_right > 0)
-		MPI_Send(rarr, chunks_right*per_proc, MPI_DOUBLE, dest_rank_right, 0, MPI_COMM_WORLD);
+		MPI_Send(rarr, rarr_sz, MPI_DOUBLE, dest_rank_right, 0, MPI_COMM_WORLD);
 	
 	// Free arrays
 	free(arr);
