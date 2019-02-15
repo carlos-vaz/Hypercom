@@ -108,8 +108,10 @@ int main(int argc, char* argv[]) {
 		arr = malloc(Points*sizeof(double));
 		func_gen(arr, X_min, X_max, Points);
 		arr_sz = Points;
-		while(propagate(arr, arr_sz, myshare)==1)
+		while(propagate(arr, arr_sz, myshare)==1) {
+			printf("(%d) arr_sz=%d\n", myrank, arr_sz);			
 			arr_sz = arr_sz>>1;
+		}
 	} else {
 		// Block until you receive a message, then receive and propagate down tree
 		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
@@ -120,7 +122,7 @@ int main(int argc, char* argv[]) {
 		MPI_Recv(arr, arr_sz, MPI_DOUBLE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 		rank_of_parent = status.MPI_SOURCE;
 		while(propagate(arr, arr_sz, myshare)==1) {
-			printf("arr_sz=%d\n", arr_sz);
+			printf("(%d) arr_sz=%d\n", myrank, arr_sz);
 			arr_sz = arr_sz>>1;
 		}
 	}
