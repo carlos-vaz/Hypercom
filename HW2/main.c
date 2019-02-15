@@ -154,9 +154,10 @@ int main(int argc, char* argv[]) {
 		MPI_Send(&sum, 1, MPI_DOUBLE, rank_of_parent, 0, MPI_COMM_WORLD);
 
 	printf("PROC %d REPORTS SUM = %lf", myrank, sum);
-	if(rank_of_parent ==-1)
+	if(rank_of_parent ==-1) {
 		gettimeofday(&stop, NULL);
 		printf("\t<-- Result. ELAPSED TIME: %f sec", (double)(stop.tv_usec-start.tv_usec)/1000000 + stop.tv_sec-start.tv_sec);
+	}
 	printf("\n");
 
 	free(myshare);
