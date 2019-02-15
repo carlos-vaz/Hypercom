@@ -118,10 +118,10 @@ int main(int argc, char* argv[]) {
 		// Block until you receive a message, then receive and propagate down tree
 		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 		MPI_Get_count(&status, MPI_DOUBLE, &arr_sz);
-		print("count after first probe: %d\n", arr_sz);
+		printf("count after first probe: %d\n", arr_sz);
 		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 		MPI_Get_count(&status, MPI_DOUBLE, &arr_sz);
-		print("count after second probe: %d\n", arr_sz);
+		printf("count after second probe: %d\n", arr_sz);
 		arr = malloc(arr_sz*sizeof(double));
 		printf("(%d) receiving %d chunks\n", myrank, arr_sz/per_proc);
 		MPI_Recv(arr, arr_sz, MPI_DOUBLE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
