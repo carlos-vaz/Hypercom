@@ -14,7 +14,7 @@ int myrank, np, per_proc;
  * To swap function, modify this only. 
  */
 double func_val(double x) {
-	return x;
+	return 1;
 }
 
 /* Store function values in array. 
@@ -41,9 +41,7 @@ void func_gen(double * arr, double X_min, double X_max, int Points) {
 void propagate(double *arr, int count, double *myshare) {
 	// Reached leaf-node process
 	if(count == per_proc) {
-		printf("leaf node (proc %d)\n", myrank);
 		memcpy(myshare, arr, per_proc*sizeof(double));
-		printf("myshare[%d] = %lfn\n", per_proc-10, myshare[per_proc-10]);
 		free(arr);
 		return;
 	}
@@ -53,7 +51,6 @@ void propagate(double *arr, int count, double *myshare) {
 	int chunks_left = chunks>>1;
 	int chunks_right = chunks-chunks_left-1;
 	int dest_rank_left  = myrank - ((chunks_left-1)>>1) - 1;
-	printf("myrank=%d, chunks_left=%d, (chunks_left-1)>>1=%d, dest_left=%d\n", myrank, chunks_left, (chunks_left-1)>>1, dest_rank_left);
 	int dest_rank_right = myrank + (chunks_right>>1)  + 1;
 
 	// Allocate left & right sub-arrays
@@ -62,15 +59,12 @@ void propagate(double *arr, int count, double *myshare) {
 	double * rarr = malloc(rarr_sz*sizeof(double));
 
 	// Copy from array to sub-arrays
-	printf("arr[490]=%lf\n", arr[490]);
 	memcpy(larr, arr, larr_sz*sizeof(double));
 	memcpy(rarr, &arr[larr_sz+per_proc], rarr_sz*sizeof(double));
 	memcpy(myshare, &arr[larr_sz], per_proc*sizeof(double));
 
 	// Send work to left and right
-	printf("(%d) sending to left (%d, %d chunks) and right (%d, %d chunks)\n", myrank, dest_rank_left, chunks_left, dest_rank_right, chunks_right);
 	if(chunks_left > 0) {
-		printf("(%d) sending larr. larr_sz = %d, larr[%d] = %lf", myrank, larr_sz, per_proc-10, larr[per_proc-10]);
 		MPI_Send(larr, larr_sz, MPI_DOUBLE, dest_rank_left, 0, MPI_COMM_WORLD);
 	}
 	if(chunks_right > 0)
@@ -91,8 +85,6 @@ int main(int argc, char* argv[]) {
 	// Parse arguments
 	if(argc!=4) {
 		printf("Abort. main needs 3 arguments: \"mpirun -np [# procs] main [# Points] [X_min] [X_max]\"\n");
-		//printf("argv[1] = %d\n", *argv[1]);
-		printf("argv[1] = %d, argv[2] = %lf, argv[3] = %lf\n", (int)strtol(argv[1], NULL, 10), atof(argv[2]), atof(argv[3]));
 		goto finish;
 	}
 	int Points = strtol(argv[1], NULL, 10);
