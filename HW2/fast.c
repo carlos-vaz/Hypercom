@@ -39,7 +39,7 @@ void func_gen(double * arr, double X_min, double X_max, int Points) {
  * RETURN VALUE: 0 if finished reached leaf node
  * process. 1 if further propagations needed. 
  */
-int propagate(double *arr, int &count, double *myshare) {
+int propagate(double *arr, int *count, double *myshare) {
 	// Reached leaf-node process. copy data to myshare
 	if(*count == per_proc) {
 		memcpy(myshare, arr, per_proc*sizeof(double));
@@ -112,7 +112,7 @@ int main(int argc, char* argv[]) {
 		arr = malloc(Points*sizeof(double));
 		func_gen(arr, X_min, X_max, Points);
 		arr_sz = Points;
-		while(propagate(arr, arr_sz, myshare)==1)
+		while(propagate(arr, &arr_sz, myshare)==1)
 			printf("(%d) arr_sz=%d, (pp=%d)\n", myrank, arr_sz, per_proc);
 	} else {
 		// Block until you receive a message, then receive and propagate down tree
@@ -123,7 +123,7 @@ int main(int argc, char* argv[]) {
 		arr = malloc(arr_sz*sizeof(double));
 		MPI_Recv(arr, arr_sz, MPI_DOUBLE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 		rank_of_parent = status.MPI_SOURCE;
-		while(propagate(arr, arr_sz, myshare)==1) 
+		while(propagate(arr, &arr_sz, myshare)==1) 
 			printf("(%d) arr_sz=%d\n", myrank, arr_sz);
 	}
 
