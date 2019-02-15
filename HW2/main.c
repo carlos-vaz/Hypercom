@@ -93,21 +93,22 @@ int main(int argc, char* argv[]) {
 	struct timeval stop, start;
 
 	// Parse arguments
-	if(argc!=4) {
+	if(myrank==0 && argc!=4) {
 		printf("Abort. main needs 3 arguments: \"mpirun -np [# procs] main [# Points] [X_min] [X_max]\"\n");
-		goto finish;
+		MPI_Abort(MPI_COMM_WORLD, 16);
 	}
+	MPI_Barrier(MPI_COMM_WORLD);
 	int Points = strtol(argv[1], NULL, 10);
 	double X_min = atof(argv[2]);
 	double X_max = atof(argv[3]);
 
 	// Check divisibility of labor
-	if(Points % np != 0 || Points == np) {
+	if(myrank==0 && (Points % np != 0 || Points == np) ) {
 		printf("Abort. Number of processes (%d) must divide number of points (%d), and " \
 		"cannot equal number of points.\n", np, Points);
 		MPI_Abort(MPI_COMM_WORLD, 17);
-		goto finish;
 	}
+	MPI_Barrier(MPI_COMM_WORLD);
 	per_proc = Points/np;
 
 	// Allocate arrays for receiving 
@@ -164,6 +165,6 @@ int main(int argc, char* argv[]) {
 
 	free(myshare);
 
-finish:	MPI_Finalize();
+	MPI_Finalize();
 	return 0;
 }
