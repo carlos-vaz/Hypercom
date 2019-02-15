@@ -76,7 +76,7 @@ int main(int argc, char* argv[]) {
 
 	// Parse arguments
 	if(argc!=3) {
-		printf("Abort. Need 4 arguments: \"mpirun -np [# procs] [# Points] [X_min] [X_max]\"\n");
+		printf("Abort. Need 3 arguments: \"mpirun -np [# procs] main [# Points] [X_min] [X_max]\"\n");
 		goto finish;
 	}
 	int Points = *argv[1];
@@ -110,6 +110,7 @@ int main(int argc, char* argv[]) {
 		propagate(arr, arr_sz, myshare);
 	}
 
+	// This process' share of computation
 	double sum;
 	for(int i=0; i<per_proc; i++)
 		sum += myshare[i];
