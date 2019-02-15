@@ -41,9 +41,9 @@ void func_gen(double * arr, double X_min, double X_max, int Points) {
 void propagate(double *arr, int count, double *myshare) {
 	// Reached leaf-node process
 	if(count == per_proc) {
-		printf("leaf node (proc %d)", myrank);
+		printf("leaf node (proc %d)\n", myrank);
 		memcpy(myshare, arr, per_proc*sizeof(double));
-		printf("myshare[%d] = %lf", per_proc-10, myshare[per_proc-10]);
+		printf("myshare[%d] = %lfn\n", per_proc-10, myshare[per_proc-10]);
 		free(arr);
 		return;
 	}
@@ -53,7 +53,7 @@ void propagate(double *arr, int count, double *myshare) {
 	int chunks_left = chunks>>1;
 	int chunks_right = chunks-chunks_left-1;
 	int dest_rank_left  = myrank - ((chunks_left-1)>>1) - 1;
-	printf("myrank=%d, chunks_left=%d, (chunks_left-1)>>1=%d, dest_left=%d", myrank, chunks_left, (chunks_left-1)>>1, dest_rank_left);
+	printf("myrank=%d, chunks_left=%d, (chunks_left-1)>>1=%d, dest_left=%d\n", myrank, chunks_left, (chunks_left-1)>>1, dest_rank_left);
 	int dest_rank_right = myrank + (chunks_right>>1)  + 1;
 
 	// Allocate left & right sub-arrays
@@ -64,7 +64,7 @@ void propagate(double *arr, int count, double *myshare) {
 	// Copy from array to sub-arrays
 	printf("arr[490]=%lf\n", arr[490]);
 	memcpy(larr, arr, rarr_sz*sizeof(double));
-	memcpy(rarr, &(arr[larr_sz+per_proc]), rarr_sz*sizeof(double));
+	memcpy(rarr, &arr[larr_sz+per_proc], rarr_sz*sizeof(double));
 	memcpy(myshare, &arr[larr_sz], per_proc*sizeof(double));
 
 	// Send work to left and right
