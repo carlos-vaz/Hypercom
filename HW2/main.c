@@ -53,6 +53,12 @@ void propagate(double *arr, int count, double *myshare) {
 	int dest_rank_left  = myrank - (chunks_left-1)>>1 - 1;
 	int dest_rank_right = myrank + (chunks_right>>1)  + 1;
 
+	int X=6;
+	printf("X before shift: %d\n", X);
+	X>>1;
+	printf("X after shift: %d\n", X);
+
+
 	// Allocate left & right sub-arrays
 	int bytes_larr = chunks_left*per_proc, bytes_rarr = chunks_right*per_proc;
 	double * larr = malloc(bytes_larr*sizeof(double));
