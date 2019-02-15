@@ -123,7 +123,7 @@ int main(int argc, char* argv[]) {
 		// Middle process generates function data, then propagates down tree
 		arr = malloc(Points*sizeof(double));
 		func_gen(arr, X_min, X_max, Points);
-		leaf = propagate(arr, Points, myshare);
+		children = propagate(arr, Points, myshare);
 	} else {
 		// Block until you receive a message, then receive and propagate down tree
 		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
@@ -136,7 +136,7 @@ int main(int argc, char* argv[]) {
 		printf("(%d) receiving %d chunks FROM PROCESS %d\n!!", myrank, arr_sz/per_proc, status.MPI_SOURCE);
 		MPI_Recv(arr, arr_sz, MPI_DOUBLE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 		rank_of_parent = status.MPI_SOURCE;
-		leaf = propagate(arr, arr_sz, myshare);
+		children = propagate(arr, arr_sz, myshare);
 	}
 
 	// Perform the integration
