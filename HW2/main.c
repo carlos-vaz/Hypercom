@@ -75,8 +75,8 @@ int main(int argc, char* argv[]) {
 	MPI_Comm_size(MPI_COMM_WORLD, &np);
 
 	// Parse arguments
-	if(argc!=3) {
-		printf("Abort. Need 3 arguments: \"mpirun -np [# procs] main [# Points] [X_min] [X_max]\"\n");
+	if(argc!=4) {
+		printf("Abort. main needs 3 arguments: \"mpirun -np [# procs] main [# Points] [X_min] [X_max]\"\n");
 		//printf("argv[1] = %d\n", *argv[1]);
 		printf("argv[1] = %d, argv[2] = %lf, argv[3] = %lf\n", (int)strtol(argv[1], NULL, 10), atof(argv[2]), atof(argv[3]));
 		goto finish;
