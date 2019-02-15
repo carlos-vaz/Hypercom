@@ -117,6 +117,8 @@ int main(int argc, char* argv[]) {
 	
 	free(myshare);
 
+	MPI_Barrier();
+
 finish:	MPI_Finalize();
 	return 0;
 }
