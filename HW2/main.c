@@ -111,7 +111,7 @@ int main(int argc, char* argv[]) {
 		// Block until you receive a message
 		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 		MPI_Get_count(&status, MPI_DOUBLE, &arr_sz);
-		printf("(%d) receiving %d chunks\n", arr_sz/per_proc);
+		printf("(%d) receiving %d chunks\n", arr_sz);
 		MPI_Recv(arr, arr_sz, MPI_DOUBLE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 		propagate(arr, arr_sz, myshare);
 	}
