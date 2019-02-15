@@ -39,7 +39,7 @@ void func_gen(double * arr, double X_min, double X_max, int Points) {
  * RETURN VALUE: 0 if finished reached leaf node
  * process. 1 if further propagations needed. 
  */
-void propagate(double *arr, int count, double *myshare) {
+int propagate(double *arr, int count, double *myshare) {
 	// Reached leaf-node process. copy data to myshare
 	if(count == per_proc) {
 		memcpy(myshare, arr, per_proc*sizeof(double));
@@ -129,10 +129,10 @@ int main(int argc, char* argv[]) {
 	for(int i=0; i<per_proc-1; i++)
 		sum += (myshare[i]+myshare[i+1])*Delta/2;
 
-	double * sums = NULL
+	double * sums = NULL;
 	if(myrank==0)
 		sums = malloc(np*sizeof(double));
-	MPI_Gather(&sum, 1 MPI_DOUBLE, sums, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	MPI_Gather(&sum, 1, MPI_DOUBLE, sums, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 	if(myrank==0) {
 		for(int i=1; i<np; i++)
 			sum += sums[i];
