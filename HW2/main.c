@@ -74,7 +74,7 @@ int propagate(double *arr, int count, double *myshare) {
 	}
 	if(chunks_right > 0) {
 		children++;
-		rank_of_children[0]==-1 ? rank_of_children[0]=dest_rank_right : rank_of_children[1]=dest_rank_right;
+		rank_of_children[ rank_of_children[0]==-1 ? 0 : 1 ] = dest_rank_right;
 		MPI_Send(rarr, rarr_sz, MPI_DOUBLE, dest_rank_right, 0, MPI_COMM_WORLD);
 	}
 	
