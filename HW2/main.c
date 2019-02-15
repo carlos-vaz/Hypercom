@@ -6,7 +6,7 @@
 #include <math.h>
 #include <sys/time.h>
 
-#define MAX_PROCS	1000
+#define MAX_PROCS 1000
 
 int myrank, np, per_proc, rank_of_children[2] = {-1,-1};
 
@@ -148,13 +148,6 @@ int main(int argc, char* argv[]) {
 		MPI_Recv(&child_sum, 1, MPI_DOUBLE, rank_of_children[i], 0, MPI_COMM_WORLD, &status);
 		sum += child_sum;
 	}
-
-	// Root process: display time elapsed
-	gettimeofday(&stop, NULL);
-	if(rank_of_parent == -1) {
-		printf("TIME ELAPSED: %f\n",(double)(stop.tv_usec-start.tv_usec)/1000000 + stop.tv_sec-start.tv_sec);
-
-	}
 	
 	// Send my sum to my parent (if I am not root)
 	if(rank_of_parent != -1)
@@ -162,7 +155,8 @@ int main(int argc, char* argv[]) {
 
 	printf("PROC %d REPORTS SUM = %lf", myrank, sum);
 	if(rank_of_parent ==-1)
-		printf("\t<-- Result. ELAPSED TIME: %lf ms", (stop.tv_usec-start.tv_usec)/1000000 + stop.tv_sec-start.tv_sec);
+		gettimeofday(&stop, NULL);
+		printf("\t<-- Result. ELAPSED TIME: %f sec", (double)(stop.tv_usec-start.tv_usec)/1000000 + stop.tv_sec-start.tv_sec);
 	printf("\n");
 
 	free(myshare);
