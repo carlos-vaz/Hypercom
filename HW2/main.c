@@ -114,7 +114,7 @@ int main(int argc, char* argv[]) {
 	double * arr;
 	int arr_sz=0;
 	double * myshare = malloc(per_proc*sizeof(double));
-	int leaf; // Im I a leaf process?
+	int children;
 
 	// Remember who sent you data. They will be expecting your computation result
 	int rank_of_parent = -1;
