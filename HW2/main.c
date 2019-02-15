@@ -115,7 +115,7 @@ int main(int argc, char* argv[]) {
 		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 		MPI_Get_count(&status, MPI_DOUBLE, &arr_sz);
 		printf("(%d) receiving %d chunks\n", myrank, arr_sz/per_proc);
-		MPI_Recv(&arr, arr_sz, MPI_DOUBLE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+		MPI_Recv(arr, arr_sz, MPI_DOUBLE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 		propagate(arr, arr_sz, myshare);
 	}
 
