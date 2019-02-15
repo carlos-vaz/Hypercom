@@ -152,7 +152,7 @@ int main(int argc, char* argv[]) {
 	// Root process: display time elapsed
 	gettimeofday(&stop, NULL);
 	if(rank_of_parent == -1) {
-		printf("TIME ELAPSED: %lu\n",(stop.tv_usec-start.tv_usec)/1000000 + stop.tv_sec-start.tv_sec);
+		printf("TIME ELAPSED: %lu\n",(double)(stop.tv_usec-start.tv_usec)/1000000 + stop.tv_sec-start.tv_sec);
 
 	}
 	
