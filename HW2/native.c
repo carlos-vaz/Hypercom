@@ -78,7 +78,6 @@ int main(int argc, char* argv[]) {
 	if(myrank==0)
 		sums = malloc(np*sizeof(double));
 	MPI_Gather(&sum, 1, MPI_DOUBLE, sums, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-	free(sums);
 
 	printf("SUMS: ");
 	for(int i=0; i<np; i++)
@@ -87,6 +86,7 @@ int main(int argc, char* argv[]) {
 
 	for(int i=1; i<np; i++)
 		sum += sums[i];
+	free(sums);
 
 	// Print results
 	if(myrank==0) {
