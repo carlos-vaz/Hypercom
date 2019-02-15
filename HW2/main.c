@@ -8,7 +8,7 @@
 
 #define MAX_PROCS	1000
 
-int myrank, np, per_proc;
+int myrank, np, per_proc, rank_of_children[2] = {-1,-1};
 
 /* Compute single function value. 
  * To swap function, modify this only. 
@@ -37,13 +37,15 @@ void func_gen(double * arr, double X_min, double X_max, int Points) {
  * arr. It will also propagate the remaining 
  * data to the left & right of its share to 
  * the appropriate process down the binary tree. 
+ * RETURN VALUE: the number of processes I pro-
+ * pagated to (0 if leaf process). 
  */
-void propagate(double *arr, int count, double *myshare) {
+int propagate(double *arr, int count, double *myshare) {
 	// Reached leaf-node process
 	if(count == per_proc) {
 		memcpy(myshare, arr, per_proc*sizeof(double));
 		free(arr);
-		return;
+		return 0;
 	}
 
 	// Calculate partitions and destinations
@@ -52,6 +54,7 @@ void propagate(double *arr, int count, double *myshare) {
 	int chunks_right = chunks-chunks_left-1;
 	int dest_rank_left  = myrank - ((chunks_left-1)>>1) - 1;
 	int dest_rank_right = myrank + (chunks_right>>1)  + 1;
+	int children=0;
 
 	// Allocate left & right sub-arrays
 	int larr_sz = chunks_left*per_proc, rarr_sz = chunks_right*per_proc;
@@ -65,15 +68,21 @@ void propagate(double *arr, int count, double *myshare) {
 
 	// Send work to left and right
 	if(chunks_left > 0) {
+		children++;
+		rank_of_children[0] = dest_rank_left;
 		MPI_Send(larr, larr_sz, MPI_DOUBLE, dest_rank_left, 0, MPI_COMM_WORLD);
 	}
-	if(chunks_right > 0)
+	if(chunks_right > 0) {
+		children++;
+		rank_of_children[0]==-1 ? rank_of_children[0]=dest_rank_right : rank_of_children[1]=dest_rank_right;
 		MPI_Send(rarr, rarr_sz, MPI_DOUBLE, dest_rank_right, 0, MPI_COMM_WORLD);
+	}
 	
 	// Free arrays
 	free(arr);
 	free(larr);
 	free(rarr);
+	return children;
 }
 
 int main(int argc, char* argv[]) {
@@ -105,15 +114,16 @@ int main(int argc, char* argv[]) {
 	double * arr;
 	int arr_sz=0;
 	double * myshare = malloc(per_proc*sizeof(double));
+	int leaf; // Im I a leaf process?
 
 	// Remember who sent you data. They will be expecting your computation result
-	int rank_of_sender;
+	int rank_of_parent = -1;
 
 	if(myrank == np>>1) {
 		// Middle process generates function data, then propagates down tree
 		arr = malloc(Points*sizeof(double));
 		func_gen(arr, X_min, X_max, Points);
-		propagate(arr, Points, myshare);
+		leaf = propagate(arr, Points, myshare);
 	} else {
 		// Block until you receive a message, then receive and propagate down tree
 		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
@@ -123,9 +133,10 @@ int main(int argc, char* argv[]) {
 		MPI_Get_count(&status, MPI_DOUBLE, &arr_sz);
 		printf("count after second probe: %d\n", arr_sz);
 		arr = malloc(arr_sz*sizeof(double));
-		printf("(%d) receiving %d chunks\n FROM PROCESS %d!!", myrank, arr_sz/per_proc, status.MPI_SOURCE);
+		printf("(%d) receiving %d chunks FROM PROCESS %d\n!!", myrank, arr_sz/per_proc, status.MPI_SOURCE);
 		MPI_Recv(arr, arr_sz, MPI_DOUBLE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-		propagate(arr, arr_sz, myshare);
+		rank_of_parent = status.MPI_SOURCE;
+		leaf = propagate(arr, arr_sz, myshare);
 	}
 
 	// Perform the integration
@@ -133,8 +144,19 @@ int main(int argc, char* argv[]) {
 	for(int i=0; i<per_proc; i++)
 		sum += myshare[i];
 	printf("Process %d got sum = %lf.\n", myrank, sum);
+
+	// If I am NOT leaf, first receive from my children
+	double child_sum=0;
+	for(int i=0; i<children; i++) {
+		MPI_Recv(&child_sum, 1, MPI_DOUBLE, rank_of_children[i], 0, MPI_COMM_WORLD, &status);
+		sum += child_sum;
+	}
 	
-	// 
+	// Send my sum to my parent (if I am not root)
+	if(rank_of_parent != -1)
+		MPI_Send(&sum, 1, MPI_DOUBLE, rank_of_parent, 0, MPI_COMM_WORLD);
+
+	printf("PROC %d REPORTS SUM = %lf\n", sum);
 
 	free(myshare);
 
