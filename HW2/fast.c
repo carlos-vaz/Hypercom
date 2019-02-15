@@ -119,8 +119,10 @@ int main(int argc, char* argv[]) {
 		arr = malloc(arr_sz*sizeof(double));
 		MPI_Recv(arr, arr_sz, MPI_DOUBLE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 		rank_of_parent = status.MPI_SOURCE;
-		while(propagate(arr, arr_sz, myshare)==1)
+		while(propagate(arr, arr_sz, myshare)==1) {
+			printf("arr_sz=%d\n", arr_sz);
 			arr_sz = arr_sz>>1;
+		}
 	}
 
 	// Perform the integration
