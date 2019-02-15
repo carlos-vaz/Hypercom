@@ -38,7 +38,7 @@ void func_gen(double * arr, double X_min, double X_max, int Points) {
  * data to the left & right of its share to 
  * the appropriate process down the binary tree. 
  */
-void progapate(double *arr, int count, double *myshare) {
+void propagate(double *arr, int count, double *myshare) {
 	// Reached leaf-node process
 	if(count == per_proc)
 		return;
