@@ -117,7 +117,6 @@ int main(int argc, char* argv[]) {
 	
 	free(myshare);
 
-	MPI_Barrier(MPI_COMM_WORLD);
 
 finish:	MPI_Finalize();
 	return 0;
