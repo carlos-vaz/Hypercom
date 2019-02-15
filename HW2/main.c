@@ -82,6 +82,8 @@ int main(int argc, char* argv[]) {
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 	MPI_Comm_size(MPI_COMM_WORLD, &np);
 
+	printf("Process %d reporting for duty.\n", myrank);
+
 	// Parse arguments
 	if(argc!=4) {
 		printf("Abort. main needs 3 arguments: \"mpirun -np [# procs] main [# Points] [X_min] [X_max]\"\n");
@@ -99,35 +101,42 @@ int main(int argc, char* argv[]) {
 	}
 	per_proc = Points/np;
 
-	printf("Process %d reporting for duty.\n", myrank);
-
+	// Allocate arrays for receiving 
 	double * arr;
 	int arr_sz=0;
 	double * myshare = malloc(per_proc*sizeof(double));
 
+	// Remember who sent you data. They will be expecting your computation result
+	int rank_of_sender;
+
 	if(myrank == np>>1) {
-		// Middle process generates function data
+		// Middle process generates function data, then propagates down tree
 		arr = malloc(Points*sizeof(double));
 		func_gen(arr, X_min, X_max, Points);
 		propagate(arr, Points, myshare);
 	} else {
-		// Block until you receive a message
+		// Block until you receive a message, then receive and propagate down tree
 		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 		MPI_Get_count(&status, MPI_DOUBLE, &arr_sz);
+		print("count after first probe: %d\n", arr_sz);
+		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+		MPI_Get_count(&status, MPI_DOUBLE, &arr_sz);
+		print("count after second probe: %d\n", arr_sz);
 		arr = malloc(arr_sz*sizeof(double));
 		printf("(%d) receiving %d chunks\n", myrank, arr_sz/per_proc);
 		MPI_Recv(arr, arr_sz, MPI_DOUBLE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 		propagate(arr, arr_sz, myshare);
 	}
 
-	// This process' share of computation
+	// Perform the integration
 	double sum=0;
 	for(int i=0; i<per_proc; i++)
 		sum += myshare[i];
 	printf("Process %d got sum = %lf.\n", myrank, sum);
 	
-	free(myshare);
+	// 
 
+	free(myshare);
 
 finish:	MPI_Finalize();
 	return 0;
