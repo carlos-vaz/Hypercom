@@ -109,7 +109,7 @@ int main(int argc, char* argv[]) {
 		func_gen(arr, X_min, X_max, Points);
 		arr_sz = Points;
 		while(propagate(arr, arr_sz, myshare)==1) {
-			printf("(%d) arr_sz=%d\n", myrank, arr_sz);			
+			printf("(%d) arr_sz=%d, (pp=%d)\n", myrank, arr_sz, per_proc);			
 			arr_sz = arr_sz>>1;
 		}
 	} else {
