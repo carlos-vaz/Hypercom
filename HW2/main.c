@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
 	if(Points % np != 0 || Points == np) {
 		printf("Abort. Number of processes (%d) must divide number of points (%d), and " \
 		"cannot equal number of points.\n", np, Points);
-		MPI_Abort(MPI_COMM_WORLD);
+		MPI_Abort(MPI_COMM_WORLD, 17);
 		goto finish;
 	}
 	per_proc = Points/np;
