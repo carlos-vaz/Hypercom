@@ -193,8 +193,7 @@ int main(int argc, char* argv[]) {
 		sum += (myshare[i]+myshare[i+1])*Delta/2;
 	free(myshare);
 
-	printf("(%d) Entering Barrier\n", myrank);
-	MPI_Barrier(MPI_COMM_WORLD);
+	//MPI_Barrier(MPI_COMM_WORLD);
 
 	// Gather all sums into the procs with virtual rank 0
 	double recv_sum=0;
