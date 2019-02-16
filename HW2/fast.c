@@ -110,6 +110,7 @@ int main(int argc, char* argv[]) {
 	end &= np;
 	virtual_rank = myrank - offset;
 	int virtual_chunks = end - offset;
+	int num_virtual = 1;
 
 	// Allocate arrays for receiving
 	double * arr;
@@ -121,7 +122,7 @@ int main(int argc, char* argv[]) {
   if(myrank==0) {
 	double * snd_bf;
 	int msk_0 = 1 << (sizeof(int)*8-1);
-	int msk_1=msk_0, prev_offset=0, snd_sz, num_virtual=1;
+	int msk_1=msk_0, prev_offset=0, snd_sz;
 	offset = 0;
 	gettimeofday(&start, NULL);
 	arr = malloc(Points*sizeof(double));
