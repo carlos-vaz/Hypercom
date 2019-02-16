@@ -134,7 +134,7 @@ int main(int argc, char* argv[]) {
 	 */
 	double * snd_bf;
 	int msk_0 = 1 << (sizeof(int)*8-1);
-	int msk_1=msk_0, prev_offset=0, snd_sz, virtual_chunks;
+	int msk_1=msk_0, prev_offset=0, snd_sz, virtual_chunks, num_virtual=1;
 	offset = 0;
 	gettimeofday(&start, NULL);
 	arr = malloc(Points*sizeof(double));
@@ -150,6 +150,7 @@ int main(int argc, char* argv[]) {
 		if(myrank==0)
 			printf("Offset %d = %d, snd_chunks = %d\n", i, prev_offset, offset-prev_offset);
 		if(prev_offset != 0 && myrank==0) {
+			num_virtual++;
 			snd_bf = malloc(snd_sz*sizeof(double));
 			memcpy(snd_bf, arr+(prev_offset*per_proc), snd_sz*sizeof(double));
 			MPI_Send(snd_bf, snd_sz, MPI_DOUBLE, prev_offset, 7, MPI_COMM_WORLD);
@@ -201,7 +202,7 @@ int main(int argc, char* argv[]) {
 	printf("(%d) Entering Barrier\n", myrank);
 	MPI_Barrier(MPI_COMM_WORLD);
 
-	// Gather the sums into proc with virtual rank 0
+	// Gather all sums into the procs with virtual rank 0
 	double recv_sum=0;
 	int rank_decay = virtual_rank;
 	for(int np_grow=2; np_grow<=virtual_chunks; np_grow<<=1, rank_decay>>=1) {
@@ -217,8 +218,21 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
+	MPI_Barrier(MPI_COMM_WORLD);
+	// Gather all virtual rank 0 sub-integrals into rank 0
+	if(virtual_rank==0)
+		MPI_Send(&sum, 1, MPI_DOUBLE, 0, 9, MPI_COMM_WORLD);
+
+	if(myrank==0) {
+		double t_sum=0;
+		for(int i=0; i<num_virtual; i++) {
+			MPI_Recv(&t_sum, 1, MPI_DOUBLE, MPI_ANY_SOURCE, 9, MPI_COMM_WORLD, &status);
+			sum += t_sum;
+		}
+	}
+
 	// Display results
-	if(virtual_rank==0) {
+	if(myrank==0) {
 		gettimeofday(&stop, NULL);
 		printf("\nPROC %d REPORTS SUM = %lf\t <-- Result. ELAPSED TIME: %f sec\n", myrank, sum, (double)(stop.tv_usec-start.tv_usec)/1000000 + stop.tv_sec-start.tv_sec);
 	}
