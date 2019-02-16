@@ -143,13 +143,13 @@ int main(int argc, char* argv[]) {
 		for(int i=0; i<(sizeof(int)*8)-1; i++) {
 			prev_offset = offset;
 			offset = msk_0&np;
-			snd_sz = per_proc*(prev_offset-offset);
+			snd_sz = per_proc*(offset-prev_offset);
 			msk_0 >>= 1;
 			msk_0 |= msk_1;
 			printf("(%d) msk_0 lsB: "BYTE_PATTERN, i, BYTE_TO_BIN(msk_0));
 			if(snd_sz==0)
 				continue;
-			printf("Offset %d = %d, snd_chunks = %d\n", i, prev_offset, prev_offset-offset);
+			printf("Offset %d = %d, snd_chunks = %d\n", i, prev_offset, offset-prev_offset);
 			snd_bf = malloc(snd_sz*sizeof(double));
 			memcpy(snd_bf, arr+(prev_offset*per_proc), snd_sz*sizeof(double));
 			MPI_Send(snd_bf, snd_sz, MPI_DOUBLE, prev_offset, 7, MPI_COMM_WORLD);
