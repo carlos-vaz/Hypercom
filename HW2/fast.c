@@ -122,7 +122,7 @@ int main(int argc, char* argv[]) {
 	int virtual_points = end - offset;
 	printf("Real rank: %d... Virtual rank: %d..., Virtual points: %d\n", myrank, virtual_rank, virtual_points);
 
-	// Allocate arrays for receiving 
+	// Allocate arrays for receiving
 	double * arr;
 	int arr_sz=0;
 	double * myshare = malloc(per_proc*sizeof(double));
@@ -150,14 +150,27 @@ int main(int argc, char* argv[]) {
 			if(snd_sz==0)
 				continue;
 			printf("Offset %d = %d\n", i, prev_offset);
-			//MPI_Send
-
+			snd_bf = malloc(snd_sz*sizeof(double));
+			memcpy(snd_bf, arr+(prev_offset*per_proc), snd_sz*sizeof(double));
+			MPI_Send(snd_bf, snd_sz, MPI_DOUBLE, prev_offset, 7, MPI_COMM_WORLD);
 		}
+	} else {
+		// Block until you receive a message, then receive and propagate down tree
+		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+		MPI_Get_count(&status, MPI_DOUBLE, &arr_sz);
+		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+		MPI_Get_count(&status, MPI_DOUBLE, &arr_sz);
+		arr = malloc(arr_sz*sizeof(double));
+		MPI_Recv(arr, arr_sz, MPI_DOUBLE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+		while(propagate(arr, &arr_sz, myshare)==1) printf("else\n");
 	}
-	MPI_Barrier(MPI_COMM_WORLD);
-	MPI_Abort(MPI_COMM_WORLD, 18);
 
-	if(virtual_rank == 0) {
+	/* If I am virtual rank 0, I will first receive my
+	 * assignment from rank 0, then distribute (propagate)
+	 * it. Otherwise, I will wait to receive from a 
+	 * virtual rank 0 and propagate. 
+	 */
+/*	if(virtual_rank == 0) {
 		arr_sz = virtual_points;
 		while(propagate(arr, &arr_sz, myshare)==1) printf("if\n");
 	} else {
@@ -169,7 +182,7 @@ int main(int argc, char* argv[]) {
 		arr = malloc(arr_sz*sizeof(double));
 		MPI_Recv(arr, arr_sz, MPI_DOUBLE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 		while(propagate(arr, &arr_sz, myshare)==1) printf("else\n");
-	}
+	} */
 
 	// Perform the integration
 	printf("(%d) INTEGRATING...\n", myrank);
