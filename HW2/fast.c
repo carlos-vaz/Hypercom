@@ -149,7 +149,7 @@ int main(int argc, char* argv[]) {
 			printf("(%d) msk_0 lsB: "BYTE_PATTERN, i, BYTE_TO_BIN(msk_0));
 			if(snd_sz==0)
 				continue;
-			printf("Offset %d = %d\n", i, prev_offset);
+			printf("Offset %d = %d, snd_chunks = %d\n", i, prev_offset, prev_offset-offset);
 			snd_bf = malloc(snd_sz*sizeof(double));
 			memcpy(snd_bf, arr+(prev_offset*per_proc), snd_sz*sizeof(double));
 			MPI_Send(snd_bf, snd_sz, MPI_DOUBLE, prev_offset, 7, MPI_COMM_WORLD);
