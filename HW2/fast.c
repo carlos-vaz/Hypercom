@@ -186,27 +186,21 @@ int main(int argc, char* argv[]) {
 	} */
 
 	// Perform the integration
-	printf("(%d) INTEGRATING...\n", myrank);
 	double sum=0;
 	double Delta = (X_max-X_min)/Points;
 	for(int i=0; i<per_proc-1; i++)
 		sum += (myshare[i]+myshare[i+1])*Delta/2;
 	free(myshare);
 
-	//MPI_Barrier(MPI_COMM_WORLD);
-
 	// Gather all sums into the procs with virtual rank 0
 	double recv_sum=0;
 	int rank_decay = virtual_rank;
-	printf("\t(%d) VIRTUAL CHUNKS=%d\n", myrank, virtual_chunks);
 	for(int np_grow=2; np_grow<=virtual_chunks; np_grow<<=1, rank_decay>>=1) {
 		if(rank_decay % 2 == 1) {
-			printf("(%d) Send to %d\n", myrank, myrank-(np_grow>>1));
 			MPI_Send(&sum, 1, MPI_DOUBLE, myrank-(np_grow>>1), 5, MPI_COMM_WORLD);
 			break; // Whoever you sent to now represents your group. you leave. 
 		}
 		else if(rank_decay % 2 == 0) {
-			printf("(%d) Recv from %d\n", myrank, myrank+(np_grow>>1));
 			MPI_Recv(&recv_sum, 1, MPI_DOUBLE, myrank+(np_grow>>1), 5, MPI_COMM_WORLD, &status);
 			sum += recv_sum;
 		}
