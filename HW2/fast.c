@@ -132,25 +132,14 @@ int main(int argc, char* argv[]) {
 	double Delta = (X_max-X_min)/Points;
 	for(int i=0; i<per_proc-1; i++)
 		sum += (myshare[i]+myshare[i+1])*Delta/2;
+	free(myshare);
 
-	/* //not needed
-	double * sums = NULL;
-	if(myrank==0)
-		sums = malloc(np*sizeof(double));
-	MPI_Gather(&sum, 1, MPI_DOUBLE, sums, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-	if(myrank==0) {
-		for(int i=1; i<np; i++)
-			sum += sums[i];
-		printf("PROC %d: SUM = %lf\n", myrank, sum);
-	}
-	*/
 	MPI_Barrier(MPI_COMM_WORLD);
 
 	// Gather the sums into proc 0
 	double recv_sum=0;
 	int rank_decay = myrank;
 	for(int i, np_grow=2; np_grow<=np; np_grow<<=1, rank_decay>>=1, i++) {
-		printf("(%d) ITERATION (%d): rank_decay = %d\n", myrank, i, rank_decay);
 		if(rank_decay % np_grow == 1) {
 			printf("(%d) ITERATION (%d): snd to = %d\n", myrank, i, myrank-(np_grow>>1));
 			MPI_Send(&sum, 1, MPI_DOUBLE, myrank-(np_grow>>1), 5, MPI_COMM_WORLD);
@@ -169,7 +158,6 @@ int main(int argc, char* argv[]) {
 		printf("\nPROC %d REPORTS SUM = %lf\t <-- Result. ELAPSED TIME: %f sec\n", myrank, sum, (double)(stop.tv_usec-start.tv_usec)/1000000 + stop.tv_sec-start.tv_sec);
 	}
 
-	free(myshare);
 
 	MPI_Finalize();
 	return 0;
