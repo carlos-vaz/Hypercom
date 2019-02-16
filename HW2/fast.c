@@ -8,7 +8,7 @@
 
 #define MAX_PROCS 1000
 
-int myrank, np, per_proc, num_children=0;
+int myrank, virtual_rank, np, per_proc;
 
 /* Compute single function value. 
  * To swap function, modify this only. 
@@ -66,8 +66,6 @@ int propagate(double *arr, int *count, double *myshare) {
 	// Free send_array (arr still needed for next propagate)
 	free(send_arr);
 
-	// This proc will expect a computation from each of its children
-	num_children++;
 	*count >>= 1;
 	return 1;
 }
@@ -80,7 +78,7 @@ int main(int argc, char* argv[]) {
 	struct timeval stop, start;
 
 	// Parse arguments
-	if(myrank==0 && argc!=4) {
+	if(virtual_rank==0 && argc!=4) {
 		printf("Abort. main needs 3 arguments: \"mpirun -np [# procs] main [# Points] [X_min] [X_max]\"\n");
 		MPI_Abort(MPI_COMM_WORLD, 16);
 	}
@@ -90,7 +88,7 @@ int main(int argc, char* argv[]) {
 	double X_max = atof(argv[3]);
 
 	// Check divisibility of labor
-	if(myrank==0 && (Points % np != 0 || Points == np) ) {
+	if(virtual_rank==0 && (Points % np != 0 || Points == np) ) {
 		printf("Abort. Number of processes (%d) must divide number of points (%d), and " \
 		"cannot equal number of points.\n", np, Points);
 		MPI_Abort(MPI_COMM_WORLD, 17);
@@ -98,17 +96,26 @@ int main(int argc, char* argv[]) {
 	MPI_Barrier(MPI_COMM_WORLD);
 	per_proc = Points/np;
 
+	/* 
+	 * Each proc gets a virtual_rank: an offset from the closest
+	 * power of 2 rank to its left
+	 * Mask starts at -1 = 0xFFFFFFFF
+	 */
+	int offset=0, mask=-1;
+	while( myrank<(np&mask) )
+		mask<<=1;
+	offset = np&mask;
+	virtual_rank = myrank - offset;
+
 	// Allocate arrays for receiving 
 	double * arr;
 	int arr_sz=0;
 	double * myshare = malloc(per_proc*sizeof(double));
 
-	// Remember who sent you data. They will be expecting your computation result
-	int rank_of_parent = -1;
-
-	if(myrank == 0) {
-		// Middle process generates function data, then propagates down tree
-		// Middle process starts wall clock timer
+	if(virtual_rank == 0) {
+		/* Middle process generates function data, then propagates down tree
+		 * Middle process starts wall clock timer
+		 */
 		gettimeofday(&start, NULL);
 		arr = malloc(Points*sizeof(double));
 		func_gen(arr, X_min, X_max, Points);
@@ -138,7 +145,7 @@ int main(int argc, char* argv[]) {
 
 	// Gather the sums into proc 0
 	double recv_sum=0;
-	int rank_decay = myrank;
+	int rank_decay = virtual_rank;
 	for(int np_grow=2; np_grow<=np; np_grow<<=1, rank_decay>>=1) {
 		if(rank_decay % 2 == 1) {
 			MPI_Send(&sum, 1, MPI_DOUBLE, myrank-(np_grow>>1), 5, MPI_COMM_WORLD);
@@ -151,7 +158,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	// Display results
-	if(myrank==0) {
+	if(virtual_rank==0) {
 		gettimeofday(&stop, NULL);
 		printf("\nPROC %d REPORTS SUM = %lf\t <-- Result. ELAPSED TIME: %f sec\n", myrank, sum, (double)(stop.tv_usec-start.tv_usec)/1000000 + stop.tv_sec-start.tv_sec);
 	}
