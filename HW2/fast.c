@@ -136,8 +136,8 @@ int main(int argc, char* argv[]) {
 			int snd_sz = per_proc*(prev_offset-offset);
 			msk_0 >>= 1;
 			msk_0 += msk_1;
-			if(snd_sz==0)
-				continue;
+			//if(snd_sz==0)
+			//	continue;
 			printf("Offset %d = %d\n", i, offset);
 			//MPI_Send(
 
