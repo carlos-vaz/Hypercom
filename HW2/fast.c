@@ -127,6 +127,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	// Perform the integration
+	printf("(%d) INTEGRATING...\n", myrank);
 	double sum=0;
 	double Delta = (X_max-X_min)/Points;
 	for(int i=0; i<per_proc-1; i++)
