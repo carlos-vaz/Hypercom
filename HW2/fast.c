@@ -125,7 +125,7 @@ int main(int argc, char* argv[]) {
 		arr = malloc(Points*sizeof(double));
 		func_gen(arr, X_min, X_max, Points);
 		arr_sz = virtual_points;
-		while(propagate(arr, &arr_sz, myshare)==1);
+		while(propagate(arr, &arr_sz, myshare)==1) printf("if\n");
 	} else {
 		// Block until you receive a message, then receive and propagate down tree
 		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
@@ -134,7 +134,7 @@ int main(int argc, char* argv[]) {
 		MPI_Get_count(&status, MPI_DOUBLE, &arr_sz);
 		arr = malloc(arr_sz*sizeof(double));
 		MPI_Recv(arr, arr_sz, MPI_DOUBLE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-		while(propagate(arr, &arr_sz, myshare)==1);
+		while(propagate(arr, &arr_sz, myshare)==1) printf("else\n");
 	}
 
 	// Perform the integration
