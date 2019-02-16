@@ -130,14 +130,14 @@ int main(int argc, char* argv[]) {
 		gettimeofday(&start, NULL);
 		arr = malloc(Points*sizeof(double));
 		func_gen(arr, X_min, X_max, Points);
-		for(int i=0; i<sizeof(int); i++) {
+		for(int i=0; i<sizeof(int)*8; i++) {
 			prev_offset = offset;
 			offset = msk_0&np;
 			int snd_sz = per_proc*(prev_offset-offset);
 			msk_0 >>= 1;
 			msk_0 += msk_1;
-			//if(snd_sz==0)
-			//	continue;
+			if(snd_sz==0)
+				continue;
 			printf("Offset %d = %d\n", i, offset);
 			//MPI_Send(
 
