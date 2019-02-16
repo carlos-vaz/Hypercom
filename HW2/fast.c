@@ -124,7 +124,7 @@ int main(int argc, char* argv[]) {
 	 */
 	double * snd_bf;
 	int msk_0 = 1 << (sizeof(int)*8-1);
-	int msk_1=msk_0; prev_offset=0;
+	int msk_1=msk_0, prev_offset=0;
 	offset = 0;
 	if(myrank==0) {
 		gettimeofday(&start, NULL);
@@ -133,7 +133,7 @@ int main(int argc, char* argv[]) {
 		for(int i=0; i<sizeof(int); i++) {
 			prev_offset = offset;
 			offset = msk_0&np;
-			snd_sz = per_proc*(prev_offset-offset);
+			int snd_sz = per_proc*(prev_offset-offset);
 			msk_0 >>= 1;
 			msk_0 += msk_1;
 			if(snd_sz==0)
