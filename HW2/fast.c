@@ -7,16 +7,6 @@
 #include <sys/time.h>
 
 #define MAX_PROCS 1000
-#define BYTE_PATTERN "%c%c%c%c%c%c%c%c\n"
-#define BYTE_TO_BIN(Int) \
-			(Int & 0x80 ? '1' : '0'), \
-			(Int & 0x40 ? '1' : '0'), \
-			(Int & 0x20 ? '1' : '0'), \
-			(Int & 0x10 ? '1' : '0'), \
-			(Int & 0x08 ? '1' : '0'), \
-			(Int & 0x04 ? '1' : '0'), \
-			(Int & 0x02 ? '1' : '0'), \
-			(Int & 0x01 ? '1' : '0')
 
 int myrank, virtual_rank, np, per_proc;
 
@@ -126,11 +116,9 @@ int main(int argc, char* argv[]) {
 	int arr_sz=0;
 	double * myshare = malloc(per_proc*sizeof(double));
 
-	/* Proc 0 distributes chunks of work to all ranks
-	 * that are virtual_rank 0, meaning they are resp-
-	 * onsible for distributing their chunk to a set
-	 * processes of size of a power-of-two.
+	/* Determine the 
 	 */
+  if(myrank==0) {
 	double * snd_bf;
 	int msk_0 = 1 << (sizeof(int)*8-1);
 	int msk_1=msk_0, prev_offset=0, snd_sz, num_virtual=1;
@@ -152,10 +140,17 @@ int main(int argc, char* argv[]) {
 			MPI_Send(snd_bf, snd_sz, MPI_DOUBLE, prev_offset, 7, MPI_COMM_WORLD);
 		}
 	}
-	if(myrank==0) {
-		arr_sz = virtual_chunks*per_proc;
-		while(propagate(arr, &arr_sz, myshare)==1);
-	} else {
+	arr_sz = virtual_chunks*per_proc;
+	while(propagate(arr, &arr_sz, myshare)==1);
+  }
+
+	/* If I am rank 0, I will first distribute assignments
+	 * to all virtual_rank 0, then propagate my remaining
+	 * data to my virtual tree. Else, I will wait to receive
+	 * my assignment and propagate it down the my virtual
+	 * tree.  
+	 */
+   else {
 		// Block until you receive a message, then receive and propagate down tree
 		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 		MPI_Get_count(&status, MPI_DOUBLE, &arr_sz);
@@ -165,25 +160,6 @@ int main(int argc, char* argv[]) {
 		MPI_Recv(arr, arr_sz, MPI_DOUBLE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 		while(propagate(arr, &arr_sz, myshare)==1);
 	}
-
-	/* If I am virtual rank 0, I will first receive my
-	 * assignment from rank 0, then distribute (propagate)
-	 * it. Otherwise, I will wait to receive from a 
-	 * virtual rank 0 and propagate. 
-	 */
-/*	if(virtual_rank == 0) {
-		arr_sz = virtual_chunks;
-		while(propagate(arr, &arr_sz, myshare)==1) printf("if\n");
-	} else {
-		// Block until you receive a message, then receive and propagate down tree
-		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-		MPI_Get_count(&status, MPI_DOUBLE, &arr_sz);
-		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-		MPI_Get_count(&status, MPI_DOUBLE, &arr_sz);
-		arr = malloc(arr_sz*sizeof(double));
-		MPI_Recv(arr, arr_sz, MPI_DOUBLE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-		while(propagate(arr, &arr_sz, myshare)==1) printf("else\n");
-	} */
 
 	// Perform the integration
 	double sum=0;
