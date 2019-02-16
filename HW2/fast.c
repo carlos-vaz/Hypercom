@@ -101,12 +101,16 @@ int main(int argc, char* argv[]) {
 	 * power of 2 rank to its left
 	 * Mask starts at -1 = 0xFFFFFFFF
 	 */
-	int offset=0, mask=-1;
-	while( myrank<(np&mask) )
+	int offset=0, mask=-1, end;
+	while( myrank<(np&mask) ) {
+		end = mask;
 		mask<<=1;
+	}
 	offset = np&mask;
+	end &= np;
 	virtual_rank = myrank - offset;
-	printf("Real rank: %d... Virtual rank: %d\n", myrank, virtual_rank);
+	int virtual_points = end - offset;
+	printf("Real rank: %d... Virtual rank: %d..., Virtual points: %d\n", myrank, virtual_rank, virtual_points);
 
 	// Allocate arrays for receiving 
 	double * arr;
@@ -120,7 +124,7 @@ int main(int argc, char* argv[]) {
 		gettimeofday(&start, NULL);
 		arr = malloc(Points*sizeof(double));
 		func_gen(arr, X_min, X_max, Points);
-		arr_sz = Points;
+		arr_sz = virtual_points;
 		while(propagate(arr, &arr_sz, myshare)==1);
 	} else {
 		// Block until you receive a message, then receive and propagate down tree
