@@ -34,7 +34,8 @@ void func_gen(double * arr, double X_min, double X_max, int Points) {
  * is a leaf-reaching propagate), and free 
  * memory of arr. It will also propagate the
  * remaining data to the right of its share to 
- * the appropriate process down the binary tree. 
+ * the appropriate process down the binary tree.
+ * Proactively halves count for next propagation.  
  * 
  * RETURN VALUE: 0 if finished reached leaf node
  * process. 1 if further propagations needed. 
@@ -112,8 +113,7 @@ int main(int argc, char* argv[]) {
 		arr = malloc(Points*sizeof(double));
 		func_gen(arr, X_min, X_max, Points);
 		arr_sz = Points;
-		while(propagate(arr, &arr_sz, myshare)==1)
-			printf("(%d) arr_sz=%d, (pp=%d)\n", myrank, arr_sz, per_proc);
+		while(propagate(arr, &arr_sz, myshare)==1);
 	} else {
 		// Block until you receive a message, then receive and propagate down tree
 		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
@@ -123,8 +123,7 @@ int main(int argc, char* argv[]) {
 		arr = malloc(arr_sz*sizeof(double));
 		MPI_Recv(arr, arr_sz, MPI_DOUBLE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 		rank_of_parent = status.MPI_SOURCE;
-		while(propagate(arr, &arr_sz, myshare)==1) 
-			printf("(%d) arr_sz=%d\n", myrank, arr_sz);
+		while(propagate(arr, &arr_sz, myshare)==1);
 	}
 
 	// Perform the integration
@@ -133,6 +132,7 @@ int main(int argc, char* argv[]) {
 	for(int i=0; i<per_proc-1; i++)
 		sum += (myshare[i]+myshare[i+1])*Delta/2;
 
+	// not needed
 	double * sums = NULL;
 	if(myrank==0)
 		sums = malloc(np*sizeof(double));
@@ -142,6 +142,21 @@ int main(int argc, char* argv[]) {
 			sum += sums[i];
 		printf("PROC %d: SUM = %lf\n", myrank, sum);
 	}
+
+	// Gather the sums into proc 0
+	int log_np = -1, t=np;
+	while( t&0 != 0) {
+		t >>= 1;
+		log_np++;
+	}
+	int rank_decay = myrank;
+	for(int np_grow=1; np_grow!=np; np_grow<<=1, rank_decay>>=1) {
+		if(rank_decay % np_grow == 1)
+			MPI_Send();
+		else if(rank_decay % np_grow == 0)
+			MPI_Recv();
+	}
+
 
 /*	// If I am NOT leaf, first receive from my children
 	double child_sum=0;
