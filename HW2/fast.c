@@ -155,7 +155,6 @@ int main(int argc, char* argv[]) {
 		}
 	}
 	MPI_Barrier(MPI_COMM_WORLD);
-	MPI_Finalize();
 
 	if(virtual_rank == 0) {
 		arr_sz = virtual_points;
