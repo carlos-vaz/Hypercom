@@ -144,6 +144,7 @@ int main(int argc, char* argv[]) {
 		printf("PROC %d: SUM = %lf\n", myrank, sum);
 	}
 	*/
+	MPI_Barrier(MPI_COMM_WORLD);
 
 	// Gather the sums into proc 0
 	double recv_sum=0;
