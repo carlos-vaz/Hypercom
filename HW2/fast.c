@@ -205,6 +205,7 @@ int main(int argc, char* argv[]) {
 	// Gather all sums into the procs with virtual rank 0
 	double recv_sum=0;
 	int rank_decay = virtual_rank;
+	printf("\t(%d) VIRTUAL CHUNKS=%d\n", myrank, virtual_chunks);
 	for(int np_grow=2; np_grow<=virtual_chunks; np_grow<<=1, rank_decay>>=1) {
 		if(rank_decay % 2 == 1) {
 			printf("(%d) Send to %d\n", myrank, myrank-(np_grow>>1));
