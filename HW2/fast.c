@@ -153,6 +153,8 @@ int main(int argc, char* argv[]) {
 			snd_bf = malloc(snd_sz*sizeof(double));
 			memcpy(snd_bf, arr+(prev_offset*per_proc), snd_sz*sizeof(double));
 			MPI_Send(snd_bf, snd_sz, MPI_DOUBLE, prev_offset, 7, MPI_COMM_WORLD);
+			int virtual_sz = virtual_points*per_proc;
+			while(propagate(arr, &virtual_sz, myshare)==1) printf("if\n");
 		}
 	} else {
 		// Block until you receive a message, then receive and propagate down tree
