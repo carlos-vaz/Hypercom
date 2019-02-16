@@ -106,6 +106,7 @@ int main(int argc, char* argv[]) {
 		mask<<=1;
 	offset = np&mask;
 	virtual_rank = myrank - offset;
+	printf("Real rank: %d... Virtual rank: %d\n", myrank, virtual_rank);
 
 	// Allocate arrays for receiving 
 	double * arr;
