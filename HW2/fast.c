@@ -117,13 +117,29 @@ int main(int argc, char* argv[]) {
 	int arr_sz=0;
 	double * myshare = malloc(per_proc*sizeof(double));
 
-	if(virtual_rank == 0) {
-		/* Middle process generates function data, then propagates down tree
-		 * Middle process starts wall clock timer
-		 */
+	/* Proc 0 distributes chunks of work to all ranks
+	 * that are virtual_rank 0, meaning they are resp-
+	 * onsible for distributing their chunk to a set
+	 * processes of size of a power-of-two.
+	 */
+	double * snd_bf;
+	int msk_0 = 1 << (sizeof(int)*8-1);
+	int msk_1=msk_0; 
+	offset = 0;
+	if(myrank==0) {
 		gettimeofday(&start, NULL);
 		arr = malloc(Points*sizeof(double));
 		func_gen(arr, X_min, X_max, Points);
+		for(int i=0; i<sizeof(int); i++) {
+			offset = msk_0&np;
+			msk_0 >>= 1;
+			msk_0 += msk_1;
+			printf("Offset %d = %d\n", i, offset);
+		}
+		//MPI_Send(
+	}
+
+	if(virtual_rank == 0) {
 		arr_sz = virtual_points;
 		while(propagate(arr, &arr_sz, myshare)==1) printf("if\n");
 	} else {
