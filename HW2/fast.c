@@ -7,6 +7,16 @@
 #include <sys/time.h>
 
 #define MAX_PROCS 1000
+#define BYTE_PATTERN "%c%c%c%c%c%c%c%c\n"
+#define BYTE_TO_BIN(Int) \
+			(Int & 0x80 ? '1' : '0'), \
+			(Int & 0x40 ? '1' : '0'), \
+			(Int & 0x20 ? '1' : '0'), \
+			(Int & 0x10 ? '1' : '0'), \
+			(Int & 0x08 ? '1' : '0'), \
+			(Int & 0x04 ? '1' : '0'), \
+			(Int & 0x02 ? '1' : '0'), \
+			(Int & 0x01 ? '1' : '0')
 
 int myrank, virtual_rank, np, per_proc;
 
@@ -136,10 +146,11 @@ int main(int argc, char* argv[]) {
 			snd_sz = per_proc*(prev_offset-offset);
 			msk_0 >>= 1;
 			msk_0 |= msk_1;
+			printf("(%d) msk_0 lsB: "BYTE_PATTERN, i, BYTE_TO_BIN(msk_0));
 			if(snd_sz==0)
 				continue;
 			printf("Offset %d = %d\n", i, offset);
-			//MPI_Send(
+			//MPI_Send
 
 		}
 	}
