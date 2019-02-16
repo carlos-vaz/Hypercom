@@ -120,7 +120,6 @@ int main(int argc, char* argv[]) {
 	end &= np;
 	virtual_rank = myrank - offset;
 	int virtual_chunks = end - offset;
-	printf("Real rank: %d... Virtual rank: %d..., Virtual points: %d\n", myrank, virtual_rank, virtual_chunks);
 
 	// Allocate arrays for receiving
 	double * arr;
@@ -146,8 +145,6 @@ int main(int argc, char* argv[]) {
 		msk_0 >>= 1; msk_0 |= msk_1;
 		//printf("(%d) msk_0 lsB: "BYTE_PATTERN, i, BYTE_TO_BIN(msk_0));
 		if(snd_sz==0) continue;
-		if(myrank==0)
-			printf("Offset %d = %d, snd_chunks = %d\n", i, prev_offset, offset-prev_offset);
 		if(prev_offset != 0 && myrank==0) {
 			num_virtual++;
 			snd_bf = malloc(snd_sz*sizeof(double));
@@ -157,18 +154,16 @@ int main(int argc, char* argv[]) {
 	}
 	if(myrank==0) {
 		arr_sz = virtual_chunks*per_proc;
-		while(propagate(arr, &arr_sz, myshare)==1) printf("if\n");
+		while(propagate(arr, &arr_sz, myshare)==1);
 	} else {
 		// Block until you receive a message, then receive and propagate down tree
-		printf("(%d) Entered Recving Else\n",myrank);
 		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-		printf("(%d) Passed Probe\n",myrank);
 		MPI_Get_count(&status, MPI_DOUBLE, &arr_sz);
 		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 		MPI_Get_count(&status, MPI_DOUBLE, &arr_sz);
 		arr = malloc(arr_sz*sizeof(double));
 		MPI_Recv(arr, arr_sz, MPI_DOUBLE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-		while(propagate(arr, &arr_sz, myshare)==1) printf("else\n");
+		while(propagate(arr, &arr_sz, myshare)==1);
 	}
 
 	/* If I am virtual rank 0, I will first receive my
@@ -225,7 +220,6 @@ int main(int argc, char* argv[]) {
 
 	if(myrank==0) {
 		double t_sum=0;
-		printf("(%d): num_virtual=%d, sumbefore= %lf\n" ,myrank, num_virtual, sum);
 		for(int i=0; i<num_virtual-1; i++) {
 			MPI_Recv(&t_sum, 1, MPI_DOUBLE, MPI_ANY_SOURCE, 9, MPI_COMM_WORLD, &status);
 			sum += t_sum;
