@@ -220,13 +220,13 @@ int main(int argc, char* argv[]) {
 
 	MPI_Barrier(MPI_COMM_WORLD);
 	// Gather all virtual rank 0 sub-integrals into rank 0
-	if(virtual_rank==0)
+	if(virtual_rank==0 && myrank!=0)
 		MPI_Send(&sum, 1, MPI_DOUBLE, 0, 9, MPI_COMM_WORLD);
 
 	if(myrank==0) {
 		double t_sum=0;
 		printf("(%d): num_virtual=%d\n" ,myrank, num_virtual);
-		for(int i=0; i<num_virtual; i++) {
+		for(int i=0; i<num_virtual-1; i++) {
 			MPI_Recv(&t_sum, 1, MPI_DOUBLE, MPI_ANY_SOURCE, 9, MPI_COMM_WORLD, &status);
 			sum += t_sum;
 		}
