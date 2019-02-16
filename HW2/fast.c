@@ -152,7 +152,8 @@ int main(int argc, char* argv[]) {
 			printf("Offset %d = %d, snd_chunks = %d\n", i, prev_offset, offset-prev_offset);
 			snd_bf = malloc(snd_sz*sizeof(double));
 			memcpy(snd_bf, arr+(prev_offset*per_proc), snd_sz*sizeof(double));
-			MPI_Send(snd_bf, snd_sz, MPI_DOUBLE, prev_offset, 7, MPI_COMM_WORLD);
+			if(prev_offset != 0)
+				MPI_Send(snd_bf, snd_sz, MPI_DOUBLE, prev_offset, 7, MPI_COMM_WORLD);
 			arr_sz = virtual_points*per_proc;
 			while(propagate(arr, &arr_sz, myshare)==1) printf("if\n");
 		}
