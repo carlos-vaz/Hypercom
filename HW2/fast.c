@@ -149,7 +149,7 @@ int main(int argc, char* argv[]) {
 	// Gather the sums into proc 0
 	double recv_sum=0;
 	int rank_decay = myrank;
-	for(int i, np_grow=2; np_grow<np; np_grow<<=1, rank_decay>>=1, i++) {
+	for(int i, np_grow=2; np_grow<=np; np_grow<<=1, rank_decay>>=1, i++) {
 		printf("(%d) ITERATION (%d): rank_decay = %d\n", myrank, i, rank_decay);
 		if(rank_decay % np_grow == 1) {
 			printf("(%d) ITERATION (%d): snd to = %d\n", myrank, i, myrank-(np_grow>>1));
