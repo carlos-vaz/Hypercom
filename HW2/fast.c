@@ -178,7 +178,6 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	MPI_Barrier(MPI_COMM_WORLD);
 	// Gather all virtual rank 0 sub-integrals into rank 0
 	if(virtual_rank==0 && myrank!=0)
 		MPI_Send(&sum, 1, MPI_DOUBLE, 0, 9, MPI_COMM_WORLD);
