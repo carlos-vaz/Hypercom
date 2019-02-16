@@ -140,12 +140,12 @@ int main(int argc, char* argv[]) {
 	double recv_sum=0;
 	int rank_decay = myrank;
 	for(int i, np_grow=2; np_grow<=np; np_grow<<=1, rank_decay>>=1, i++) {
-		if(rank_decay % np_grow == 1) {
+		if(rank_decay % 2 == 1) {
 			printf("(%d) ITERATION (%d): snd to = %d\n", myrank, i, myrank-(np_grow>>1));
 			MPI_Send(&sum, 1, MPI_DOUBLE, myrank-(np_grow>>1), 5, MPI_COMM_WORLD);
 			break; // Whoever you sent to now represents your group. you leave. 
 		}
-		else if(rank_decay % np_grow == 0) {
+		else if(rank_decay % 2 == 0) {
 			printf("(%d) ITERATION (%d): rcv from = %d\n", myrank, i, myrank+(np_grow>>1));
 			MPI_Recv(&recv_sum, 1, MPI_DOUBLE, myrank+(np_grow>>1), 5, MPI_COMM_WORLD, &status);
 			sum += recv_sum;
