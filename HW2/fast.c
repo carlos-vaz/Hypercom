@@ -152,7 +152,6 @@ int main(int argc, char* argv[]) {
 	for(int i, np_grow=2; np_grow<np; np_grow<<=1, rank_decay>>=1, i++) {
 		printf("(%d) ITERATION (%d): rank_decay = %d\n", myrank, i, rank_decay);
 		if(rank_decay % np_grow == 1) {
-			MPI_Barrier(MPI_COMM_WORLD);
 			printf("(%d) ITERATION (%d): snd to = %d\n", myrank, i, myrank-(np_grow>>1));
 			MPI_Send(&sum, 1, MPI_DOUBLE, myrank-(np_grow>>1), 5, MPI_COMM_WORLD);
 			break; // Whoever you sent to now represents your group. you leave. 
