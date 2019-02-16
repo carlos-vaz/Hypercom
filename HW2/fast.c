@@ -156,6 +156,7 @@ int main(int argc, char* argv[]) {
 		}
 	} else {
 		// Block until you receive a message, then receive and propagate down tree
+		printf("(%d) Entered Recving Else\n",myrank);
 		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 		MPI_Get_count(&status, MPI_DOUBLE, &arr_sz);
 		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
