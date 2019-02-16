@@ -117,41 +117,36 @@ int main(int argc, char* argv[]) {
 	int arr_sz=0;
 	double * myshare = malloc(per_proc*sizeof(double));
 
-	/* Determine the 
-	 */
-  if(myrank==0) {
-	double * snd_bf;
-	int msk_0 = 1 << (sizeof(int)*8-1);
-	int msk_1=msk_0, prev_offset=0, snd_sz;
-	offset = 0;
-	gettimeofday(&start, NULL);
-	arr = malloc(Points*sizeof(double));
-	func_gen(arr, X_min, X_max, Points);
-	for(int i=0; i<sizeof(int)*8; i++) {
-		prev_offset = offset;
-		offset = msk_0&np;
-		snd_sz = per_proc*(offset-prev_offset);
-		msk_0 >>= 1; msk_0 |= msk_1;
-		//printf("(%d) msk_0 lsB: "BYTE_PATTERN, i, BYTE_TO_BIN(msk_0));
-		if(snd_sz==0) continue;
-		if(prev_offset != 0 && myrank==0) {
-			num_virtual++;
-			snd_bf = malloc(snd_sz*sizeof(double));
-			memcpy(snd_bf, arr+(prev_offset*per_proc), snd_sz*sizeof(double));
-			MPI_Send(snd_bf, snd_sz, MPI_DOUBLE, prev_offset, 7, MPI_COMM_WORLD);
-		}
-	}
-	arr_sz = virtual_chunks*per_proc;
-	while(propagate(arr, &arr_sz, myshare)==1);
-  }
-
 	/* If I am rank 0, I will first distribute assignments
 	 * to all virtual_rank 0, then propagate my remaining
 	 * data to my virtual tree. Else, I will wait to receive
 	 * my assignment and propagate it down the my virtual
 	 * tree.  
 	 */
-   else {
+	if(myrank==0) {
+		double * snd_bf;
+		int msk_0 = 1 << (sizeof(int)*8-1);
+		int msk_1=msk_0, prev_offset=0, snd_sz;
+		offset = 0;
+		gettimeofday(&start, NULL);
+		arr = malloc(Points*sizeof(double));
+		func_gen(arr, X_min, X_max, Points);
+		for(int i=0; i<sizeof(int)*8; i++) {
+			prev_offset = offset;
+			offset = msk_0&np;
+			snd_sz = per_proc*(offset-prev_offset);
+			msk_0 >>= 1; msk_0 |= msk_1;
+			if(snd_sz==0) continue;
+			if(prev_offset != 0) {
+				num_virtual++;
+				snd_bf = malloc(snd_sz*sizeof(double));
+				memcpy(snd_bf, arr+(prev_offset*per_proc), snd_sz*sizeof(double));
+				MPI_Send(snd_bf, snd_sz, MPI_DOUBLE, prev_offset, 7, MPI_COMM_WORLD);
+			}
+		}
+		arr_sz = virtual_chunks*per_proc;
+		while(propagate(arr, &arr_sz, myshare)==1);
+	} else {
 		// Block until you receive a message, then receive and propagate down tree
 		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 		MPI_Get_count(&status, MPI_DOUBLE, &arr_sz);
