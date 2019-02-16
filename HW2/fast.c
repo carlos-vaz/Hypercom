@@ -140,7 +140,7 @@ int main(int argc, char* argv[]) {
 		gettimeofday(&start, NULL);
 		arr = malloc(Points*sizeof(double));
 		func_gen(arr, X_min, X_max, Points);
-		for(int i=0; i<(sizeof(int)*8)-1; i++) {
+		for(int i=0; i<(sizeof(int)*8); i++) {
 			prev_offset = offset;
 			offset = msk_0&np;
 			snd_sz = per_proc*(offset-prev_offset);
