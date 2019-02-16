@@ -149,7 +149,7 @@ int main(int argc, char* argv[]) {
 			printf("(%d) msk_0 lsB: "BYTE_PATTERN, i, BYTE_TO_BIN(msk_0));
 			if(snd_sz==0)
 				continue;
-			printf("Offset %d = %d\n", i, offset);
+			printf("Offset %d = %d\n", i, prev_offset);
 			//MPI_Send
 
 		}
