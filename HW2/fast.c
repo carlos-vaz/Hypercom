@@ -146,7 +146,7 @@ int main(int argc, char* argv[]) {
 
 	// Gather the sums into proc 0
 	double recv_sum=0;
-	for(int np_grow=1, int rank_decay=myrank; np_grow!=np; np_grow<<=1, rank_decay>>=1) {
+	for(int np_grow=1, rank_decay=myrank; np_grow!=np; np_grow<<=1, rank_decay>>=1) {
 		if(rank_decay % np_grow == 1) {
 			MPI_Send(&sum, 1, MPI_DOUBLE, myrank-np_grow, 5, MPI_COMM_WORLD);
 			break; // Whoever you sent to now represents your group. you leave. 
