@@ -225,7 +225,7 @@ int main(int argc, char* argv[]) {
 
 	if(myrank==0) {
 		double t_sum=0;
-		printf("(%d): num_virtual=%d\n" ,myrank, num_virtual);
+		printf("(%d): num_virtual=%d, sumbefore= %lf\n" ,myrank, num_virtual, sum);
 		for(int i=0; i<num_virtual-1; i++) {
 			MPI_Recv(&t_sum, 1, MPI_DOUBLE, MPI_ANY_SOURCE, 9, MPI_COMM_WORLD, &status);
 			sum += t_sum;
