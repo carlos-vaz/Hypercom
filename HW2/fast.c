@@ -132,7 +132,7 @@ int main(int argc, char* argv[]) {
 	for(int i=0; i<per_proc-1; i++)
 		sum += (myshare[i]+myshare[i+1])*Delta/2;
 
-	// not needed
+	/* //not needed
 	double * sums = NULL;
 	if(myrank==0)
 		sums = malloc(np*sizeof(double));
@@ -142,40 +142,25 @@ int main(int argc, char* argv[]) {
 			sum += sums[i];
 		printf("PROC %d: SUM = %lf\n", myrank, sum);
 	}
+	*/
 
 	// Gather the sums into proc 0
-	int log_np = -1, t=np;
-	while( t&0 != 0) {
-		t >>= 1;
-		log_np++;
-	}
-	int rank_decay = myrank;
-	for(int np_grow=1; np_grow!=np; np_grow<<=1, rank_decay>>=1) {
-		if(rank_decay % np_grow == 1)
-			MPI_Send();
-		else if(rank_decay % np_grow == 0)
-			MPI_Recv();
+	double recv_sum=0;
+	for(int np_grow=1, int rank_decay=myrank; np_grow!=np; np_grow<<=1, rank_decay>>=1) {
+		if(rank_decay % np_grow == 1) {
+			MPI_Send(&sum, 1, MPI_DOUBLE, myrank-np_grow, 5, MPI_COMM_WORLD);
+			break; // Whoever you sent to now represents your group. you leave. 
+		}
+		else if(rank_decay % np_grow == 0) {
+			MPI_Recv(&recv_sum, 1, MPI_DOUBLE, myrank+np_grow, 5, MPI_COMM_WORLD, &status);
+			sum += recv_sum;
+		}
 	}
 
+	// Display results
+	gettimeofday(&stop, NULL);
+	printf("\nPROC %d REPORTS SUM = %lf\t <-- Result. ELAPSED TIME: %f sec\n", myrank, sum, (double)(stop.tv_usec-start.tv_usec)/1000000 + stop.tv_sec-start.tv_sec);
 
-/*	// If I am NOT leaf, first receive from my children
-	double child_sum=0;
-	for(int i=0; i<children; i++) {
-		MPI_Recv(&child_sum, 1, MPI_DOUBLE, rank_of_children[i], 0, MPI_COMM_WORLD, &status);
-		sum += child_sum;
-	}
-	
-	// Send my sum to my parent (if I am not root)
-	if(rank_of_parent != -1)
-		MPI_Send(&sum, 1, MPI_DOUBLE, rank_of_parent, 0, MPI_COMM_WORLD);
-
-	printf("PROC %d REPORTS SUM = %lf", myrank, sum);
-	if(rank_of_parent ==-1) {
-		gettimeofday(&stop, NULL);
-		printf("\t<-- Result. ELAPSED TIME: %f sec", (double)(stop.tv_usec-start.tv_usec)/1000000 + stop.tv_sec-start.tv_sec);
-	}
-	printf("\n");
-*/
 	free(myshare);
 
 	MPI_Finalize();
