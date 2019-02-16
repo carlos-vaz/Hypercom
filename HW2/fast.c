@@ -153,13 +153,14 @@ int main(int argc, char* argv[]) {
 			snd_bf = malloc(snd_sz*sizeof(double));
 			memcpy(snd_bf, arr+(prev_offset*per_proc), snd_sz*sizeof(double));
 			MPI_Send(snd_bf, snd_sz, MPI_DOUBLE, prev_offset, 7, MPI_COMM_WORLD);
-			int virtual_sz = virtual_points*per_proc;
-			while(propagate(arr, &virtual_sz, myshare)==1) printf("if\n");
+			arr_sz = virtual_points*per_proc;
+			while(propagate(arr, &arr_sz, myshare)==1) printf("if\n");
 		}
 	} else {
 		// Block until you receive a message, then receive and propagate down tree
 		printf("(%d) Entered Recving Else\n",myrank);
 		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+		printf("(%d) Passed Probe\n",myrank);
 		MPI_Get_count(&status, MPI_DOUBLE, &arr_sz);
 		MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 		MPI_Get_count(&status, MPI_DOUBLE, &arr_sz);
