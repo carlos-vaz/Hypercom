@@ -144,18 +144,16 @@ int main(int argc, char* argv[]) {
 			prev_offset = offset;
 			offset = msk_0&np;
 			snd_sz = per_proc*(offset-prev_offset);
-			msk_0 >>= 1;
-			msk_0 |= msk_1;
+			msk_0 >>= 1; msk_0 |= msk_1;
 			printf("(%d) msk_0 lsB: "BYTE_PATTERN, i, BYTE_TO_BIN(msk_0));
-			if(snd_sz==0)
-				continue;
+			if(snd_sz==0) continue;
 			printf("Offset %d = %d, snd_chunks = %d\n", i, prev_offset, offset-prev_offset);
 			snd_bf = malloc(snd_sz*sizeof(double));
 			memcpy(snd_bf, arr+(prev_offset*per_proc), snd_sz*sizeof(double));
 			if(prev_offset != 0)
 				MPI_Send(snd_bf, snd_sz, MPI_DOUBLE, prev_offset, 7, MPI_COMM_WORLD);
-			arr_sz = virtual_points*per_proc;
 		}
+		arr_sz = virtual_points*per_proc;
 		while(propagate(arr, &arr_sz, myshare)==1) printf("if\n");	
 	} else {
 		// Block until you receive a message, then receive and propagate down tree
@@ -205,10 +203,12 @@ int main(int argc, char* argv[]) {
 	int rank_decay = virtual_rank;
 	for(int np_grow=2; np_grow<=np; np_grow<<=1, rank_decay>>=1) {
 		if(rank_decay % 2 == 1) {
+			printf("(%d) Send to %d\n", myrank, myrank-(np_grow>>1));
 			MPI_Send(&sum, 1, MPI_DOUBLE, myrank-(np_grow>>1), 5, MPI_COMM_WORLD);
 			break; // Whoever you sent to now represents your group. you leave. 
 		}
 		else if(rank_decay % 2 == 0) {
+			printf("(%d) Recv from %d\n", myrank, myrank+(np_grow>>1));
 			MPI_Recv(&recv_sum, 1, MPI_DOUBLE, myrank+(np_grow>>1), 5, MPI_COMM_WORLD, &status);
 			sum += recv_sum;
 		}
