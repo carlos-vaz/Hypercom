@@ -136,25 +136,26 @@ int main(int argc, char* argv[]) {
 	int msk_0 = 1 << (sizeof(int)*8-1);
 	int msk_1=msk_0, prev_offset=0, snd_sz;
 	offset = 0;
-	if(myrank==0) {
-		gettimeofday(&start, NULL);
-		arr = malloc(Points*sizeof(double));
-		func_gen(arr, X_min, X_max, Points);
-		for(int i=0; i<sizeof(int)*8; i++) {
-			prev_offset = offset;
-			offset = msk_0&np;
-			snd_sz = per_proc*(offset-prev_offset);
-			msk_0 >>= 1; msk_0 |= msk_1;
-			printf("(%d) msk_0 lsB: "BYTE_PATTERN, i, BYTE_TO_BIN(msk_0));
-			if(snd_sz==0) continue;
+	gettimeofday(&start, NULL);
+	arr = malloc(Points*sizeof(double));
+	func_gen(arr, X_min, X_max, Points);
+	for(int i=0; i<sizeof(int)*8; i++) {
+		prev_offset = offset;
+		offset = msk_0&np;
+		snd_sz = per_proc*(offset-prev_offset);
+		msk_0 >>= 1; msk_0 |= msk_1;
+		printf("(%d) msk_0 lsB: "BYTE_PATTERN, i, BYTE_TO_BIN(msk_0));
+		if(snd_sz==0) continue;
+		if(myrank==0)
 			printf("Offset %d = %d, snd_chunks = %d\n", i, prev_offset, offset-prev_offset);
+		if(prev_offset != 0 && myrank==0) {
 			snd_bf = malloc(snd_sz*sizeof(double));
 			memcpy(snd_bf, arr+(prev_offset*per_proc), snd_sz*sizeof(double));
-			if(prev_offset != 0)
-				MPI_Send(snd_bf, snd_sz, MPI_DOUBLE, prev_offset, 7, MPI_COMM_WORLD);
+			MPI_Send(snd_bf, snd_sz, MPI_DOUBLE, prev_offset, 7, MPI_COMM_WORLD);
 		}
+	if(myrank==0) {
 		arr_sz = virtual_points*per_proc;
-		while(propagate(arr, &arr_sz, myshare)==1) printf("if\n");	
+		while(propagate(arr, &arr_sz, myshare)==1) printf("if\n");
 	} else {
 		// Block until you receive a message, then receive and propagate down tree
 		printf("(%d) Entered Recving Else\n",myrank);
@@ -198,7 +199,7 @@ int main(int argc, char* argv[]) {
 	printf("(%d) Entering Barrier\n", myrank);
 	MPI_Barrier(MPI_COMM_WORLD);
 
-	// Gather the sums into proc 0
+	// Gather the sums into proc with virtual rank 0
 	double recv_sum=0;
 	int rank_decay = virtual_rank;
 	for(int np_grow=2; np_grow<=np; np_grow<<=1, rank_decay>>=1) {
