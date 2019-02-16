@@ -134,7 +134,7 @@ int main(int argc, char* argv[]) {
 	 */
 	double * snd_bf;
 	int msk_0 = 1 << (sizeof(int)*8-1);
-	int msk_1=msk_0, prev_offset=0, snd_sz;
+	int msk_1=msk_0, prev_offset=0, snd_sz, virtual_chunks;
 	offset = 0;
 	gettimeofday(&start, NULL);
 	arr = malloc(Points*sizeof(double));
@@ -142,9 +142,10 @@ int main(int argc, char* argv[]) {
 	for(int i=0; i<sizeof(int)*8; i++) {
 		prev_offset = offset;
 		offset = msk_0&np;
-		snd_sz = per_proc*(offset-prev_offset);
+		virtual_chunks = offset-prev_offset;
+		snd_sz = per_proc*virtual_chunks;
 		msk_0 >>= 1; msk_0 |= msk_1;
-		printf("(%d) msk_0 lsB: "BYTE_PATTERN, i, BYTE_TO_BIN(msk_0));
+		//printf("(%d) msk_0 lsB: "BYTE_PATTERN, i, BYTE_TO_BIN(msk_0));
 		if(snd_sz==0) continue;
 		if(myrank==0)
 			printf("Offset %d = %d, snd_chunks = %d\n", i, prev_offset, offset-prev_offset);
@@ -203,7 +204,7 @@ int main(int argc, char* argv[]) {
 	// Gather the sums into proc with virtual rank 0
 	double recv_sum=0;
 	int rank_decay = virtual_rank;
-	for(int np_grow=2; np_grow<=np; np_grow<<=1, rank_decay>>=1) {
+	for(int np_grow=2; np_grow<=virtual_chunks; np_grow<<=1, rank_decay>>=1) {
 		if(rank_decay % 2 == 1) {
 			printf("(%d) Send to %d\n", myrank, myrank-(np_grow>>1));
 			MPI_Send(&sum, 1, MPI_DOUBLE, myrank-(np_grow>>1), 5, MPI_COMM_WORLD);
