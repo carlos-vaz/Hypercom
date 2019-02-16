@@ -158,8 +158,10 @@ int main(int argc, char* argv[]) {
 	}
 
 	// Display results
-	gettimeofday(&stop, NULL);
-	printf("\nPROC %d REPORTS SUM = %lf\t <-- Result. ELAPSED TIME: %f sec\n", myrank, sum, (double)(stop.tv_usec-start.tv_usec)/1000000 + stop.tv_sec-start.tv_sec);
+	if(myrank==0) {
+		gettimeofday(&stop, NULL);
+		printf("\nPROC %d REPORTS SUM = %lf\t <-- Result. ELAPSED TIME: %f sec\n", myrank, sum, (double)(stop.tv_usec-start.tv_usec)/1000000 + stop.tv_sec-start.tv_sec);
+	}
 
 	free(myshare);
 
