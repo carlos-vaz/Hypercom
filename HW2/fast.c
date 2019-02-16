@@ -119,8 +119,8 @@ int main(int argc, char* argv[]) {
 	offset = np&mask;
 	end &= np;
 	virtual_rank = myrank - offset;
-	int virtual_points = end - offset;
-	printf("Real rank: %d... Virtual rank: %d..., Virtual points: %d\n", myrank, virtual_rank, virtual_points);
+	int virtual_chunks = end - offset;
+	printf("Real rank: %d... Virtual rank: %d..., Virtual points: %d\n", myrank, virtual_rank, virtual_chunks);
 
 	// Allocate arrays for receiving
 	double * arr;
@@ -134,7 +134,7 @@ int main(int argc, char* argv[]) {
 	 */
 	double * snd_bf;
 	int msk_0 = 1 << (sizeof(int)*8-1);
-	int msk_1=msk_0, prev_offset=0, snd_sz, virtual_chunks, num_virtual=1;
+	int msk_1=msk_0, prev_offset=0, snd_sz, num_virtual=1;
 	offset = 0;
 	gettimeofday(&start, NULL);
 	arr = malloc(Points*sizeof(double));
@@ -142,8 +142,7 @@ int main(int argc, char* argv[]) {
 	for(int i=0; i<sizeof(int)*8; i++) {
 		prev_offset = offset;
 		offset = msk_0&np;
-		virtual_chunks = offset-prev_offset;
-		snd_sz = per_proc*virtual_chunks;
+		snd_sz = per_proc*(offset-prev_offset);
 		msk_0 >>= 1; msk_0 |= msk_1;
 		//printf("(%d) msk_0 lsB: "BYTE_PATTERN, i, BYTE_TO_BIN(msk_0));
 		if(snd_sz==0) continue;
@@ -157,7 +156,7 @@ int main(int argc, char* argv[]) {
 		}
 	}
 	if(myrank==0) {
-		arr_sz = virtual_points*per_proc;
+		arr_sz = virtual_chunks*per_proc;
 		while(propagate(arr, &arr_sz, myshare)==1) printf("if\n");
 	} else {
 		// Block until you receive a message, then receive and propagate down tree
@@ -178,7 +177,7 @@ int main(int argc, char* argv[]) {
 	 * virtual rank 0 and propagate. 
 	 */
 /*	if(virtual_rank == 0) {
-		arr_sz = virtual_points;
+		arr_sz = virtual_chunks;
 		while(propagate(arr, &arr_sz, myshare)==1) printf("if\n");
 	} else {
 		// Block until you receive a message, then receive and propagate down tree
