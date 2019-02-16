@@ -149,8 +149,8 @@ int main(int argc, char* argv[]) {
 	// Gather the sums into proc 0
 	double recv_sum=0;
 	int rank_decay = myrank;
-	for(int np_grow=1; np_grow<np; np_grow<<=1, rank_decay>>=1) {
-		printf("LOOP: rank_decay = %d\n", rank_decay);
+	for(int i, np_grow=1; np_grow<np; np_grow<<=1, rank_decay>>=1, i++) {
+		printf("(%d) ITERATION (%d): rank_decay = %d\n", myrank, i, rank_decay);
 		if(rank_decay % np_grow == 1) {
 			MPI_Barrier(MPI_COMM_WORLD);
 			MPI_Send(&sum, 1, MPI_DOUBLE, myrank-np_grow, 5, MPI_COMM_WORLD);
