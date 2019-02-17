@@ -83,7 +83,7 @@ int propagate(double *arr, long count, double *myshare) {
 	return children;
 }
 
-int main(int argc, char* argv[]) {
+int main(long argc, char* argv[]) {
 	MPI_Status status;
 	MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
