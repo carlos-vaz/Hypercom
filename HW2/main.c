@@ -121,9 +121,9 @@ int main(long argc, char* argv[]) {
 	if(myrank == np>>1) {
 		// Middle process generates function data, then propagates down tree
 		// Middle process starts wall clock timer
-		gettimeofday(&start, NULL);
 		arr = malloc(Points*sizeof(double));
 		func_gen(arr, X_min, X_max, Points);
+		gettimeofday(&start, NULL);	// Start timer AFTER you compute function
 		children = propagate(arr, Points, myshare);
 	} else {
 		// Block until you receive a message, then receive and propagate down tree

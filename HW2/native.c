@@ -59,10 +59,11 @@ int main(long argc, char* argv[]) {
 	double * arr = NULL;
 	double * myshare = malloc(per_proc*sizeof(double));
 	if(myrank==0) {
-		gettimeofday(&start, NULL);
 		arr = malloc(Points*sizeof(double));
 		func_gen(arr, X_min, X_max, Points);
+		gettimeofday(&start, NULL);	// Start timer AFTER you compute function
 	}
+	printf("Proc0 has already gen %li points\n", Points);
 	MPI_Scatter(arr, (int)per_proc, MPI_DOUBLE, myshare, (int)per_proc, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 	free(arr);
 

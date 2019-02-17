@@ -128,9 +128,9 @@ int main(int argc, char* argv[]) {
 		int msk_0 = 1 << (sizeof(int)*8-1);
 		int msk_1=msk_0, prev_offset=0, snd_sz;
 		offset = 0;
-		gettimeofday(&start, NULL);
 		arr = malloc(Points*sizeof(double));
 		func_gen(arr, X_min, X_max, Points);
+		gettimeofday(&start, NULL);	// Start timer AFTER you compute function
 		for(int i=0; i<sizeof(int)*8; i++) {
 			prev_offset = offset;
 			offset = msk_0&np;
