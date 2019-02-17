@@ -5,8 +5,8 @@ OBJ =	main \
 	native \
 	slow
 
-comp = 	 @module load openmpi; \
-	echo '[Compiling $@...]'; \
+comp =  \
+	@echo '[Compiling $@...]'; \
 	$1;
 
 % : %.c
