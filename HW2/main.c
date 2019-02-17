@@ -8,7 +8,8 @@
 
 #define MAX_PROCS 1000
 
-int myrank, np, per_proc, rank_of_children[2] = {-1,-1};
+int myrank, np, rank_of_children[2] = {-1,-1};
+long per_proc;
 
 /* Compute single function value. 
  * To swap function, modify this only. 
@@ -22,7 +23,7 @@ double func_val(double x) {
  * this function, and pass the chunks
  * to its friends. 
  */
-void func_gen(double * arr, double X_min, double X_max, int Points) {
+void func_gen(double * arr, double X_min, double X_max, long Points) {
 	double x = X_min, Delta = (X_max-X_min)/Points;
 	for(int i=0; i<Points; i++, x += Delta)
 		arr[i] = func_val(x);
@@ -37,7 +38,7 @@ void func_gen(double * arr, double X_min, double X_max, int Points) {
  * RETURN VALUE: the number of processes I pro-
  * pagated to (0 if leaf process). 
  */
-int propagate(double *arr, int count, double *myshare) {
+int propagate(double *arr, long count, double *myshare) {
 	// Reached leaf-node process
 	if(count == per_proc) {
 		memcpy(myshare, arr, per_proc*sizeof(double));
@@ -95,7 +96,7 @@ int main(int argc, char* argv[]) {
 		MPI_Abort(MPI_COMM_WORLD, 16);
 	}
 	MPI_Barrier(MPI_COMM_WORLD);
-	int Points = strtol(argv[1], NULL, 10);
+	long Points = strtol(argv[1], NULL, 10);
 	double X_min = atof(argv[2]);
 	double X_max = atof(argv[3]);
 
@@ -133,7 +134,7 @@ int main(int argc, char* argv[]) {
 		arr = malloc(arr_sz*sizeof(double));
 		MPI_Recv(arr, arr_sz, MPI_DOUBLE, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 		rank_of_parent = status.MPI_SOURCE;
-		children = propagate(arr, arr_sz, myshare);
+		children = propagate(arr, (long)arr_sz, myshare);
 	}
 
 	// Perform the integration

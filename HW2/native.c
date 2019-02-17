@@ -8,7 +8,8 @@
 
 #define MAX_PROCS 1000
 
-int myrank, np, per_proc;
+int myrank, np;
+long per_proc;
 
 /* Compute single function value. 
  * To swap function, modify this only. 
@@ -22,13 +23,13 @@ double func_val(double x) {
  * this function, and pass the chunks
  * to its friends. 
  */
-void func_gen(double * arr, double X_min, double X_max, int Points) {
+void func_gen(double * arr, double X_min, double X_max, long Points) {
 	double x = X_min, Delta = (X_max-X_min)/Points;
 	for(int i=0; i<Points; i++, x += Delta)
 		arr[i] = func_val(x);
 }
 
-int main(int argc, char* argv[]) {
+int main(long argc, char* argv[]) {
 	MPI_Status status;
 	MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
@@ -41,7 +42,7 @@ int main(int argc, char* argv[]) {
 		MPI_Abort(MPI_COMM_WORLD, 16);
 	}
 	MPI_Barrier(MPI_COMM_WORLD);
-	int Points = strtol(argv[1], NULL, 10);
+	long Points = strtol(argv[1], NULL, 10);
 	double X_min = atof(argv[2]);
 	double X_max = atof(argv[3]);
 
@@ -62,7 +63,7 @@ int main(int argc, char* argv[]) {
 		arr = malloc(Points*sizeof(double));
 		func_gen(arr, X_min, X_max, Points);
 	}
-	MPI_Scatter(arr, per_proc, MPI_DOUBLE, myshare, per_proc, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	MPI_Scatter(arr, (int)per_proc, MPI_DOUBLE, myshare, (int)per_proc, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 	free(arr);
 
 	// Perform the integration
