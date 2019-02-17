@@ -2,8 +2,8 @@ CC = mpicc
 CFLAGS = -std=c99
 LFLAGS = -lm
 OBJ =	main \
-	fast \
-	native
+	native \
+	slow
 
 comp = 	 @module load openmpi; \
 	echo '[Compiling $@...]'; \
