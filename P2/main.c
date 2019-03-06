@@ -14,7 +14,7 @@ int main(int argc, char* argv[]) {
 	MPI_Comm_size(MPI_COMM_WORLD, &np);
 
 	if(argc!=3) {
-		MPI_Abort(MPI_COMM_WORLD);
+		MPI_Abort(MPI_COMM_WORLD, -1);
 	}
 	
 	MPI_Comm comm2d;
