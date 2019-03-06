@@ -21,14 +21,14 @@ int main(int argc, char* argv[]) {
 	MPI_File file; 
 	char * pts_str = malloc(3); // 10 digit limit to # of points
 	MPI_File_open(MPI_COMM_WORLD, "./data.txt", MPI_MODE_RDONLY, MPI_INFO_NULL, &file);
-	MPI_File_read_all(file, &pts_str, 2, MPI_CHAR, MPI_STATUS_IGNORE);
+	MPI_File_read_all(file, pts_str, 2, MPI_CHAR, MPI_STATUS_IGNORE);
 	pts_str[2]=0;
 
 	printf("FILE CONTAINS %s ELEMENTS\n", pts_str);
 
 	MPI_Datatype vector; 
 	//MPI_Vector_type();
-	
+
 	MPI_Comm comm2d;
 	int ndim = 2;
 	int periodic[2] = {0,0};	// What is periodic?
