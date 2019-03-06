@@ -16,9 +16,9 @@ int main(int argc, char* argv[]) {
 	
 	MPI_Comm comm2d;
 	int ndim = 2;
-	int periodic[2];
+	const int periodic[2];
 	periodic[0] = periodic[1] = 0;				// what is periodic?
-	int dimensions[2];
+	const int dimensions[2];
 	dimensions[0] = 10; dimensions[1] = 10;			// 10 x 10?
 	int coord_2d[2];
 	int rank_2d;
