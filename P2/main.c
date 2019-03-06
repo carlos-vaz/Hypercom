@@ -19,9 +19,10 @@ int main(int argc, char* argv[]) {
 	}
 
 	MPI_File file; 
-	char * pts_str = malloc(10); // 10 digit limit to # of points
+	char * pts_str = malloc(3); // 10 digit limit to # of points
 	MPI_File_open(MPI_COMM_WORLD, "data.txt", MPI_MODE_RDONLY, MPI_INFO_NULL, &file);
 	MPI_File_read_all(file, &pts_str, 10, MPI_CHAR, MPI_STATUS_IGNORE);
+	pts_str[2]=0;
 
 	printf("FILE CONTAINS %s ELEMENTS\n", pts_str);
 
