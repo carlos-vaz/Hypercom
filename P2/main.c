@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
 	int periodic[2];
 	periodic[0] = 1; periodic[1] = 1;				// what is periodic?
 	int dimensions[2];
-	dimensions[0] = 2; dimensions[1] = 5;	
+	dimensions[0] = 1; dimensions[1] = 5;
 	int coord_2d[2];
 	int rank_2d;
 	MPI_Cart_create(MPI_COMM_WORLD,ndim,dimensions,periodic,1,&comm2d);
