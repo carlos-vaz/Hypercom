@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
 	MPI_File_open(MPI_COMM_WORLD, "data.txt", MPI_MODE_RDONLY, MPI_INFO_NULL, &file);
 	MPI_File_read_all(file, &num_points, 1, MPI_INT, MPI_STATUS_IGNORE);
 
-	printf("FILE CONTAINS %d ELEMENTS\n", num_points);
+	printf("FILE CONTAINS %d ELEMENTS\n", atoi(num_points));
 
 	MPI_Datatype vector; 
 	//MPI_Vector_type();
