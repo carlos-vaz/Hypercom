@@ -13,11 +13,13 @@ int main(int argc, char* argv[]) {
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 	MPI_Comm_size(MPI_COMM_WORLD, &np);
 
+	printf("Num args: %d", argc);
+
 	
 	MPI_Comm comm2d;
 	int ndim = 2;
 	int periodic[2];
-	periodic[0] = 0; periodic[1] = 0;				// what is periodic?
+	periodic[0] = 0; periodic[1] = 0;			// what is periodic?
 	int dimensions[2];
 	dimensions[0] = 1; dimensions[1] = 5;
 	int coord_2d[2];
