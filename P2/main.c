@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
 	printf("FILE CONTAINS %d ELEMENTS\n", num_points);
 
 	MPI_Datatype vector; 
-	MPI_Vector_type();
+	//MPI_Vector_type();
 	
 	MPI_Comm comm2d;
 	int ndim = 2;
