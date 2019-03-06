@@ -13,8 +13,9 @@ int main(int argc, char* argv[]) {
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 	MPI_Comm_size(MPI_COMM_WORLD, &np);
 
-	printf("Num args: %d", argc);
-
+	if(argc!=3) {
+		MPI_Abort(MPI_COMM_WORLD);
+	}
 	
 	MPI_Comm comm2d;
 	int ndim = 2;
