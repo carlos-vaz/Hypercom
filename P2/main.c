@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
 	int ndim = 2;
 	const int periodic[2] = {0,0};
 	//periodic[0] = periodic[1] = 0;				// what is periodic?
-	const int dimensions[2] = {2,1};
+	const int dimensions[2] = {5,2};
 	//dimensions[0] = 10; dimensions[1] = 10;			// 10 x 10?
 	int coord_2d[2];
 	int rank_2d;
