@@ -22,8 +22,8 @@ int main(int argc, char* argv[]) {
 	int x_dim = atoi(argv[4]);
 	int y_dim = atoi(argv[3]);
 	double x_range, y_range;
-	sscanf(argv[1], "%lf", &x_range);
-	sscanf(argv[2], "%lf", &y_range);
+	sscanf(argv[1], "%lf", &y_range);
+	sscanf(argv[2], "%lf", &x_range);
 	printf("x_range = %lf, y_range = %lf\n", x_range, y_range);
 	char * filename = malloc(20);
 	sprintf(filename, "data_%dx%d.txt", y_dim, x_dim);
