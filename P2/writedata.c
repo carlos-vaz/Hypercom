@@ -22,8 +22,8 @@ int main(int argc, char* argv[]) {
 
 
 	// Write Dimensions into file
-	write(fd, x_dim, sizeof(int));
-	write(fd, y_dim, sizeof(int));
+	write(fd, &x_dim, sizeof(int));
+	write(fd, &y_dim, sizeof(int));
 	close(fd);
 }
 

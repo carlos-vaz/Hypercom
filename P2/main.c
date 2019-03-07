@@ -29,6 +29,7 @@ int main(int argc, char* argv[]) {
 
 	printf("FILE CONTAINS %s ELEMENTS\n", pts_str);
 */
+
 	MPI_Datatype vector; 
 	//MPI_Vector_type();
 
