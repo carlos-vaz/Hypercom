@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
 	MPI_Datatype vector; 
 	proc_pts[0] = dims_pts[0]/dims_procs[0];
 	proc_pts[1] = dims_pts[1]/dims_procs[1];
-	printf("# blocks per process = %d\t# pts per proc (X) = %d\t# pts per proc (Y) = %d\n",proc_pts[1], proc_pts[0], proc_pts[1]);
+	printf("# blocks per process = %d\t# pts per proc (X) = %d\t# pts per proc (Y) = %d\n",proc_pts[0], proc_pts[1], proc_pts[0]);
 	MPI_Type_vector(proc_pts[1], proc_pts[0], proc_pts[1]*np, MPI_DOUBLE, &vector);
 	MPI_Type_commit(&vector);
 
