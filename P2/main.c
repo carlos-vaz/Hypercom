@@ -113,7 +113,7 @@ int main(int argc, char* argv[]) {
 		printf("Process (%d, %d): I have a southern boundary\n", mycoord[0], mycoord[1]);
 		// Do nothing (xe^y == 0)
 	}
-	if(mycoord[1]==dims_procs[1]) {
+	if(mycoord[1]==dims_procs[1]-1) {
 		printf("Process (%d, %d): I have a northern boundary\n", mycoord[0], mycoord[1]);
 		for(int x=0; x<proc_pts[0]; x++)
 			T[(proc_pts[1]-1)*proc_pts[0]+x] = v[(proc_pts[1]-1)*proc_pts[0]+x]; // copy from 'v'
@@ -123,7 +123,7 @@ int main(int argc, char* argv[]) {
 		for(int y=0; y<proc_pts[1]; y++)
 			T[y*proc_pts[0]] = v[y*proc_pts[0]]; // copy from 'v'
 	}
-	if(mycoord[0]==dims_procs[0]) {
+	if(mycoord[0]==dims_procs[0]-1) {
 		printf("Process (%d, %d): I have a western boundary\n", mycoord[0], mycoord[1]);
 		for(int y=0; y<proc_pts[1]; y++)
 			T[(y+1)*proc_pts[0]-1] = v[(y+1)*proc_pts[0]-1];  // copy from 'v'
