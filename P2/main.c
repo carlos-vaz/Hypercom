@@ -76,8 +76,8 @@ int main(int argc, char* argv[]) {
 	MPI_Type_vector(proc_pts[1], proc_pts[0], proc_pts[0]*dims_procs[0], MPI_DOUBLE, &vector);
 	MPI_Type_commit(&vector);	
 	printf("MPI_File_set_view(file, 2*sizeof(int)+%d*%d+%d*%d, MPI_DOUBLE, vector, NULL, MPI_INFO_NULL)\n", \
-								mycoord[1], proc_pts[1] ,mycoord[0], proc_size);
-	MPI_File_set_view(file, 2*sizeof(int)+(mycoord[1]*proc_pts[1]+mycoord[0]*proc_size)*sizeof(double), \
+								mycoord[0], proc_pts[0] ,mycoord[1], proc_size);
+	MPI_File_set_view(file, 2*sizeof(int)+(mycoord[0]*proc_pts[0]+mycoord[1]*proc_size)*sizeof(double), \
 								MPI_DOUBLE, vector, "native", MPI_INFO_NULL);	
 	MPI_File_read_all(file, v, proc_size, MPI_DOUBLE, MPI_STATUS_IGNORE);
 
