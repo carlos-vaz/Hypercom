@@ -5,17 +5,25 @@
 #include <math.h>
 
 /* 
- * Writes exponential into grid
+ * Writes exponential data xe^y into grid. 
+ * 
+ * IMPORTANT: 
+ * User types in dimensions in MATRIX NOTATION: Y by X. 
+ * However, computations in main.c will use cartesian
+ * notation: (X,Y). 
  */
 
 int main(int argc, char* argv[]) {
-	if(argc!=3) {
-		printf("ERROR! Format: ./writedata [# points y] [# points x]\n");
+	if(argc!=5) {
+		printf("ERROR! Format: ./writedata [Y Range] [X Range] [# points y] [# points x]\n");
 		exit(0);
 	}
 
-	int x_dim = atoi(argv[2]);
-	int y_dim = atoi(argv[1]);
+	int x_dim = atoi(argv[4]);
+	int y_dim = atoi(argv[3]);
+	double x_range, y_range;
+	sscanf(argv[1], "%lf", x_range);
+	sscanf(argv[2], "%lf", y_range);
 	char * filename = malloc(20);
 	sprintf(filename, "data_%dx%d.txt", y_dim, x_dim);
 	printf("x_dim=%d\ny_dim=%d\nWriting data to %s\n",x_dim, y_dim, filename);
@@ -28,9 +36,11 @@ int main(int argc, char* argv[]) {
 
 
 	// Write data into file
-	double e = 2.718281828, val; 
-	for(double y=0; y<y_dim; y++)
-		for(double x=0; x<x_dim; x++) {
+	double e = 2.718281828, xval yval, val, xinc, yinc; 
+	xinc = x_range/(double)x_dim;
+	yinc = y_range/(double)y_dim;	
+	for(yval=0; yval<y_range; yval+=yinc)
+		for(xval=0; xval<x_range; xval+=xinc) {
 			//val = x*pow(e, y);
 			val = y*x_dim+x;
 			write(fd, &val, sizeof(double));
