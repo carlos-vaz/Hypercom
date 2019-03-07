@@ -31,7 +31,8 @@ int main(int argc, char* argv[]) {
 	double e = 2.718281828, val; 
 	for(double y=0; y<y_dim; y++)
 		for(double x=0; x<x_dim; x++) {
-			val = x*pow(e, y);
+			//val = x*pow(e, y);
+			val = y*x_dim+x;
 			write(fd, &val, sizeof(double));
 		}
 	close(fd);
