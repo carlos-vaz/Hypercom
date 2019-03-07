@@ -39,6 +39,7 @@ int main(int argc, char* argv[]) {
 	double e = 2.718281828, xval, yval, val, xinc, yinc; 
 	xinc = x_range/(double)x_dim;
 	yinc = y_range/(double)y_dim;	
+	printf("x_range = %lf, y_range = %lf\n", x_range, y_range);
 	for(yval=0; yval<y_range; yval+=yinc)
 		for(xval=0; xval<x_range; xval+=xinc) {
 			//val = x*pow(e, y);
