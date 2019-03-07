@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
 	MPI_File file; 
 	MPI_File_open(MPI_COMM_WORLD, argv[1], MPI_MODE_RDONLY, MPI_INFO_NULL, &file);
 	MPI_File_read_all(file, &dims_pts, 2, MPI_INT, MPI_STATUS_IGNORE);
-	MPI_File_read_all_at(file, 2*sizeof(int), &deltas, 2, MPI_DOUBLE, MPI_STATUS_IGNORE);
+	MPI_File_read_at_all(file, 2*sizeof(int), &deltas, 2, MPI_DOUBLE, MPI_STATUS_IGNORE);
 	if(myrank == ANNOUNCER_PROC) printf("FILE READ... DIMENSIONS (MATRIX FORM): %d BY %d\n", dims_pts[1], dims_pts[0]);
 	if( (dims_pts[0]%dims_procs[0]!=0 || dims_pts[1]%dims_procs[1]!=0) && myrank==ANNOUNCER_PROC) {
 		printf("Number of points must be divisible by number of procs in that dimension.\n");
@@ -166,7 +166,7 @@ int main(int argc, char* argv[]) {
 	MPI_Cart_shift(comm2d, 0, -1, &rank_2d, &rank_left);
 	MPI_Cart_shift(comm2d, 1, +1, &rank_2d, &rank_up);
 	MPI_Cart_shift(comm2d, 1, -1, &rank_2d, &rank_down);
-	printf("RANK %d (%d,%d): rank_right=%d, rank_up=%d\n", myrank, mycoords[0], mycoords[1], rank_right, rank_left);
+	printf("RANK %d (%d,%d): rank_right=%d, rank_up=%d\n", myrank, mycoord[0], mycoord[1], rank_right, rank_left);
 
 //	while(myError > ERROR_THRESH) {
 		/*
@@ -199,7 +199,7 @@ int main(int argc, char* argv[]) {
 //	}
 
 
-	free(v);
+/*	free(v);
 	free(T);
 	free(send_south);
 	free(send_north);
@@ -209,7 +209,7 @@ int main(int argc, char* argv[]) {
 	free(recv_north);
 	free(recv_east);
 	free(recv_west);
-
+*/
 	MPI_Barrier(MPI_COMM_WORLD);
 
 	MPI_Finalize();
