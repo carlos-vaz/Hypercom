@@ -76,11 +76,17 @@ int main(int argc, char* argv[]) {
 	MPI_File_read_all(file, v, proc_size, MPI_DOUBLE, MPI_STATUS_IGNORE);
 
 
-	printf("\nRANK %d\n", myrank);
-	for(int i=0; i<proc_size; i++) {
-		printf("%d, ", (int)v[i]);
+	for(int i=0; i<np; i++) {
+		if(myrank==i) {
+			printf("\nRANK %d\n", myrank);
+			for(int j=0; j<proc_size; j++) {
+				printf("%d, ", (int)v[j]);
+			}
+			printf("\n\n");
+		}
+		MPI_Barrier(MPI_COMM_WORLD);
 	}
-	printf("\n\n");
+
 
 	MPI_Finalize();
 	return 0;
