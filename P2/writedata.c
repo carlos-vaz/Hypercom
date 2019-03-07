@@ -22,8 +22,9 @@ int main(int argc, char* argv[]) {
 	int x_dim = atoi(argv[4]);
 	int y_dim = atoi(argv[3]);
 	double x_range, y_range;
-	sscanf(argv[1], "%lf", x_range);
-	sscanf(argv[2], "%lf", y_range);
+	sscanf(argv[1], "%lf", &x_range);
+	sscanf(argv[2], "%lf", &y_range);
+	printf("x_range = %lf, y_range = %lf\n", x_range, y_range);
 	char * filename = malloc(20);
 	sprintf(filename, "data_%dx%d.txt", y_dim, x_dim);
 	printf("x_dim=%d\ny_dim=%d\nWriting data to %s\n",x_dim, y_dim, filename);
@@ -37,9 +38,9 @@ int main(int argc, char* argv[]) {
 
 	// Write data into file
 	double e = 2.718281828, xval, yval, val, xinc, yinc; 
-	xinc = x_range/((double)x_dim);
-	yinc = y_range/((double)y_dim);	
-	printf("x_range = %lf, y_range = %lf\n", x_range, y_range);
+	xinc = x_range/(double)x_dim;
+	yinc = y_range/(double)y_dim;
+	printf("x_inc = %lf, y_inc = %lf\n", x_inc, y_inc);
 	for(yval=0; yval<y_range; yval+=yinc)
 		for(xval=0; xval<x_range; xval+=xinc) {
 			//val = x*pow(e, y);
