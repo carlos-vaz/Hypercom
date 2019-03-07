@@ -76,6 +76,7 @@ int main(int argc, char* argv[]) {
 	MPI_File_read_all(file, v, proc_size, MPI_DOUBLE, MPI_STATUS_IGNORE);
 
 
+	MPI_Barrier(MPI_COMM_WORLD);
 	for(int i=0; i<np; i++) {
 		if(myrank==i) {
 			printf("\nRANK %d\n", myrank);
