@@ -78,7 +78,7 @@ int main(int argc, char* argv[]) {
 
 	printf("\nRANK %d\n", myrank);
 	for(int i=0; i<proc_size; i++) {
-		printf("%lf, ", v[i]);
+		printf("%d, ", (int)v[i]);
 	}
 	printf("\n\n");
 
