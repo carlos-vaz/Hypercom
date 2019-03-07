@@ -123,12 +123,12 @@ int main(int argc, char* argv[]) {
 		for(int y=0; y<dims_pts[1]; y++)
 			T[y*proc_pts[0]] = v[y*proc_pts[0]]; // copy from 'v'
 	}
-	if(mycoord[0]==dims_procs[0]) {
+/*	if(mycoord[0]==dims_procs[0]) {
 		printf("Process (%d, %d): I have a western boundary\n", mycoord[0], mycoord[1]);
 		for(int y=0; y<dims_pts[1]; y++)
 			T[(y+1)*proc_pts[0]-1] = v[(y+1)*proc_pts[0]-1];  // copy from 'v'
 	}
-
+*/
 	MPI_Finalize();
 	return 0;
 }
