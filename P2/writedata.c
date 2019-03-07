@@ -36,13 +36,13 @@ int main(int argc, char* argv[]) {
 
 
 	// Write data into file
-	double e = 2.718281828, xval yval, val, xinc, yinc; 
+	double e = 2.718281828, xval, yval, val, xinc, yinc; 
 	xinc = x_range/(double)x_dim;
 	yinc = y_range/(double)y_dim;	
 	for(yval=0; yval<y_range; yval+=yinc)
 		for(xval=0; xval<x_range; xval+=xinc) {
 			//val = x*pow(e, y);
-			val = y*x_dim+x;
+			val = yval*x_dim+xval;
 			write(fd, &val, sizeof(double));
 		}
 	close(fd);
