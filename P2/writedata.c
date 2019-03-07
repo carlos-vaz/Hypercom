@@ -19,8 +19,11 @@ int main(int argc, char* argv[]) {
 	sprintf(filename, "data_%dx%d.txt", x_dim, y_dim);
 	printf("x_dim=%d\ny_dim=%d\nWriting data to %s\n",x_dim, y_dim, filename);
 	int fd = open(filename, O_WRONLY | O_CREAT, 0644, 1);
-	char * test = "hello\n";
-	write(fd, test, 6);
+
+
+	// Write Dimensions into file
+	write(fd, x_dim, sizeof(int));
+	write(fd, y_dim, sizeof(int));
 	close(fd);
 }
 
