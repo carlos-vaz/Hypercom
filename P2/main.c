@@ -79,7 +79,7 @@ int main(int argc, char* argv[]) {
 	MPI_Barrier(MPI_COMM_WORLD);
 	for(int i=0; i<np; i++) {
 		if(myrank==i) {
-			printf("\nRANK %d\n", myrank);
+			printf("\nRANK %d (%d, %d)\n", myrank, mycoord[0], mycoord[1]);
 			for(int j=0; j<proc_size; j++) {
 				printf("%d, ", (int)v[j]);
 			}
