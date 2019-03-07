@@ -50,7 +50,8 @@ int main(int argc, char* argv[]) {
 	}
 	if(np!=dims_procs[0]*dims_procs[1]) {
 		if(myrank == 0)
-			printf("Allocated %d processes, but user specified %d*%d = %d processes.\n", np, dims_procs[1], dims_procs[0]);
+			printf("Allocated %d processes, but user specified %d*%d = %d processes.\n", \
+					np, dims_procs[1], dims_procs[0], dims_procs[1]*dims_procs[0]);
 		MPI_Abort(MPI_COMM_WORLD, -1);	
 	}
 
