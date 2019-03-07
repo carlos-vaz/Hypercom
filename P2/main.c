@@ -13,7 +13,7 @@
 #define    right(i)	i+1;
 #define    left(i)	i-1;
 
-int myrank, rank_2d, mycoord[2], np, dims_procs[2], num_points, dims_pts[2], proc_pts[2], proc_size \
+int myrank, rank_2d, mycoord[2], np, dims_procs[2], num_points, dims_pts[2], proc_pts[2], proc_size, \
 	rank_right, rank_left, rank_up, rank_down;
 double deltas[2];
 
