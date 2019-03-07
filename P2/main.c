@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
 
 
 	MPI_Datatype vector; 
-	MPI_Vector_type();
+	//MPI_Vector_type();
 
 	MPI_Comm comm2d;
 	int ndim = 2;
