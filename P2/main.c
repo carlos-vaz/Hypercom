@@ -23,20 +23,21 @@ int main(int argc, char* argv[]) {
 
 	/*
 	 * Check for correct number of arguments
+	 * Arguments in the form: Y procs, X procs (MATRIX FORM)
 	 */
 	if(argc!=4) {
 		if(myrank==0)
-			printf("ERROR: arguments to main: mpirun -np [#procs] main [sourcefile] [# procs X] [# procs Y] \n");
+			printf("ERROR: arguments to main: mpirun -np [#procs] main [sourcefile] [# procs Y] [# procs X] \n");
 		MPI_Abort(MPI_COMM_WORLD, -1);
 	}
 
 
 	/*
 	 * Read the file metadata and check for do-ablility
-	 * File metadata in the form: X dimensions, Y dimensions
+	 * File metadata in the form: X dimensions, Y dimensions (CARTESIAN FORM)
 	 */
-	dims_procs[0] = atoi(argv[2]);
-	dims_procs[1] = atoi(argv[3]);
+	dims_procs[0] = atoi(argv[3]);
+	dims_procs[1] = atoi(argv[2]);
 	printf("Will solve %s with %d (x) by %d (y) processes\n", argv[1], dims_procs[0], dims_procs[1]);
 	MPI_File file; 
 	MPI_File_open(MPI_COMM_WORLD, argv[1], MPI_MODE_RDONLY, MPI_INFO_NULL, &file);
