@@ -45,8 +45,13 @@ int main(int argc, char* argv[]) {
 	printf("FILE READ... DIMENSIONS (MATRIX FORM): %d BY %d\n", dims_pts[1], dims_pts[0]);
 	if(dims_pts[0]%dims_procs[0]!=0 || dims_pts[1]%dims_procs[1]!=0) {
 		if(myrank == 0)
-			printf("Number of points must be divisible by number of procs in that dimension\n");
+			printf("Number of points must be divisible by number of procs in that dimension.\n");
 		MPI_Abort(MPI_COMM_WORLD, -1);
+	}
+	if(np!=dims_procs[0]*dims_procs[1]) {
+		if(myrank == 0)
+			printf("Allocated %d processes, but user specified %d*%d = %d processes.\n", np, dims_procs[1], dims_procs[0]);
+		MPI_Abort(MPI_COMM_WORLD, -1);	
 	}
 
 
