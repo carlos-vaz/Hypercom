@@ -22,13 +22,13 @@ int main(int argc, char* argv[]) {
 		MPI_Abort(MPI_COMM_WORLD, -1);
 	}
 
-/*	MPI_File file; 
-	MPI_File_open(MPI_COMM_WORLD, "./data.txt", MPI_MODE_RDONLY, MPI_INFO_NULL, &file);
-	MPI_File_read_all(file, pts_str, 10, MPI_CHAR, MPI_STATUS_IGNORE);
-	//pts_str[2]=0;
+	MPI_File file; 
+	int dimensions_pts[2]; 
+	MPI_File_open(MPI_COMM_WORLD, argv[1], MPI_MODE_RDONLY, MPI_INFO_NULL, &file);
+	MPI_File_read_all(file, &dimensions_pts, 2, MPI_INT, MPI_STATUS_IGNORE);
 
-	printf("FILE CONTAINS %s ELEMENTS\n", pts_str);
-*/
+	printf("FILE READ... DIMENSIONS: %d BY %d\n", dimensions_pts[0], dimensions_pts[1]);
+
 
 	MPI_Datatype vector; 
 	//MPI_Vector_type();
