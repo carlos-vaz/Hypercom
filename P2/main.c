@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-int myrank, np, num_points;
+int myrank, np, x_proc, y_proc, num_points, dimensions_pts[2];
 
 /*void read_file_into_vector(MPI_File *file, void *buf, int count, MPI_Dataype vector, int int_or_double) {
 	MPI_File_read_all(*file, buf, count, MPI_
@@ -22,11 +22,11 @@ int main(int argc, char* argv[]) {
 		MPI_Abort(MPI_COMM_WORLD, -1);
 	}
 
-	int x_proc = atoi(argv[2]), y_proc = atoi(argv[3]);
-	printf("Reading %s with %d horizontal processes and %d vertical processes\n", argv[1], x_proc, y_proc);
+	x_proc = atoi(argv[2]);
+	y_proc = atoi(argv[3]);
+	printf("Will solve %s with %d horizontal processes and %d vertical processes\n", argv[1], x_proc, y_proc);
 
 	MPI_File file; 
-	int dimensions_pts[2]; 
 	MPI_File_open(MPI_COMM_WORLD, argv[1], MPI_MODE_RDONLY, MPI_INFO_NULL, &file);
 	MPI_File_read_all(file, &dimensions_pts, 2, MPI_INT, MPI_STATUS_IGNORE);
 
