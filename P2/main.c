@@ -17,10 +17,13 @@ int main(int argc, char* argv[]) {
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 	MPI_Comm_size(MPI_COMM_WORLD, &np);
 
-	if(argc!=2) {
-		printf("ERROR: arguments to main: mpirun -np [#procs] main [sourcefile]\n");
+	if(argc!=4) {
+		printf("ERROR: arguments to main: mpirun -np [#procs] main [sourcefile] [# procs X] [# procs Y] \n");
 		MPI_Abort(MPI_COMM_WORLD, -1);
 	}
+
+	int x_proc = atoi(argv[2]), y_proc = atoi(argv[3]);
+	printf("Reading %s with %d horizontal processes and %d vertical processes\n", argv[1], x_proc, y_proc);
 
 	MPI_File file; 
 	int dimensions_pts[2]; 
@@ -31,7 +34,7 @@ int main(int argc, char* argv[]) {
 
 
 	MPI_Datatype vector; 
-	//MPI_Vector_type();
+	MPI_Vector_type();
 
 	MPI_Comm comm2d;
 	int ndim = 2;
