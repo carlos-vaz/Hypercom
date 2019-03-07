@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+#define ANNOUNCER_PROC 0
+
 int myrank, rank_2d, mycoord[2], np, dims_procs[2], num_points, dims_pts[2];
 int proc_pts[2], proc_size;
 
@@ -26,7 +28,7 @@ int main(int argc, char* argv[]) {
 	 * Arguments in the form: Y procs, X procs (MATRIX FORM)
 	 */
 	if(argc!=4) {
-		if(myrank==0)
+		if(myrank == ANNOUNCER_PROC)
 			printf("ERROR: arguments to main: mpirun -np [#procs] main [sourcefile] [# procs Y] [# procs X] \n");
 		MPI_Abort(MPI_COMM_WORLD, -1);
 	}
@@ -38,22 +40,21 @@ int main(int argc, char* argv[]) {
 	 */
 	dims_procs[0] = atoi(argv[3]);
 	dims_procs[1] = atoi(argv[2]);
-	printf("Will solve %s with %d (x) by %d (y) processes\n", argv[1], dims_procs[0], dims_procs[1]);
+	if(myrank == ANNOUNCER_PROC) printf("Will solve %s with %d (x) by %d (y) processes\n", argv[1], dims_procs[0], dims_procs[1]);
 	MPI_File file; 
 	MPI_File_open(MPI_COMM_WORLD, argv[1], MPI_MODE_RDONLY, MPI_INFO_NULL, &file);
 	MPI_File_read_all(file, &dims_pts, 2, MPI_INT, MPI_STATUS_IGNORE);
 	printf("FILE READ... DIMENSIONS (MATRIX FORM): %d BY %d\n", dims_pts[1], dims_pts[0]);
-	if(dims_pts[0]%dims_procs[0]!=0 || dims_pts[1]%dims_procs[1]!=0) {
-		if(myrank == 0)
-			printf("Number of points must be divisible by number of procs in that dimension.\n");
+	if( (dims_pts[0]%dims_procs[0]!=0 || dims_pts[1]%dims_procs[1]!=0) && myrank==ANNOUNCER_PROC) {
+		printf("Number of points must be divisible by number of procs in that dimension.\n");
 		MPI_Abort(MPI_COMM_WORLD, -1);
 	}
-	if(np!=dims_procs[0]*dims_procs[1]) {
-		if(myrank == 0)
-			printf("Allocated %d processes, but user specified %d*%d = %d processes.\n", \
-					np, dims_procs[1], dims_procs[0], dims_procs[1]*dims_procs[0]);
+	if(np!=dims_procs[0]*dims_procs[1] && myrank == ANNOUNCER_PROC) {
+		printf("Allocated %d processes, but user specified %d*%d = %d processes.\n", \
+				np, dims_procs[1], dims_procs[0], dims_procs[1]*dims_procs[0]);
 		MPI_Abort(MPI_COMM_WORLD, -1);	
 	}
+	MPI_Barrier(MPI_COMM_WORLD); // wait in case proc 0 aborts
 
 
 	/*
@@ -77,8 +78,8 @@ int main(int argc, char* argv[]) {
 	proc_pts[1] = dims_pts[1]/dims_procs[1]; // # pts in X dim of process partition
 	proc_size = proc_pts[0]*proc_pts[1];
 	double *v = (double*)malloc(proc_size*sizeof(double));
-	printf("# blocks per process = %d\t# pts per proc (X) = %d\t# pts per proc (Y) = %d\n",proc_pts[1], proc_pts[0], proc_pts[1]);
-	printf("proc_size = %d\n",proc_size);
+	if( myrank == ANNOUNCER_PROC) printf("# blocks per process = %d\t# pts per proc (X) = %d\t# pts per proc (Y) = %d\n", \
+							proc_pts[1], proc_pts[0], proc_pts[1]);
 	MPI_Type_vector(proc_pts[1], proc_pts[0], dims_pts[0], MPI_DOUBLE, &vector);
 	MPI_Type_commit(&vector);	
 	printf("MPI_File_set_view(file, 2*sizeof(int)+%d*%d+%d*%d, MPI_DOUBLE, vector, NULL, MPI_INFO_NULL)\n", \
