@@ -5,8 +5,8 @@
 #include <stdlib.h>
 #include <math.h>
 
-int myrank, rank_2d, coord_2d[2], np, dims_procs[2], num_points, dims_pts[2];
-int proc_pts[2];
+int myrank, rank_2d, mycoord[2], np, dims_procs[2], num_points, dims_pts[2];
+int proc_pts[2], proc_size;
 
 
 /*
@@ -53,21 +53,31 @@ int main(int argc, char* argv[]) {
 	MPI_Comm comm2d;
 	int periodic[2] = {0,0};	// What is periodic?
 	MPI_Cart_create(MPI_COMM_WORLD, 2,dims_procs,periodic,1,&comm2d);
-	MPI_Cart_coords(comm2d,myrank, 2,coord_2d);
-	MPI_Cart_rank(comm2d,coord_2d,&rank_2d);
-	printf("I am %d: (%d,%d); originally %d\n",rank_2d,coord_2d[0],coord_2d[1],myrank);
+	MPI_Cart_coords(comm2d,myrank, 2,mycoord);
+	MPI_Cart_rank(comm2d,mycoord,&rank_2d);
+	printf("I am %d: (%d,%d); originally %d\n",rank_2d,mycoord[0],mycoord[1],myrank);
 
 
 	/*
 	 * Read the file contents into vector
 	 */
 	MPI_Datatype vector; 
-	proc_pts[0] = dims_pts[0]/dims_procs[0];
-	proc_pts[1] = dims_pts[1]/dims_procs[1];
+	proc_pts[0] = dims_pts[0]/dims_procs[0]; // # pts in Y dim of process partition
+	proc_pts[1] = dims_pts[1]/dims_procs[1]; // # pts in X dim of process partition
+	proc_size = proc_pts[0]*proc_pts[1];
+	double *v = (double*)malloc(proc_size*sizeof(double));
 	printf("# blocks per process = %d\t# pts per proc (X) = %d\t# pts per proc (Y) = %d\n",proc_pts[0], proc_pts[1], proc_pts[0]);
 	MPI_Type_vector(proc_pts[1], proc_pts[0], proc_pts[1]*np, MPI_DOUBLE, &vector);
 	MPI_Type_commit(&vector);
+	MPI_File_set_view(file, 2*sizeof(int)+mycoord[0]*proc_pts[1]+mycoord[1]*dims_pts[1], MPI_DOUBLE, vector, NULL, MPI_INFO_NULL);	
+	MPI_File_read_all(file, v, proc_size, MPI_DOUBLE, MPI_STATUS_IGNORE);
 
+
+	printf("\nRANK %d\n", myrank);
+	for(int i=0; i<proc_size; i++) {
+		printf("%lf, ", v[i]);
+	}
+	printf("\n\n");
 
 	MPI_Finalize();
 	return 0;
