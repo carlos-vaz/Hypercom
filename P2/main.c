@@ -67,6 +67,7 @@ int main(int argc, char* argv[]) {
 	proc_size = proc_pts[0]*proc_pts[1];
 	double *v = (double*)malloc(proc_size*sizeof(double));
 	printf("# blocks per process = %d\t# pts per proc (X) = %d\t# pts per proc (Y) = %d\n",proc_pts[0], proc_pts[1], proc_pts[0]);
+	printf("proc_size = %d\n",proc_size);
 	MPI_Type_vector(proc_pts[1], proc_pts[0], proc_pts[1]*np, MPI_DOUBLE, &vector);
 	MPI_Type_commit(&vector);	
 	printf("MPI_File_set_view(file, 2*sizeof(int)+%d*%d+%d*%d, MPI_DOUBLE, vector, NULL, MPI_INFO_NULL)\n", \
