@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
 	 */
 	dims_procs[0] = atoi(argv[2]);
 	dims_procs[1] = atoi(argv[3]);
-	printf("Will solve %s with %d horizontal processes and %d vertical processes\n", argv[1], dims_procs[0], dims_procs[1]);
+	printf("Will solve %s with %d (y) by %d (x) processes\n", argv[1], dims_procs[0], dims_procs[1]);
 	MPI_File file; 
 	MPI_File_open(MPI_COMM_WORLD, argv[1], MPI_MODE_RDONLY, MPI_INFO_NULL, &file);
 	MPI_File_read_all(file, &dims_pts, 2, MPI_INT, MPI_STATUS_IGNORE);
@@ -69,5 +69,6 @@ int main(int argc, char* argv[]) {
 	MPI_Type_commit(&vector);
 
 
+	MPI_Finalize();
 	return 0;
 }
