@@ -31,9 +31,11 @@ int main(int argc, char* argv[]) {
 	int fd = open(filename, O_WRONLY | O_CREAT, 0644, 1);
 
 
-	// Write dimensions metadata into file
+	// Write dimensions & range metadata into file
 	write(fd, &x_dim, sizeof(int));
 	write(fd, &y_dim, sizeof(int));
+	write(fd, &x_range, sizeof(double));
+	write(fd, &y_range, sizeof(double));
 
 
 	// Write data into file
