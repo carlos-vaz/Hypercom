@@ -15,7 +15,7 @@
 
 int main(int argc, char* argv[]) {
 	if(argc!=5) {
-		printf("ERROR! Format: ./writedata [Y Range] [X Range] [# points y] [# points x]\n");
+		printf("USAGE INFO:\n\t./writedata [Y Range] [X Range] [# points y] [# points x]\n");
 		exit(0);
 	}
 
