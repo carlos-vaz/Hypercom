@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
 	MPI_File_set_view(file, 2*sizeof(int)+mycoord[0]*proc_pts[1]+mycoord[1]*dims_pts[1], MPI_DOUBLE, vector, "native", MPI_INFO_NULL);	
 	MPI_File_read_all(file, v, proc_size, MPI_DOUBLE, MPI_STATUS_IGNORE);
 
-
+	fflush(stdout);
 	MPI_Barrier(MPI_COMM_WORLD);
 	for(int i=0; i<np; i++) {
 		if(myrank==i) {
@@ -85,6 +85,7 @@ int main(int argc, char* argv[]) {
 			}
 			printf("\n\n");
 		}
+		fflush(stdout);
 		MPI_Barrier(MPI_COMM_WORLD);
 	}
 
