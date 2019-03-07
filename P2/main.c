@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
 	MPI_File_open(MPI_COMM_WORLD, argv[1], MPI_MODE_RDONLY, MPI_INFO_NULL, &file);
 	MPI_File_read_all(file, &dims_pts, 2, MPI_INT, MPI_STATUS_IGNORE);
 
-	printf("FILE READ... DIMENSIONS: %d BY %d\n", dimensions_pts[0], dims_pts[1]);
+	printf("FILE READ... DIMENSIONS: %d BY %d\n", dims_pts[0], dims_pts[1]);
 
 
 	MPI_Datatype vector; 
