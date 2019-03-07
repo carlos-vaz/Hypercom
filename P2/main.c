@@ -72,7 +72,7 @@ int main(int argc, char* argv[]) {
 	MPI_Type_commit(&vector);	
 	printf("MPI_File_set_view(file, 2*sizeof(int)+%d*%d+%d*%d, MPI_DOUBLE, vector, NULL, MPI_INFO_NULL)\n", \
 	mycoord[0], proc_pts[1] ,mycoord[1], dims_pts[1]);
-	MPI_File_set_view(file, 2*sizeof(int)+mycoord[0]*proc_pts[1]+mycoord[1]*dims_pts[1], MPI_DOUBLE, vector, NULL, MPI_INFO_NULL);	
+//	MPI_File_set_view(file, 2*sizeof(int)+mycoord[0]*proc_pts[1]+mycoord[1]*dims_pts[1], MPI_DOUBLE, vector, NULL, MPI_INFO_NULL);	
 //	MPI_File_read_all(file, v, proc_size, MPI_DOUBLE, MPI_STATUS_IGNORE);
 
 
