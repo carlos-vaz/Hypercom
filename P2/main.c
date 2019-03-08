@@ -257,8 +257,11 @@ int main(int argc, char* argv[]) {
 	free(recv_east);
 	free(recv_west);
 
-	double Xmin=0, Ymin=0;
-	VTK_out(dims_pts[0], dims_pts[1], &Xmin, &ranges[0], &Ymin, &ranges[1], T, myrank);
+	double Xmin = (ranges[0]/dims_procs[0])*mycoord[0];
+	double Ymin = (ranges[1]/dims_procs[1])*mycoord[1];
+	double Xmax = Xmin+(ranges[0]/dims_procs[0]);	
+	double Ymax = Ymin+(ranges[1]/dims_procs[1]);
+	VTK_out(proc_pts[0], proc_pts[1], &Xmin, &Xmax, &Ymin, &Ymax, T, myrank);
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
