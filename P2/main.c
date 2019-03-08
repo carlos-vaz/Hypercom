@@ -14,7 +14,7 @@
 #define    left(i)	i-1;
 
 int myrank, rank_2d, mycoord[2], np, dims_procs[2], num_points, dims_pts[2], proc_pts[2], proc_size, \
-	rank_right, rank_left, rank_up, rank_down;
+	ranks_around[4] = {-1,-1,-1,-1}; // {right, left, up, down}
 double deltas[2];
 
 
@@ -162,11 +162,12 @@ int main(int argc, char* argv[]) {
 	int got_west  = 0;
 	double myError = ERROR_THRESH + 1;
 
-	MPI_Cart_shift(comm2d, 0, +1, &rank_2d, &rank_right);
-	MPI_Cart_shift(comm2d, 0, -1, &rank_2d, &rank_left);
-	MPI_Cart_shift(comm2d, 1, +1, &rank_2d, &rank_up);
-	MPI_Cart_shift(comm2d, 1, -1, &rank_2d, &rank_down);
-	printf("RANK %d (%d,%d): rank_right/left/up/down=%d/%d/%d/%d\n", myrank, mycoord[0], mycoord[1], rank_right, rank_left, rank_up, rank_down);
+	MPI_Cart_shift(comm2d, 0, +1, &rank_2d, &ranks_around[0]);
+	MPI_Cart_shift(comm2d, 0, -1, &rank_2d, &ranks_around[1]);
+	MPI_Cart_shift(comm2d, 1, +1, &rank_2d, &ranks_around[2]);
+	MPI_Cart_shift(comm2d, 1, -1, &rank_2d, &ranks_around[3]);
+	printf("RANK %d (%d,%d): rank_right/left/up/down=%d/%d/%d/%d\n", myrank, mycoord[0], mycoord[1], \
+								rank_around[0], rank_around[1], rank_around[2], rank_around[3]);
 
 //	while(myError > ERROR_THRESH) {
 		/*
