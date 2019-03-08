@@ -216,12 +216,12 @@ int main(int argc, char* argv[]) {
 			i = index(proc_pts[0]-1,0);
 			T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+recv_east[0])*pow(deltas[1],2)+ \
 						(recv_south[i]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
-		{
+		}
 		if(got_south==1 && got_west==1) {
 			i = index(0,0);
 			T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(recv_west[i]+T[right(i)])*pow(deltas[1],2)+ \
 						(recv_south[i]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
-		{
+		}
 		for(y=1; y<proc_pts[1]-1; y++) {
 			for(x=1; x<proc_pts[0]-1; x++) {
 				i = index(x,y);
