@@ -237,7 +237,7 @@ int main(int argc, char* argv[]) {
 	}
 
 
-	free(v);
+/*	free(v);
 	free(T);
 	free(send_south);
 	free(send_north);
@@ -247,7 +247,7 @@ int main(int argc, char* argv[]) {
 	free(recv_north);
 	free(recv_east);
 	free(recv_west);
-
+*/
 	MPI_Barrier(MPI_COMM_WORLD);
 
 	MPI_Finalize();
