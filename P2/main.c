@@ -168,7 +168,7 @@ int main(int argc, char* argv[]) {
 	printf("RANK %d (%d,%d): rank_right/left/up/down=%d/%d/%d/%d\n", myrank, mycoord[0], mycoord[1], \
 								ranks_around[0], ranks_around[1], ranks_around[2], ranks_around[3]);
 	MPI_Request req[8];
-	MPI_Status status[0];
+	MPI_Status status[8];
 
 //	while(myError > ERROR_THRESH) {
 	int count = 0;
