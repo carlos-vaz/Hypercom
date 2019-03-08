@@ -22,7 +22,7 @@ void VTK_out(const int N, const int M, const double *Xmin, const double *Xmax,
 
 int myrank, rank_2d, mycoord[2], np, dims_procs[2], num_points, dims_pts[2], proc_pts[2], proc_size, \
 	ranks_around[4] = {-1,-1,-1,-1}; // {right, left, up, down}
-double deltas[2];
+double ranges[2], deltas[2];
 
 
 /*
@@ -58,7 +58,9 @@ int main(int argc, char* argv[]) {
 	MPI_File file; 
 	MPI_File_open(MPI_COMM_WORLD, argv[1], MPI_MODE_RDONLY, MPI_INFO_NULL, &file);
 	MPI_File_read_all(file, &dims_pts, 2, MPI_INT, MPI_STATUS_IGNORE);
-	MPI_File_read_at_all(file, 2*sizeof(int), &deltas, 2, MPI_DOUBLE, MPI_STATUS_IGNORE);
+	MPI_File_read_at_all(file, 2*sizeof(int), &ranges, 2, MPI_DOUBLE, MPI_STATUS_IGNORE);
+	deltas[0] = ranges[0]/(double)dims_pts[0];
+	deltas[1] = ranges[1]/(double)dims_pts[1];
 	if(myrank == ANNOUNCER_PROC) printf("FILE READ... DIMENSIONS (MATRIX FORM): %d BY %d\n", dims_pts[1], dims_pts[0]);
 	if( (dims_pts[0]%dims_procs[0]!=0 || dims_pts[1]%dims_procs[1]!=0) && myrank==ANNOUNCER_PROC) {
 		printf("Number of points must be divisible by number of procs in that dimension.\n");
@@ -256,7 +258,7 @@ int main(int argc, char* argv[]) {
 	free(recv_west);
 
 	double Xmin=0, Ymin=0;
-	VTK_out(dims_pts[0], dims_pts[1], &Xmin, &x_range, &Ymin, &y_range, T, 1);
+	VTK_out(dims_pts[0], dims_pts[1], &Xmin, &ranges[0], &Ymin, &ranges[1], T, 1);
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
