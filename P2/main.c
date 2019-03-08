@@ -161,43 +161,80 @@ int main(int argc, char* argv[]) {
 	int got_east  = 0;
 	int got_west  = 0;
 	double myError = ERROR_THRESH + 1;
-
 	MPI_Cart_shift(comm2d, 0, +1, &rank_2d, &ranks_around[0]);
 	MPI_Cart_shift(comm2d, 0, -1, &rank_2d, &ranks_around[1]);
 	MPI_Cart_shift(comm2d, 1, +1, &rank_2d, &ranks_around[2]);
 	MPI_Cart_shift(comm2d, 1, -1, &rank_2d, &ranks_around[3]);
 	printf("RANK %d (%d,%d): rank_right/left/up/down=%d/%d/%d/%d\n", myrank, mycoord[0], mycoord[1], \
 								ranks_around[0], ranks_around[1], ranks_around[2], ranks_around[3]);
+	MPI_Request req[8];
+	MPI_Status status[0];
 
 //	while(myError > ERROR_THRESH) {
+	int count = 0;
+	while(count < 100);
 		/*
 		 * Post a non-blocking send and a non-blocking receive to all neighbors.
 		 * While you update your internal temperatures, hopefully the requests
 		 * will go through. 
 		 */
-/*		if(!border_south) {
-			MPI_Irecv(recv_south, proc_pts[0], MPI_DOUBLE, rank_down, );
-			MPI_Isend();
+		if(!border_south) {
+			MPI_Irecv(recv_south, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/ \
+									, 2 /*northernly tag*/, comm2d, &req[0]);
+			//memcpy(send_south, T, proc_pts[0]); // Why copy if T[0->xdim] won't change?
+			MPI_Isend(T, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/, 3/*southernly tag*/, &req[1]);
 		}
-*/
+		if(!border_north) {
+			MPI_Irecv(recv_north, proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/ \
+									, 3 /*southernly tag*/, comm2d, &req[2]);
+			//memcpy(send_south, T, proc_pts[0]); // Why copy if T[0->xdim] won't change?
+			MPI_Isend(T[proc_size-proc_pts[0]], proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/, 2/*northernly tag*/, &req[3]);
+		}
+
 		/*
 		 * Compute & update temperatures on block interiors (Gauss-Seidel) for
 		 * 1 iteration. 
 		 */
-/*		int i=0;
-		for(int y=1; y<dims_procs[1]-1; y++) {
-			for(int x=1; x<dims_procs[0]-1; x++) {
+		int i=0 x=0, y=0;
+		if(got_south==1) {
+			for(x=1; x<procs_pts[0]-1; x++) {
+				i = index(x,0);
+				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+T[right(i)])*pow(deltas[1],2)+ \
+						(recv_south[i]+T[up(i)]*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
+			}
+		}
+		for(y=1; y<procs_pts[1]-1; y++) {
+			for(x=1; x<procs_pts[0]-1; x++) {
 				i = index(x,y);
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+T[right(i)])*pow(deltas[1],2)+ \
 					(T[down(i)]+T[up(i)]*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 			}
 		}
-*/
+		if(got_north==1) {
+			for(x=1; x<procs_pts[0]-1; x++) {
+				i = index(x,procs_pts[1]-1);
+				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+T[right(i)])*pow(deltas[1],2)+ \
+						(T[down(i)]+recv_north[i]*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
+			}
+		}
+
+
 		/*
 		 * Check the status of your send and receive requests. 
 		 */
+		if(!border_south) {
+			MPI_Waitall(2, req, status);
+			got_south = 1;
+		}
+		if(!border_north) {
+			MPI_Waitall(2, req[2], status[2]);
+			got_south = 1;
+		}
+	
+		MPI_Barrier(MPI_COMM_WORLD); // remove this
 
-//	}
+		count++;
+	}
 
 
 	free(v);
