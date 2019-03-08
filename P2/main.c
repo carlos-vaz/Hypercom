@@ -168,7 +168,7 @@ int main(int argc, char* argv[]) {
 	printf("RANK %d (%d,%d): rank_right/left/up/down=%d/%d/%d/%d\n", myrank, mycoord[0], mycoord[1], \
 								ranks_around[0], ranks_around[1], ranks_around[2], ranks_around[3]);
 	MPI_Request req[8];
-	MPI_Status status[8];
+	MPI_Status stati[8];
 
 //	while(myError > ERROR_THRESH) {
 	int count = 0;
@@ -178,13 +178,13 @@ int main(int argc, char* argv[]) {
 		 * While you update your internal temperatures, hopefully the requests
 		 * will go through. 
 		 */
-		if(!border_south) {
+		if(!bound_south) {
 			MPI_Irecv(recv_south, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/ \
 									, 2 /*northernly tag*/, comm2d, &req[0]);
 			//memcpy(send_south, T, proc_pts[0]); // Why copy if T[0->xdim] won't change?
 			MPI_Isend(T, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/, 3/*southernly tag*/, &req[1]);
 		}
-		if(!border_north) {
+		if(!bound_north) {
 			MPI_Irecv(recv_north, proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/ \
 									, 3 /*southernly tag*/, comm2d, &req[2]);
 			//memcpy(send_south, T, proc_pts[0]); // Why copy if T[0->xdim] won't change?
@@ -222,12 +222,12 @@ int main(int argc, char* argv[]) {
 		/*
 		 * Check the status of your send and receive requests. 
 		 */
-		if(!border_south) {
-			MPI_Waitall(2, req, status);
+		if(!bound_south) {
+			MPI_Waitall(2, req, stati);
 			got_south = 1;
 		}
-		if(!border_north) {
-			MPI_Waitall(2, req[2], status[2]);
+		if(!bound_north) {
+			MPI_Waitall(2, req[2], stati[2]);
 			got_south = 1;
 		}
 	
