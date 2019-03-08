@@ -182,20 +182,20 @@ int main(int argc, char* argv[]) {
 			MPI_Irecv(recv_south, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/ \
 									, 2 /*northernly tag*/, comm2d, &req[0]);
 			//memcpy(send_south, T, proc_pts[0]); // Why copy if T[0->xdim] won't change?
-			MPI_Isend(T, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/, 3/*southernly tag*/, &req[1]);
+			MPI_Isend(T, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/, 3/*southernly tag*/, comm2d, &req[1]);
 		}
 		if(!bound_north) {
 			MPI_Irecv(recv_north, proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/ \
 									, 3 /*southernly tag*/, comm2d, &req[2]);
 			//memcpy(send_south, T, proc_pts[0]); // Why copy if T[0->xdim] won't change?
-			MPI_Isend(T[proc_size-proc_pts[0]], proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/, 2/*northernly tag*/, &req[3]);
+			MPI_Isend(T[proc_size-proc_pts[0]], proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/, 2/*northernly tag*/, comm2d, &req[3]);
 		}
 
 		/*
 		 * Compute & update temperatures on block interiors (Gauss-Seidel) for
 		 * 1 iteration. 
 		 */
-		int i=0 x=0, y=0;
+		int i=0, x=0, y=0;
 		if(got_south==1) {
 			for(x=1; x<procs_pts[0]-1; x++) {
 				i = index(x,0);
