@@ -199,6 +199,23 @@ int main(int argc, char* argv[]) {
 			//memcpy(send_south, T, proc_pts[0]); // Why copy if T[0->xdim] won't change?
 			MPI_Isend(&T[proc_size-proc_pts[0]], proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/, 2/*northernly tag*/, comm2d, &req[3]);
 		}
+		if(!bound_east) {
+			MPI_Irecv(recv_east, proc_pts[1], MPI_DOUBLE, ranks_around[0] /*eastern rank*/ \
+									, 1 /*westernly tag*/, comm2d, &req[4]);
+			// Copy eastern buffer to send_east
+			for(int i=0; i<procs_pts[1]; i++)
+				send_east[i] = T[index(proc_pts[0]-1, i)];
+			MPI_Isend(send_east, proc_pts[1], MPI_DOUBLE, ranks_around[0] /*eastern rank*/, 0/*easternly tag*/, comm2d, &req[5]);
+		}
+		if(!bound_west) {
+			MPI_Irecv(recv_west, proc_pts[1], MPI_DOUBLE, ranks_around[1] /*western rank*/ \
+									, 0 /*easternly tag*/, comm2d, &req[6]);
+			// Copy western buffer to send_west
+			for(int i=0; i<procs_pts[1]; i++)
+				send_west[i] = T[index(0, i)];
+			MPI_Isend(send_west, proc_pts[1], MPI_DOUBLE, ranks_around[1] /*western rank*/, 1/*westernly tag*/, comm2d, &req[7]);
+		}
+
 
 		/*
 		 * Compute & update temperatures on block interiors (Gauss-Seidel) for
@@ -212,7 +229,7 @@ int main(int argc, char* argv[]) {
 						(recv_south[i]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 			}
 		}
-		if(got_south==1 && got_east==1) {
+/*		if(got_south==1 && got_east==1) {
 			i = index(proc_pts[0]-1,0);
 			T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+recv_east[0])*pow(deltas[1],2)+ \
 						(recv_south[i]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
@@ -222,7 +239,7 @@ int main(int argc, char* argv[]) {
 			T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(recv_west[i]+T[right(i)])*pow(deltas[1],2)+ \
 						(recv_south[i]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 		}
-		for(y=1; y<proc_pts[1]-1; y++) {
+*/		for(y=1; y<proc_pts[1]-1; y++) {
 			i = index(0,y);
 			T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(recv_west[i]+T[right(i)])*pow(deltas[1],2)+ \
 					(T[down(i)]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
