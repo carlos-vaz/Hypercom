@@ -264,7 +264,7 @@ int main(int argc, char* argv[]) {
 		/*
 		 * Check the status of your send and receive requests. 
 		 */
-		if(mycoords[1]%2==0) {
+		if(mycoord[1]%2==0) {
 			if(!bound_south) {
 				MPI_Waitall(2, &req[0], &stati[0]);
 				got_south = 1;
@@ -285,7 +285,7 @@ int main(int argc, char* argv[]) {
 			}
 			
 		}
-		if(mycoords[0]%2==0) {
+		if(mycoord[0]%2==0) {
 			if(!bound_east) {
 				MPI_Waitall(2, &req[4], &stati[4]);
 				got_east = 1;
