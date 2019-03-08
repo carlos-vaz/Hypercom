@@ -203,7 +203,7 @@ int main(int argc, char* argv[]) {
 						(recv_south[i]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 			}
 		}
-		for(y=1; y<procs_pts[1]-1; y++) {
+		for(y=1; y<proc_pts[1]-1; y++) {
 			for(x=1; x<proc_pts[0]-1; x++) {
 				i = index(x,y);
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+T[right(i)])*pow(deltas[1],2)+ \
@@ -223,11 +223,11 @@ int main(int argc, char* argv[]) {
 		 * Check the status of your send and receive requests. 
 		 */
 		if(!bound_south) {
-			MPI_Waitall(2, req, stati);
+			MPI_Waitall(2, &req, &stati);
 			got_south = 1;
 		}
 		if(!bound_north) {
-			MPI_Waitall(2, req[2], stati[2]);
+			MPI_Waitall(2, &req[2], &stati[2]);
 			got_south = 1;
 		}
 	
