@@ -231,7 +231,7 @@ int main(int argc, char* argv[]) {
 			got_south = 1;
 		}
 	
-		MPI_Barrier(MPI_COMM_WORLD); // remove this
+	//	MPI_Barrier(MPI_COMM_WORLD); // remove this
 
 		count++;
 	}
