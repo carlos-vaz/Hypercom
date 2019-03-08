@@ -166,7 +166,7 @@ int main(int argc, char* argv[]) {
 	MPI_Cart_shift(comm2d, 0, -1, &rank_2d, &rank_left);
 	MPI_Cart_shift(comm2d, 1, +1, &rank_2d, &rank_up);
 	MPI_Cart_shift(comm2d, 1, -1, &rank_2d, &rank_down);
-	printf("RANK %d (%d,%d): rank_right=%d, rank_up=%d\n", myrank, mycoord[0], mycoord[1], rank_right, rank_left);
+	printf("RANK %d (%d,%d): rank_right/left/up/down=%d/%d/%d/%d\n", myrank, mycoord[0], mycoord[1], rank_right, rank_left, rank_up, rank_down);
 
 //	while(myError > ERROR_THRESH) {
 		/*
