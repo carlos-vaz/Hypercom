@@ -10,8 +10,8 @@
 #define	   index(x,y)	x+y*proc_pts[0]
 #define	   up(i)	i+proc_pts[0]
 #define	   down(i)	i-proc_pts[0]
-#define    right(i)	i+1;
-#define    left(i)	i-1;
+#define    right(i)	i+1
+#define    left(i)	i-1
 
 int myrank, rank_2d, mycoord[2], np, dims_procs[2], num_points, dims_pts[2], proc_pts[2], proc_size, \
 	ranks_around[4] = {-1,-1,-1,-1}; // {right, left, up, down}
@@ -197,24 +197,24 @@ int main(int argc, char* argv[]) {
 		 */
 		int i=0, x=0, y=0;
 		if(got_south==1) {
-			for(x=1; x<procs_pts[0]-1; x++) {
+			for(x=1; x<proc_pts[0]-1; x++) {
 				i = index(x,0);
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+T[right(i)])*pow(deltas[1],2)+ \
-						(recv_south[i]+T[up(i)]*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
+						(recv_south[i]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 			}
 		}
 		for(y=1; y<procs_pts[1]-1; y++) {
-			for(x=1; x<procs_pts[0]-1; x++) {
+			for(x=1; x<proc_pts[0]-1; x++) {
 				i = index(x,y);
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+T[right(i)])*pow(deltas[1],2)+ \
-					(T[down(i)]+T[up(i)]*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
+					(T[down(i)]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 			}
 		}
 		if(got_north==1) {
-			for(x=1; x<procs_pts[0]-1; x++) {
+			for(x=1; x<proc_pts[0]-1; x++) {
 				i = index(x,procs_pts[1]-1);
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+T[right(i)])*pow(deltas[1],2)+ \
-						(T[down(i)]+recv_north[i]*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
+						(T[down(i)]+recv_north[i])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 			}
 		}
 
