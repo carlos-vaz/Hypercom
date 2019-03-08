@@ -190,8 +190,8 @@ int main(int argc, char* argv[]) {
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+T[right(i)])*pow(deltas[1],2)+ \
 					(T[down(i)]+T[up(i)]*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 			}
-*/		}
-
+		}
+*/
 		/*
 		 * Check the status of your send and receive requests. 
 		 */
