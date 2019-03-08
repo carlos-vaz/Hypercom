@@ -172,7 +172,7 @@ int main(int argc, char* argv[]) {
 
 //	while(myError > ERROR_THRESH) {
 	int count = 0;
-	while(count < 100);
+	while(count < 100) {
 		/*
 		 * Post a non-blocking send and a non-blocking receive to all neighbors.
 		 * While you update your internal temperatures, hopefully the requests
@@ -237,7 +237,7 @@ int main(int argc, char* argv[]) {
 	}
 
 
-/*	free(v);
+	free(v);
 	free(T);
 	free(send_south);
 	free(send_north);
@@ -247,7 +247,7 @@ int main(int argc, char* argv[]) {
 	free(recv_north);
 	free(recv_east);
 	free(recv_west);
-*/
+
 	MPI_Barrier(MPI_COMM_WORLD);
 
 	MPI_Finalize();
