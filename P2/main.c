@@ -308,7 +308,7 @@ int main(int argc, char* argv[]) {
 
 		
 	
-		MPI_Barrier(MPI_COMM_WORLD); // remove this
+		//MPI_Barrier(MPI_COMM_WORLD); // remove this
 		if(myrank==ANNOUNCER_PROC) printf("%d\n", count);
 		count++;
 	}
