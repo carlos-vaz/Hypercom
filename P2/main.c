@@ -182,13 +182,13 @@ int main(int argc, char* argv[]) {
 			MPI_Irecv(recv_south, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/ \
 									, 2 /*northernly tag*/, comm2d, &req[0]);
 			//memcpy(send_south, T, proc_pts[0]); // Why copy if T[0->xdim] won't change?
-			MPI_Isend(T, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/, 3/*southernly tag*/, comm2d, &req[1]);
+			MPI_Isend(&T, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/, 3/*southernly tag*/, comm2d, &req[1]);
 		}
 		if(!bound_north) {
 			MPI_Irecv(recv_north, proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/ \
 									, 3 /*southernly tag*/, comm2d, &req[2]);
 			//memcpy(send_south, T, proc_pts[0]); // Why copy if T[0->xdim] won't change?
-			MPI_Isend(T[proc_size-proc_pts[0]], proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/, 2/*northernly tag*/, comm2d, &req[3]);
+			MPI_Isend(&T[proc_size-proc_pts[0]], proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/, 2/*northernly tag*/, comm2d, &req[3]);
 		}
 
 		/*
