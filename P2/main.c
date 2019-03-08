@@ -181,7 +181,7 @@ int main(int argc, char* argv[]) {
 
 //	while(myError > ERROR_THRESH) {
 	int count = 0;
-	while(count < 100) {
+	while(count < 2000) {
 		/*
 		 * Post a non-blocking send and a non-blocking receive to all neighbors.
 		 * While you update your internal temperatures, hopefully the requests
