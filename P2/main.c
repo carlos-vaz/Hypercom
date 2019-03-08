@@ -13,6 +13,13 @@
 #define    right(i)	i+1
 #define    left(i)	i-1
 
+
+extern 
+void VTK_out(const int N, const int M, const double *Xmin, const double *Xmax,
+             const double *Ymin, const double *Ymax, const double *T,
+             const int index);
+
+
 int myrank, rank_2d, mycoord[2], np, dims_procs[2], num_points, dims_pts[2], proc_pts[2], proc_size, \
 	ranks_around[4] = {-1,-1,-1,-1}; // {right, left, up, down}
 double deltas[2];
@@ -247,6 +254,9 @@ int main(int argc, char* argv[]) {
 	free(recv_north);
 	free(recv_east);
 	free(recv_west);
+
+	double Xmin=0, Ymin=0;
+	VTK_out(dims_pts[0], dims_pts[1], &Xmin, &x_range, &Ymin, &y_range, T, 1);
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
