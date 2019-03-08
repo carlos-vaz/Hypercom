@@ -258,7 +258,7 @@ int main(int argc, char* argv[]) {
 	free(recv_west);
 
 	double Xmin=0, Ymin=0;
-	VTK_out(dims_pts[0], dims_pts[1], &Xmin, &ranges[0], &Ymin, &ranges[1], T, 1);
+	VTK_out(dims_pts[0], dims_pts[1], &Xmin, &ranges[0], &Ymin, &ranges[1], T, myrank);
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
