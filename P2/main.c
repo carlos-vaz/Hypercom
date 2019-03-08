@@ -296,7 +296,6 @@ int main(int argc, char* argv[]) {
 			}
 		}
 		else {
-			}
 			if(!bound_west) {
 				MPI_Waitall(2, &req[6], &stati[6]);
 				got_west = 1;
