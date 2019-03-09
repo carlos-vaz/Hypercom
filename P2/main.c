@@ -312,6 +312,8 @@ int main(int argc, char* argv[]) {
 		if(myrank==ANNOUNCER_PROC) printf("%d\n", count);
 		count++;
 	}
+	if(myrank==ANNOUNCER_PROC) printf("Announcer Exited Loop\n", count); fflush(stdout);
+	
 
 
 
