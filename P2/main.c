@@ -223,7 +223,7 @@ int main(int argc, char* argv[]) {
 
 
 		/*
-		 * Compute & update temperatures on block interiors (Gauss-Seidel) for
+		 * Compute & update temperatures on block interiors (Gauss-Seidel + block Jacobi) for
 		 * 1 iteration. 
 		 */
 		int i=0, x=0, y=0;
@@ -245,7 +245,7 @@ int main(int argc, char* argv[]) {
 						(recv_south[proc_pts[0]-1]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 		}
 		for(y=1; y<proc_pts[1]-1; y++) {
-			if(got_west) {
+			if(got_west==1) {
 				i = index(0,y);
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(recv_west[y]+T[right(i)])*pow(deltas[1],2)+ \
 						(T[down(i)]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
@@ -255,7 +255,7 @@ int main(int argc, char* argv[]) {
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+T[right(i)])*pow(deltas[1],2)+ \
 					(T[down(i)]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 			}
-			if(got_east) {
+			if(got_east==1) {
 				i = index(proc_pts[0]-1, y);
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+recv_east[y])*pow(deltas[1],2)+ \
 						(T[down(i)]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
@@ -332,7 +332,7 @@ int main(int argc, char* argv[]) {
 		printf("(%d): iter %d\n", myrank, count);
 		count++;
 	}
-	sleep(3);
+	//sleep(3);
 	printf("(%d): EXITED\n", myrank);
 	fflush(stdout);
 	
@@ -345,7 +345,7 @@ int main(int argc, char* argv[]) {
 	double Ymin = (ranges[1]/dims_procs[1])*mycoord[1];
 	double Xmax = Xmin+(ranges[0]/dims_procs[0]);	
 	double Ymax = Ymin+(ranges[1]/dims_procs[1]);
-	VTK_out(proc_pts[0], proc_pts[1], &Xmin, &Xmax, &Ymin, &Ymax, T, myrank);
+	VTK_out(proc_pts[0], proc_pts[1], &Xmin, &Xmax, &Ymin, &Ymax, v, myrank);
 
 	free(v);
 	free(T);
