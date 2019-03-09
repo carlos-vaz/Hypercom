@@ -285,7 +285,7 @@ int main(int argc, char* argv[]) {
 			}
 			
 		}
-*/		if(mycoord[0]%2==0) {
+*///		if(mycoord[0]%2==0) {
 			if(bound_east==0) {
 				MPI_Waitall(2, &req[4], &stati[4]);
 				got_east = 1;
@@ -294,8 +294,8 @@ int main(int argc, char* argv[]) {
 				MPI_Waitall(2, &req[6], &stati[6]);
 				got_west = 1;
 			}
-		}
-		else {
+//		}
+/*		else {
 			if(bound_west==0) {
 				MPI_Waitall(2, &req[6], &stati[6]);
 				got_west = 1;
@@ -305,7 +305,7 @@ int main(int argc, char* argv[]) {
 				got_east = 1;
 			}
 		}
-
+*/
 		
 	
 		//MPI_Barrier(MPI_COMM_WORLD); // remove this
