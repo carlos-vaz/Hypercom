@@ -144,9 +144,8 @@ int main(int argc, char* argv[]) {
 	if(mycoord[0]==0) {
 		printf("Process (%d, %d): I have a western boundary\n", mycoord[0], mycoord[1]);
 		bound_west = 1;
-		//for(int y=0; y<proc_pts[1]; y++)
-		//	T[y*proc_pts[0]] = v[y*proc_pts[0]]; // copy from 'v'
-		// Do nothing (xe^y == 0)
+		for(int y=0; y<proc_pts[1]; y++)
+			T[y*proc_pts[0]] = v[y*proc_pts[0]]; // copy from 'v'
 		
 	}
 	if(mycoord[0]==dims_procs[0]-1) {
