@@ -285,7 +285,7 @@ int main(int argc, char* argv[]) {
 			}
 			
 		}
-*/		if(mycoord[0]%2==0) {
+*//*		if(mycoord[0]%2==0) {
 			if(bound_east==0) {
 				MPI_Waitall(2, &req[4], &stati[4]);
 				got_east = 1;
@@ -306,7 +306,7 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
-		
+*/		
 	
 		//MPI_Barrier(MPI_COMM_WORLD); // remove this
 		//if(myrank==ANNOUNCER_PROC) printf("%d\n", count);
