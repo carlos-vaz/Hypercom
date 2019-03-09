@@ -227,6 +227,11 @@ int main(int argc, char* argv[]) {
 		 * 1 iteration. 
 		 */
 		int i=0, x=0, y=0;
+		if(got_south==1 && got_west==1) {
+			i = index(0,0);
+			T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(recv_west[0]+T[right(i)])*pow(deltas[1],2)+ \
+						(recv_south[0]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
+		}
 		if(got_south==1) {
 			for(x=1; x<proc_pts[0]-1; x++) {
 				i = index(x,0);
@@ -234,17 +239,12 @@ int main(int argc, char* argv[]) {
 						(recv_south[x]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 			}
 		}
-/*		if(got_south==1 && got_east==1) {
+		if(got_south==1 && got_east==1) {
 			i = index(proc_pts[0]-1,0);
 			T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+recv_east[0])*pow(deltas[1],2)+ \
-						(recv_south[i]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
+						(recv_south[proc_pts[0]-1]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 		}
-		if(got_south==1 && got_west==1) {
-			i = index(0,0);
-			T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(recv_west[i]+T[right(i)])*pow(deltas[1],2)+ \
-						(recv_south[i]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
-		}
-*/		for(y=1; y<proc_pts[1]-1; y++) {
+		for(y=1; y<proc_pts[1]-1; y++) {
 			if(got_west) {
 				i = index(0,y);
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(recv_west[y]+T[right(i)])*pow(deltas[1],2)+ \
@@ -261,12 +261,22 @@ int main(int argc, char* argv[]) {
 						(T[down(i)]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 			}
 		}
+		if(got_north==1 && got_west==1) {
+			i = index(0,proc_pts[1]-1);
+			T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(recv_west[proc_pts[1]-1]+T[right(i)])*pow(deltas[1],2)+ \
+						(recv_north[0]+T[down(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
+		}
 		if(got_north==1) {
 			for(x=1; x<proc_pts[0]-1; x++) {
 				i = index(x,proc_pts[1]-1);
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+T[right(i)])*pow(deltas[1],2)+ \
 						(T[down(i)]+recv_north[x])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 			}
+		}
+		if(got_north==1 && got_east==1) {
+			i = index(proc_pts[0]-1,proc_pts[1]-1);
+			T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(recv_east[proc_pts[1]-1]+T[left(i)])*pow(deltas[1],2)+ \
+						(recv_north[proc_pts[0]-1]+T[down(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 		}
 
 
