@@ -190,7 +190,7 @@ int main(int argc, char* argv[]) {
 		if(!bound_south) {
 			MPI_Irecv(recv_south, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/ \
 									, 2 /*northernly tag*/, comm2d, &req[0]);
-			memcpy(send_south, &T, proc_pts[0]); // Why copy if T[0->xdim] won't change?
+			memcpy(send_south, &T[0], proc_pts[0]); // Why copy if T[0->xdim] won't change?
 			MPI_Isend(send_south, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/, 3/*southernly tag*/, comm2d, &req[1]);
 		}
 		if(!bound_north) {
@@ -314,6 +314,13 @@ int main(int argc, char* argv[]) {
 	}
 
 
+
+	double Xmin = (ranges[0]/dims_procs[0])*mycoord[0];
+	double Ymin = (ranges[1]/dims_procs[1])*mycoord[1];
+	double Xmax = Xmin+(ranges[0]/dims_procs[0]);	
+	double Ymax = Ymin+(ranges[1]/dims_procs[1]);
+	VTK_out(proc_pts[0], proc_pts[1], &Xmin, &Xmax, &Ymin, &Ymax, T, myrank);
+
 	free(v);
 	free(T);
 	free(send_south);
@@ -325,11 +332,6 @@ int main(int argc, char* argv[]) {
 	free(recv_east);
 	free(recv_west);
 
-	double Xmin = (ranges[0]/dims_procs[0])*mycoord[0];
-	double Ymin = (ranges[1]/dims_procs[1])*mycoord[1];
-	double Xmax = Xmin+(ranges[0]/dims_procs[0]);	
-	double Ymax = Ymin+(ranges[1]/dims_procs[1]);
-	VTK_out(proc_pts[0], proc_pts[1], &Xmin, &Xmax, &Ymin, &Ymax, T, myrank);
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
