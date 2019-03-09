@@ -208,12 +208,12 @@ int main(int argc, char* argv[]) {
 			MPI_Isend(send_east, proc_pts[1], MPI_DOUBLE, ranks_around[0] /*eastern rank*/, 0/*easternly tag*/, comm2d, &req[5]);
 		}
 		if(bound_west==0) {
-			MPI_Irecv(recv_west, proc_pts[1], MPI_DOUBLE, ranks_around[1] /*western rank*/ \
-									, 0 /*easternly tag*/, comm2d, &req[6]);
 			// Copy western buffer to send_west
 			for(int i=0; i<proc_pts[1]; i++)
 				send_west[i] = T[index(0, i)];
 			MPI_Isend(send_west, proc_pts[1], MPI_DOUBLE, ranks_around[1] /*western rank*/, 1/*westernly tag*/, comm2d, &req[7]);
+			MPI_Irecv(recv_west, proc_pts[1], MPI_DOUBLE, ranks_around[1] /*western rank*/ \
+									, 0 /*easternly tag*/, comm2d, &req[6]);
 		}
 
 
@@ -285,7 +285,7 @@ int main(int argc, char* argv[]) {
 			}
 			
 		}
-*///		if(mycoord[0]%2==0) {
+*/		if(mycoord[0]%2==0) {
 			if(bound_east==0) {
 				MPI_Waitall(2, &req[4], &stati[4]);
 				got_east = 1;
@@ -294,8 +294,8 @@ int main(int argc, char* argv[]) {
 				MPI_Waitall(2, &req[6], &stati[6]);
 				got_west = 1;
 			}
-//		}
-/*		else {
+		}
+		else {
 			if(bound_west==0) {
 				MPI_Waitall(2, &req[6], &stati[6]);
 				got_west = 1;
@@ -305,7 +305,7 @@ int main(int argc, char* argv[]) {
 				got_east = 1;
 			}
 		}
-*/
+
 		
 	
 		//MPI_Barrier(MPI_COMM_WORLD); // remove this
