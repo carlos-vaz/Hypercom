@@ -348,7 +348,15 @@ int main(int argc, char* argv[]) {
 	printf("(%d): EXITED\n", myrank);
 	fflush(stdout);
 	
-	
+	if(myrank==0) {
+		printf("\nPrinting V\n");
+		for(int i=0; i<proc_size; i++) {
+			if(i%proc_pts[0]==0)
+				printf("...\n");
+			printf("%lf\n", v[i]);
+		}
+		
+	}
 	
 
 
