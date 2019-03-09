@@ -179,7 +179,7 @@ int main(int argc, char* argv[]) {
 	printf("RANK %d (%d,%d): rank_east/west/north/south=%d/%d/%d/%d\n", myrank, mycoord[0], mycoord[1], \
 								ranks_around[0], ranks_around[1], ranks_around[2], ranks_around[3]);
 	MPI_Request req[8];
-	MPI_Status stati[4];
+	MPI_Status stati[8];
 
 //	while(myError > ERROR_THRESH) {
 	int count = 0;
@@ -191,13 +191,13 @@ int main(int argc, char* argv[]) {
 		 */
 		if(bound_south==0) {
 			//printf("(%d): BOUND_SOUTH==0 inside if\n", myrank);
-			MPI_Recv(recv_south, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/ \
-									, 2 /*northernly tag*/, comm2d, &stati[0]);
-			got_south=1;
+			MPI_Irecv(recv_south, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/ \
+									, 2 /*northernly tag*/, comm2d, &req[0]);
+			//got_south=1;
 			//memcpy(send_south, T, proc_pts[0]*sizeof(double)); // Why copy if T[0->xdim] won't change?
 			for(int i=0; i<proc_pts[0]; i++)
 				send_south[i] = T[i];
-			MPI_Send(send_south, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/, 3/*southernly tag*/, comm2d);
+			MPI_Isend(send_south, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/, 3/*southernly tag*/, comm2d, &req[1]);
 		}
 		if(bound_north==0) {
 			//printf("(%d): BOUND_NORTH==0 inside if\n", myrank);
@@ -205,32 +205,32 @@ int main(int argc, char* argv[]) {
 			for(int i=0; i<proc_pts[0]; i++)
 				send_north[i] = T[proc_size-proc_pts[0]+i];
 
-			MPI_Send(send_north, proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/, 2/*northernly tag*/, comm2d);
-			MPI_Recv(recv_north, proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/ \
-									, 3 /*southernly tag*/, comm2d, &stati[1]);
+			MPI_Isend(send_north, proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/, 2/*northernly tag*/, comm2d, &req[2]);
+			MPI_Irecv(recv_north, proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/ \
+									, 3 /*southernly tag*/, comm2d, &req[3]);
 /*			printf("(%d): Recvd from North\n", myrank);
 			for(int i=0; i<proc_pts[0]; i++) 
 				printf("%lf, ", recv_north[i]);
 			printf("\n\n\n");
-*/			got_north=1;
+*/			//got_north=1;
 		}
 		if(bound_east==0) {
-			MPI_Recv(recv_east, proc_pts[1], MPI_DOUBLE, ranks_around[0] /*eastern rank*/ \
-									, 1 /*westernly tag*/, comm2d, &stati[2]);
-			got_east=1;
+			MPI_Irecv(recv_east, proc_pts[1], MPI_DOUBLE, ranks_around[0] /*eastern rank*/ \
+									, 1 /*westernly tag*/, comm2d, &req[4]);
+			//got_east=1;
 			// Copy eastern buffer to send_east
 			for(int i=0; i<proc_pts[1]; i++)
 				send_east[i] = T[index(proc_pts[0]-1, i)];
-			MPI_Send(send_east, proc_pts[1], MPI_DOUBLE, ranks_around[0] /*eastern rank*/, 0/*easternly tag*/, comm2d);
+			MPI_Isend(send_east, proc_pts[1], MPI_DOUBLE, ranks_around[0] /*eastern rank*/, 0/*easternly tag*/, comm2d, &req[5]);
 		}
 		if(bound_west==0) {
 			// Copy western buffer to send_west
 			for(int i=0; i<proc_pts[1]; i++)
 				send_west[i] = T[index(0, i)];
-			MPI_Send(send_west, proc_pts[1], MPI_DOUBLE, ranks_around[1] /*western rank*/, 1/*westernly tag*/, comm2d);
-			MPI_Recv(recv_west, proc_pts[1], MPI_DOUBLE, ranks_around[1] /*western rank*/ \
-									, 0 /*easternly tag*/, comm2d, &stati[3]);
-			got_west=1;
+			MPI_Isend(send_west, proc_pts[1], MPI_DOUBLE, ranks_around[1] /*western rank*/, 1/*westernly tag*/, comm2d, &req[6]);
+			MPI_Irecv(recv_west, proc_pts[1], MPI_DOUBLE, ranks_around[1] /*western rank*/ \
+									, 0 /*easternly tag*/, comm2d, &req[7]);
+			//got_west=1;
 		}
 
 
@@ -296,7 +296,7 @@ int main(int argc, char* argv[]) {
 		/*
 		 * Check the status of your send and receive requests. 
 		 */
-/*		if(mycoord[1]%2==0) {
+		if(mycoord[1]%2==0) {
 			if(bound_south==0) {
 				MPI_Waitall(2, &req[0], &stati[0]);
 				got_south = 1;
@@ -317,7 +317,7 @@ int main(int argc, char* argv[]) {
 			}
 			
 		}
-*//*		if(mycoord[0]%2==0) {
+		if(mycoord[0]%2==0) {
 			if(bound_east==0) {
 				MPI_Waitall(2, &req[4], &stati[4]);
 				got_east = 1;
@@ -338,7 +338,7 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
-*/		
+		
 	
 		//MPI_Barrier(MPI_COMM_WORLD); // remove this
 		//if(myrank==ANNOUNCER_PROC) printf("%d\n", count);
