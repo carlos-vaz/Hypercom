@@ -309,10 +309,14 @@ int main(int argc, char* argv[]) {
 		
 	
 		//MPI_Barrier(MPI_COMM_WORLD); // remove this
-		if(myrank==ANNOUNCER_PROC) printf("%d\n", count);
+		//if(myrank==ANNOUNCER_PROC) printf("%d\n", count);
+		printf("(%d): iter %d\n", myrank, count);
 		count++;
 	}
-	if(myrank==ANNOUNCER_PROC) printf("Announcer Exited Loop\n", count); fflush(stdout);
+	printf("(%d): EXITED\n", myrank);
+	fflush(stdout);
+	
+	
 	
 
 
