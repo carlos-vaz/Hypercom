@@ -133,7 +133,7 @@ int main(int argc, char* argv[]) {
 	if(mycoord[1]==0) {
 		printf("Process (%d, %d): I have a southern boundary\n", mycoord[0], mycoord[1]);
 		bound_south = 1;
-		// Do nothing (xe^y == 0)
+		memcpy(&v[0], &T[0], proc_pts[0]*sizeof(double));
 	}
 	if(mycoord[1]==dims_procs[1]-1) {
 		printf("Process (%d, %d): I have a northern boundary\n", mycoord[0], mycoord[1]);
@@ -144,8 +144,10 @@ int main(int argc, char* argv[]) {
 	if(mycoord[0]==0) {
 		printf("Process (%d, %d): I have a western boundary\n", mycoord[0], mycoord[1]);
 		bound_west = 1;
-		for(int y=0; y<proc_pts[1]; y++)
-			T[y*proc_pts[0]] = v[y*proc_pts[0]]; // copy from 'v'
+		//for(int y=0; y<proc_pts[1]; y++)
+		//	T[y*proc_pts[0]] = v[y*proc_pts[0]]; // copy from 'v'
+		// Do nothing (xe^y == 0)
+		
 	}
 	if(mycoord[0]==dims_procs[0]-1) {
 		printf("Process (%d, %d): I have an eastern boundary\n", mycoord[0], mycoord[1]);
@@ -345,7 +347,7 @@ int main(int argc, char* argv[]) {
 	double Ymin = (ranges[1]/dims_procs[1])*mycoord[1];
 	double Xmax = Xmin+(ranges[0]/dims_procs[0]);	
 	double Ymax = Ymin+(ranges[1]/dims_procs[1]);
-	VTK_out(proc_pts[0], proc_pts[1], &Xmin, &Xmax, &Ymin, &Ymax, v, myrank);
+	VTK_out(proc_pts[0], proc_pts[1], &Xmin, &Xmax, &Ymin, &Ymax, T, myrank);
 
 	free(v);
 	free(T);
