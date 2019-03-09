@@ -190,6 +190,7 @@ int main(int argc, char* argv[]) {
 		if(bound_south==0) {
 			MPI_Recv(recv_south, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/ \
 									, 2 /*northernly tag*/, comm2d, &stati[0]);
+			got_south=1;
 			memcpy(send_south, &T[0], proc_pts[0]*sizeof(double)); // Why copy if T[0->xdim] won't change?
 			MPI_Send(send_south, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/, 3/*southernly tag*/, comm2d);
 		}
@@ -198,6 +199,7 @@ int main(int argc, char* argv[]) {
 			MPI_Send(send_north, proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/, 2/*northernly tag*/, comm2d);
 			MPI_Recv(recv_north, proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/ \
 									, 3 /*southernly tag*/, comm2d, &stati[1]);
+			got_north=1;
 		}
 //		if(bound_east==0) {
 //			MPI_Recv(recv_east, proc_pts[1], MPI_DOUBLE, ranks_around[0] /*eastern rank*/ \
