@@ -187,34 +187,34 @@ int main(int argc, char* argv[]) {
 		 * While you update your internal temperatures, hopefully the requests
 		 * will go through. 
 		 */
-		if(bound_south==0) {
-			MPI_Irecv(recv_south, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/ \
-									, 2 /*northernly tag*/, comm2d, &req[0]);
-			memcpy(send_south, &T[0], proc_pts[0]); // Why copy if T[0->xdim] won't change?
-			MPI_Isend(send_south, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/, 3/*southernly tag*/, comm2d, &req[1]);
-		}
-		if(bound_north==0) {
-			MPI_Irecv(recv_north, proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/ \
-									, 3 /*southernly tag*/, comm2d, &req[2]);
-			memcpy(send_north, &T[proc_size-proc_pts[0]], proc_pts[0]); // Why copy if T[0->xdim] won't change?
-			MPI_Isend(send_north, proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/, 2/*northernly tag*/, comm2d, &req[3]);
-		}
-//		if(bound_east==0) {
-//			MPI_Irecv(recv_east, proc_pts[1], MPI_DOUBLE, ranks_around[0] /*eastern rank*/ \
-//									, 1 /*westernly tag*/, comm2d, &req[4]);
-//			// Copy eastern buffer to send_east
-//			for(int i=0; i<proc_pts[1]; i++)
-//				send_east[i] = T[index(proc_pts[0]-1, i)];
-//			MPI_Isend(send_east, proc_pts[1], MPI_DOUBLE, ranks_around[0] /*eastern rank*/, 0/*easternly tag*/, comm2d, &req[5]);
+//		if(bound_south==0) {
+//			MPI_Irecv(recv_south, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/ \
+//									, 2 /*northernly tag*/, comm2d, &req[0]);
+//			memcpy(send_south, &T[0], proc_pts[0]); // Why copy if T[0->xdim] won't change?
+//			MPI_Isend(send_south, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/, 3/*southernly tag*/, comm2d, &req[1]);
 //		}
-//		if(bound_west==0) {
-//			MPI_Irecv(recv_west, proc_pts[1], MPI_DOUBLE, ranks_around[1] /*western rank*/ \
-//									, 0 /*easternly tag*/, comm2d, &req[6]);
-//			// Copy western buffer to send_west
-//			for(int i=0; i<proc_pts[1]; i++)
-//				send_west[i] = T[index(0, i)];
-//			MPI_Isend(send_west, proc_pts[1], MPI_DOUBLE, ranks_around[1] /*western rank*/, 1/*westernly tag*/, comm2d, &req[7]);
+//		if(bound_north==0) {
+//			MPI_Irecv(recv_north, proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/ \
+//									, 3 /*southernly tag*/, comm2d, &req[2]);
+//			memcpy(send_north, &T[proc_size-proc_pts[0]], proc_pts[0]); // Why copy if T[0->xdim] won't change?
+//			MPI_Isend(send_north, proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/, 2/*northernly tag*/, comm2d, &req[3]);
 //		}
+		if(bound_east==0) {
+			MPI_Irecv(recv_east, proc_pts[1], MPI_DOUBLE, ranks_around[0] /*eastern rank*/ \
+									, 1 /*westernly tag*/, comm2d, &req[4]);
+			// Copy eastern buffer to send_east
+			for(int i=0; i<proc_pts[1]; i++)
+				send_east[i] = T[index(proc_pts[0]-1, i)];
+			MPI_Isend(send_east, proc_pts[1], MPI_DOUBLE, ranks_around[0] /*eastern rank*/, 0/*easternly tag*/, comm2d, &req[5]);
+		}
+		if(bound_west==0) {
+			MPI_Irecv(recv_west, proc_pts[1], MPI_DOUBLE, ranks_around[1] /*western rank*/ \
+									, 0 /*easternly tag*/, comm2d, &req[6]);
+			// Copy western buffer to send_west
+			for(int i=0; i<proc_pts[1]; i++)
+				send_west[i] = T[index(0, i)];
+			MPI_Isend(send_west, proc_pts[1], MPI_DOUBLE, ranks_around[1] /*western rank*/, 1/*westernly tag*/, comm2d, &req[7]);
+		}
 
 
 		/*
@@ -222,13 +222,13 @@ int main(int argc, char* argv[]) {
 		 * 1 iteration. 
 		 */
 		int i=0, x=0, y=0;
-		if(got_south==1) {
+/*		if(got_south==1) {
 			for(x=1; x<proc_pts[0]-1; x++) {
 				i = index(x,0);
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+T[right(i)])*pow(deltas[1],2)+ \
 						(recv_south[i]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 			}
-		}
+*///		}
 /*		if(got_south==1 && got_east==1) {
 			i = index(proc_pts[0]-1,0);
 			T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+recv_east[0])*pow(deltas[1],2)+ \
@@ -241,30 +241,30 @@ int main(int argc, char* argv[]) {
 		}
 */		for(y=1; y<proc_pts[1]-1; y++) {
 			i = index(0,y);
-/*			T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(recv_west[i]+T[right(i)])*pow(deltas[1],2)+ \
+			T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(recv_west[i]+T[right(i)])*pow(deltas[1],2)+ \
 					(T[down(i)]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
-*/			for(x=1; x<proc_pts[0]-1; x++) {
+			for(x=1; x<proc_pts[0]-1; x++) {
 				i = index(x,y);
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+T[right(i)])*pow(deltas[1],2)+ \
 					(T[down(i)]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 			}
-/*			i = index(proc_pts[0]-1, y);
+			i = index(proc_pts[0]-1, y);
 			T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+recv_east[i])*pow(deltas[1],2)+ \
 					(T[down(i)]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
-*/		}
-		if(got_north==1) {
+		}
+/*		if(got_north==1) {
 			for(x=1; x<proc_pts[0]-1; x++) {
 				i = index(x,proc_pts[1]-1);
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+T[right(i)])*pow(deltas[1],2)+ \
 						(T[down(i)]+recv_north[i])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 			}
 		}
-
+*/
 
 		/*
 		 * Check the status of your send and receive requests. 
 		 */
-		if(mycoord[1]%2==0) {
+/*		if(mycoord[1]%2==0) {
 			if(bound_south==0) {
 				MPI_Waitall(2, &req[0], &stati[0]);
 				got_south = 1;
@@ -285,7 +285,7 @@ int main(int argc, char* argv[]) {
 			}
 			
 		}
-/*		if(mycoord[0]%2==0) {
+*/		if(mycoord[0]%2==0) {
 			if(bound_east==0) {
 				MPI_Waitall(2, &req[4], &stati[4]);
 				got_east = 1;
@@ -306,7 +306,7 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
-*/		
+		
 	
 		//MPI_Barrier(MPI_COMM_WORLD); // remove this
 		//if(myrank==ANNOUNCER_PROC) printf("%d\n", count);
