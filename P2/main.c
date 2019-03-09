@@ -177,7 +177,7 @@ int main(int argc, char* argv[]) {
 	printf("RANK %d (%d,%d): rank_right/left/up/down=%d/%d/%d/%d\n", myrank, mycoord[0], mycoord[1], \
 								ranks_around[0], ranks_around[1], ranks_around[2], ranks_around[3]);
 	MPI_Request req[8];
-	MPI_Status stati[8];
+	MPI_Status stati[4];
 
 //	while(myError > ERROR_THRESH) {
 	int count = 0;
@@ -200,20 +200,20 @@ int main(int argc, char* argv[]) {
 //			MPI_Isend(send_north, proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/, 2/*northernly tag*/, comm2d, &req[3]);
 //		}
 		if(bound_east==0) {
-			MPI_Irecv(recv_east, proc_pts[1], MPI_DOUBLE, ranks_around[0] /*eastern rank*/ \
-									, 1 /*westernly tag*/, comm2d, &req[4]);
+			MPI_Recv(recv_east, proc_pts[1], MPI_DOUBLE, ranks_around[0] /*eastern rank*/ \
+									, 1 /*westernly tag*/, comm2d, &stati[2]);
 			// Copy eastern buffer to send_east
 			for(int i=0; i<proc_pts[1]; i++)
 				send_east[i] = T[index(proc_pts[0]-1, i)];
-			MPI_Isend(send_east, proc_pts[1], MPI_DOUBLE, ranks_around[0] /*eastern rank*/, 0/*easternly tag*/, comm2d, &req[5]);
+			MPI_Send(send_east, proc_pts[1], MPI_DOUBLE, ranks_around[0] /*eastern rank*/, 0/*easternly tag*/, comm2d);
 		}
 		if(bound_west==0) {
 			// Copy western buffer to send_west
 			for(int i=0; i<proc_pts[1]; i++)
 				send_west[i] = T[index(0, i)];
-			MPI_Isend(send_west, proc_pts[1], MPI_DOUBLE, ranks_around[1] /*western rank*/, 1/*westernly tag*/, comm2d, &req[7]);
-			MPI_Irecv(recv_west, proc_pts[1], MPI_DOUBLE, ranks_around[1] /*western rank*/ \
-									, 0 /*easternly tag*/, comm2d, &req[6]);
+			MPI_Send(send_west, proc_pts[1], MPI_DOUBLE, ranks_around[1] /*western rank*/, 1/*westernly tag*/, comm2d);
+			MPI_Recv(recv_west, proc_pts[1], MPI_DOUBLE, ranks_around[1] /*western rank*/ \
+									, 0 /*easternly tag*/, comm2d, &stati[3]);
 		}
 
 
