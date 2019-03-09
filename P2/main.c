@@ -210,7 +210,7 @@ int main(int argc, char* argv[]) {
 									, 3 /*southernly tag*/, comm2d, &stati[1]);
 			printf("(%d): Recvd from North\n", myrank);
 			for(int i=0; i<proc_pts[0]; i++) 
-				printf("%lf, " recv_north[i]);
+				printf("%lf, ", recv_north[i]);
 			printf("\n\n\n");
 			got_north=1;
 		}
