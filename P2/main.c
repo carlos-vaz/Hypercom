@@ -187,19 +187,19 @@ int main(int argc, char* argv[]) {
 		 * While you update your internal temperatures, hopefully the requests
 		 * will go through. 
 		 */
-		if(!bound_south) {
+		if(bound_south==0) {
 			MPI_Irecv(recv_south, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/ \
 									, 2 /*northernly tag*/, comm2d, &req[0]);
 			memcpy(send_south, &T[0], proc_pts[0]); // Why copy if T[0->xdim] won't change?
 			MPI_Isend(send_south, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/, 3/*southernly tag*/, comm2d, &req[1]);
 		}
-		if(!bound_north) {
+		if(bound_north==0) {
 			MPI_Irecv(recv_north, proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/ \
 									, 3 /*southernly tag*/, comm2d, &req[2]);
 			memcpy(send_north, &T[proc_size-proc_pts[0]], proc_pts[0]); // Why copy if T[0->xdim] won't change?
 			MPI_Isend(send_north, proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/, 2/*northernly tag*/, comm2d, &req[3]);
 		}
-		if(!bound_east) {
+		if(bound_east==0) {
 			MPI_Irecv(recv_east, proc_pts[1], MPI_DOUBLE, ranks_around[0] /*eastern rank*/ \
 									, 1 /*westernly tag*/, comm2d, &req[4]);
 			// Copy eastern buffer to send_east
@@ -207,7 +207,7 @@ int main(int argc, char* argv[]) {
 				send_east[i] = T[index(proc_pts[0]-1, i)];
 			MPI_Isend(send_east, proc_pts[1], MPI_DOUBLE, ranks_around[0] /*eastern rank*/, 0/*easternly tag*/, comm2d, &req[5]);
 		}
-		if(!bound_west) {
+		if(bound_west==0) {
 			MPI_Irecv(recv_west, proc_pts[1], MPI_DOUBLE, ranks_around[1] /*western rank*/ \
 									, 0 /*easternly tag*/, comm2d, &req[6]);
 			// Copy western buffer to send_west
@@ -265,42 +265,42 @@ int main(int argc, char* argv[]) {
 		 * Check the status of your send and receive requests. 
 		 */
 		if(mycoord[1]%2==0) {
-			if(!bound_south) {
+			if(bound_south==0) {
 				MPI_Waitall(2, &req[0], &stati[0]);
 				got_south = 1;
 			}
-			if(!bound_north) {
+			if(bound_north==0) {
 				MPI_Waitall(2, &req[2], &stati[2]);
 				got_north = 1;
 			}
 		}
 		else {
-			if(!bound_north) {
+			if(bound_north==0) {
 				MPI_Waitall(2, &req[2], &stati[2]);
 				got_north = 1;
 			}
-			if(!bound_south) {
+			if(bound_south==0) {
 				MPI_Waitall(2, &req[0], &stati[0]);
 				got_south = 1;
 			}
 			
 		}
 		if(mycoord[0]%2==0) {
-			if(!bound_east) {
+			if(bound_east==0) {
 				MPI_Waitall(2, &req[4], &stati[4]);
 				got_east = 1;
 			}
-			if(!bound_west) {
+			if(bound_west==0) {
 				MPI_Waitall(2, &req[6], &stati[6]);
 				got_west = 1;
 			}
 		}
 		else {
-			if(!bound_west) {
+			if(bound_west==0) {
 				MPI_Waitall(2, &req[6], &stati[6]);
 				got_west = 1;
 			}
-			if(!bound_east) {
+			if(bound_east==0) {
 				MPI_Waitall(2, &req[4], &stati[4]);
 				got_east = 1;
 			}
