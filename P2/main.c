@@ -260,8 +260,8 @@ int main(int argc, char* argv[]) {
 				i = index(proc_pts[0]-1, y);
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+recv_east[y])*pow(deltas[1],2)+ \
 					(T[down(i)]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
-*/			}
-		}
+			}
+*/		}
 /*		if(got_north==1 && got_west==1) {
 			i = index(0,proc_pts[1]-1);
 			T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(recv_west[proc_pts[1]-1]+T[right(i)])*pow(deltas[1],2)+ \
