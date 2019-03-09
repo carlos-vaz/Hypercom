@@ -208,11 +208,11 @@ int main(int argc, char* argv[]) {
 			MPI_Send(send_north, proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/, 2/*northernly tag*/, comm2d);
 			MPI_Recv(recv_north, proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/ \
 									, 3 /*southernly tag*/, comm2d, &stati[1]);
-			printf("(%d): Recvd from North\n", myrank);
+/*			printf("(%d): Recvd from North\n", myrank);
 			for(int i=0; i<proc_pts[0]; i++) 
 				printf("%lf, ", recv_north[i]);
 			printf("\n\n\n");
-			got_north=1;
+*/			got_north=1;
 		}
 //		if(bound_east==0) {
 //			MPI_Recv(recv_east, proc_pts[1], MPI_DOUBLE, ranks_around[0] /*eastern rank*/ \
