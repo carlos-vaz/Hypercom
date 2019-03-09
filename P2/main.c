@@ -313,6 +313,7 @@ int main(int argc, char* argv[]) {
 		printf("(%d): iter %d\n", myrank, count);
 		count++;
 	}
+	sleep(3);
 	printf("(%d): EXITED\n", myrank);
 	fflush(stdout);
 	
