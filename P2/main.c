@@ -190,7 +190,7 @@ int main(int argc, char* argv[]) {
 		 * will go through. 
 		 */
 		if(bound_south==0) {
-			printf("(%d): BOUND_SOUTH==0 inside if\n", myrank);
+			//printf("(%d): BOUND_SOUTH==0 inside if\n", myrank);
 			MPI_Recv(recv_south, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/ \
 									, 2 /*northernly tag*/, comm2d, &stati[0]);
 			got_south=1;
@@ -200,7 +200,7 @@ int main(int argc, char* argv[]) {
 			MPI_Send(send_south, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/, 3/*southernly tag*/, comm2d);
 		}
 		if(bound_north==0) {
-			printf("(%d): BOUND_NORTH==0 inside if\n", myrank);
+			//printf("(%d): BOUND_NORTH==0 inside if\n", myrank);
 			//memcpy(send_north, &(T[proc_size-proc_pts[0]]), proc_pts[0]*sizeof(double)); // Why copy if T[0->xdim] won't change?
 			for(int i=0; i<proc_pts[0]; i++)
 				send_north[i] = T[proc_size-proc_pts[0]+i];
@@ -208,6 +208,10 @@ int main(int argc, char* argv[]) {
 			MPI_Send(send_north, proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/, 2/*northernly tag*/, comm2d);
 			MPI_Recv(recv_north, proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/ \
 									, 3 /*southernly tag*/, comm2d, &stati[1]);
+			printf("(%d): Recvd from North\n", myrank);
+			for(int i=0; i<proc_pts[0]; i++) 
+				printf("%lf, " recv_north[i]);
+			printf("\n\n\n");
 			got_north=1;
 		}
 //		if(bound_east==0) {
