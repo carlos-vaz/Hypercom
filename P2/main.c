@@ -133,7 +133,7 @@ int main(int argc, char* argv[]) {
 	if(mycoord[1]==0) {
 		printf("Process (%d, %d): I have a southern boundary\n", mycoord[0], mycoord[1]);
 		bound_south = 1;
-		memcpy(&v[0], &T[0], proc_pts[0]*sizeof(double));
+		memcpy(v, T, proc_pts[0]*sizeof(double));
 	}
 	if(mycoord[1]==dims_procs[1]-1) {
 		printf("Process (%d, %d): I have a northern boundary\n", mycoord[0], mycoord[1]);
@@ -193,11 +193,16 @@ int main(int argc, char* argv[]) {
 			MPI_Recv(recv_south, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/ \
 									, 2 /*northernly tag*/, comm2d, &stati[0]);
 			got_south=1;
-			memcpy(send_south, T, proc_pts[0]*sizeof(double)); // Why copy if T[0->xdim] won't change?
+			//memcpy(send_south, T, proc_pts[0]*sizeof(double)); // Why copy if T[0->xdim] won't change?
+			for(int i=0; i<proc_pts[0]; i++)
+				send_south[i] = T[i];
 			MPI_Send(send_south, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/, 3/*southernly tag*/, comm2d);
 		}
 		if(bound_north==0) {
-			memcpy(send_north, &(T[proc_size-proc_pts[0]]), proc_pts[0]*sizeof(double)); // Why copy if T[0->xdim] won't change?
+			//memcpy(send_north, &(T[proc_size-proc_pts[0]]), proc_pts[0]*sizeof(double)); // Why copy if T[0->xdim] won't change?
+			for(int i=0; i<proc_pts[0]; i++)
+				send_north[i] = T[proc_size-proc_pts[0]+i];
+
 			MPI_Send(send_north, proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/, 2/*northernly tag*/, comm2d);
 			MPI_Recv(recv_north, proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/ \
 									, 3 /*southernly tag*/, comm2d, &stati[1]);
