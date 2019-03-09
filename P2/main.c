@@ -222,13 +222,13 @@ int main(int argc, char* argv[]) {
 		 * 1 iteration. 
 		 */
 		int i=0, x=0, y=0;
-/*		if(got_south==1) {
+		if(got_south==1) {
 			for(x=1; x<proc_pts[0]-1; x++) {
 				i = index(x,0);
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+T[right(i)])*pow(deltas[1],2)+ \
 						(recv_south[i]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 			}
-*///		}
+		}
 /*		if(got_south==1 && got_east==1) {
 			i = index(proc_pts[0]-1,0);
 			T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+recv_east[0])*pow(deltas[1],2)+ \
@@ -240,26 +240,26 @@ int main(int argc, char* argv[]) {
 						(recv_south[i]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 		}
 */		for(y=1; y<proc_pts[1]-1; y++) {
-			i = index(0,y);
+/*			i = index(0,y);
 			T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(recv_west[i]+T[right(i)])*pow(deltas[1],2)+ \
 					(T[down(i)]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
-			for(x=1; x<proc_pts[0]-1; x++) {
+*/			for(x=1; x<proc_pts[0]-1; x++) {
 				i = index(x,y);
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+T[right(i)])*pow(deltas[1],2)+ \
 					(T[down(i)]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 			}
-			i = index(proc_pts[0]-1, y);
+/*			i = index(proc_pts[0]-1, y);
 			T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+recv_east[i])*pow(deltas[1],2)+ \
 					(T[down(i)]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
-		}
-/*		if(got_north==1) {
+*/		}
+		if(got_north==1) {
 			for(x=1; x<proc_pts[0]-1; x++) {
 				i = index(x,proc_pts[1]-1);
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+T[right(i)])*pow(deltas[1],2)+ \
 						(T[down(i)]+recv_north[i])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 			}
 		}
-*/
+
 
 		/*
 		 * Check the status of your send and receive requests. 
