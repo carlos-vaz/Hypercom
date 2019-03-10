@@ -19,6 +19,20 @@ void VTK_out(const int N, const int M, const double *Xmin, const double *Xmax,
              const double *Ymin, const double *Ymax, const double *T,
              const int index);
 
+/*
+ * Return value:
+	0 = Fail
+	1 = Pass
+ */
+int verify_error(double *T, double *v, int len) {
+	for(int i=0; i<len; i++) {
+		if(fabs(T[i]-v[i])>ERROR_THRESH) {
+			return 0;
+		}
+	}
+	return 1;
+}
+
 
 int myrank, rank_2d, mycoord[2], np, dims_procs[2], num_points, dims_pts[2], proc_pts[2], proc_size, \
 	ranks_around[4] = {-1,-1,-1,-1}; // {right, left, up, down}
@@ -156,79 +170,92 @@ int main(int argc, char* argv[]) {
 
 	// Preparation complete... Start the timer
 
-	double *send_south = (double*)malloc(proc_pts[0]*sizeof(double));
-	double *send_north = (double*)malloc(proc_pts[0]*sizeof(double));
-	double *send_east  = (double*)malloc(proc_pts[1]*sizeof(double));
-	double *send_west  = (double*)malloc(proc_pts[1]*sizeof(double));
-	double *recv_south = (double*)malloc(proc_pts[0]*sizeof(double));
-	double *recv_north = (double*)malloc(proc_pts[0]*sizeof(double));
-	double *recv_east  = (double*)malloc(proc_pts[1]*sizeof(double));
-	double *recv_west  = (double*)malloc(proc_pts[1]*sizeof(double));
+	// Allocate 1 extra element to signal when the neighbor should remember
+	// the sent buffer because the sender will stop sending (due to exit)
+	double *send_south = (double*)calloc((proc_pts[0]+1), sizeof(double));
+	double *send_north = (double*)calloc((proc_pts[0]+1), sizeof(double));
+	double *send_east  = (double*)calloc((proc_pts[1]+1), sizeof(double));
+	double *send_west  = (double*)calloc((proc_pts[1]+1), sizeof(double));
+	double *recv_south = (double*)calloc((proc_pts[0]+1), sizeof(double));
+	double *recv_north = (double*)calloc((proc_pts[0]+1), sizeof(double));
+	double *recv_east  = (double*)calloc((proc_pts[1]+1), sizeof(double));
+	double *recv_west  = (double*)calloc((proc_pts[1]+1), sizeof(double));
 	int got_south = 0;
 	int got_north = 0;
 	int got_east  = 0;
 	int got_west  = 0;
-	double myError = ERROR_THRESH + 1;
 	MPI_Cart_shift(comm2d, 0, +1, &rank_2d, &ranks_around[0]);
 	MPI_Cart_shift(comm2d, 0, -1, &rank_2d, &ranks_around[1]);
 	MPI_Cart_shift(comm2d, 1, +1, &rank_2d, &ranks_around[2]);
 	MPI_Cart_shift(comm2d, 1, -1, &rank_2d, &ranks_around[3]);
-	//printf("RANK %d (%d,%d): rank_east/west/north/south=%d/%d/%d/%d\n", myrank, mycoord[0], mycoord[1], \
-	//							ranks_around[0], ranks_around[1], ranks_around[2], ranks_around[3]);
+
+	int remember_south = 0;
+	int remember_north = 0;
+	int remember_east  = 0;
+	int remember_west  = 0;
+
+	// Rank order: east/west/north/south = 0/1/2/3
 	MPI_Request req[8];
 	MPI_Status stati[8];
 
-//	while(myError > ERROR_THRESH) {
 	int count = 0;
-	while(count < 10000) {
+	int will_break = 0;
+//	while(count < 10000) {
+	while(1) {
 		/*
 		 * Post a non-blocking send and a non-blocking receive to all neighbors.
 		 * While you update your internal temperatures, hopefully the requests
 		 * will go through. 
 		 */
-		if(bound_south==0) {
-			//printf("(%d): BOUND_SOUTH==0 inside if\n", myrank);
-			MPI_Irecv(recv_south, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/ \
+		if(bound_south==0 && remember_south==0) {
+			MPI_Irecv(recv_south, proc_pts[0]+1, MPI_DOUBLE, ranks_around[3] /*southern rank*/ \
 									, 2 /*northernly tag*/, comm2d, &req[0]);
-			//got_south=1;
-			//memcpy(send_south, T, proc_pts[0]*sizeof(double)); // Why copy if T[0->xdim] won't change?
-			for(int i=0; i<proc_pts[0]; i++)
-				send_south[i] = T[i];
-			MPI_Isend(send_south, proc_pts[0], MPI_DOUBLE, ranks_around[3] /*southern rank*/, 3/*southernly tag*/, comm2d, &req[1]);
+			if(recv_south[proc_pts[0]]==1) // did Southern neighbr signal to me to remember recv_south?
+				remember_south = 1;
+			memcpy(send_south, T, proc_pts[0]*sizeof(double)); // Why copy if T[0->xdim] won't change?
+			//for(int i=0; i<proc_pts[0]; i++)
+			//	send_south[i] = T[i];
+			if(will_break)
+				send_south[proc_pts[0]] = 1; // signal to Southern neighbor to remember this buffer
+			MPI_Isend(send_south, proc_pts[0]+1, MPI_DOUBLE, ranks_around[3] /*southern rank*/, 3/*southernly tag*/, comm2d, &req[1]);
 		}
-		if(bound_north==0) {
-			//printf("(%d): BOUND_NORTH==0 inside if\n", myrank);
-			//memcpy(send_north, &(T[proc_size-proc_pts[0]]), proc_pts[0]*sizeof(double)); // Why copy if T[0->xdim] won't change?
-			for(int i=0; i<proc_pts[0]; i++)
-				send_north[i] = T[proc_size-proc_pts[0]+i];
+		if(bound_north==0 && remember_north==0) {
+			memcpy(send_north, &T[proc_size-proc_pts[0]], proc_pts[0]*sizeof(double)); // Why copy if T[0->xdim] won't change?
+			//for(int i=0; i<proc_pts[0]; i++)
+			//	send_north[i] = T[proc_size-proc_pts[0]+i];
+			if(will_break)
+				send_north[proc_pts[0]] = 1; // signal to Northern neighbor to remember this buffer
 
-			MPI_Isend(send_north, proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/, 2/*northernly tag*/, comm2d, &req[2]);
-			MPI_Irecv(recv_north, proc_pts[0], MPI_DOUBLE, ranks_around[2] /*northern rank*/ \
+			MPI_Isend(send_north, proc_pts[0]+1, MPI_DOUBLE, ranks_around[2] /*northern rank*/, 2/*northernly tag*/, comm2d, &req[2]);
+			MPI_Irecv(recv_north, proc_pts[0]+1, MPI_DOUBLE, ranks_around[2] /*northern rank*/ \
 									, 3 /*southernly tag*/, comm2d, &req[3]);
-/*			printf("(%d): Recvd from North\n", myrank);
-			for(int i=0; i<proc_pts[0]; i++) 
-				printf("%lf, ", recv_north[i]);
-			printf("\n\n\n");
-*/			//got_north=1;
+			if(recv_north[proc_pts[0]]==1) // did Northern neighbr signal to me to remember recv_north?
+				remember_north = 1;
 		}
-		if(bound_east==0) {
-			MPI_Irecv(recv_east, proc_pts[1], MPI_DOUBLE, ranks_around[0] /*eastern rank*/ \
+		if(bound_east==0 && remember_east==0) {
+			MPI_Irecv(recv_east, proc_pts[1]+1, MPI_DOUBLE, ranks_around[0] /*eastern rank*/ \
 									, 1 /*westernly tag*/, comm2d, &req[4]);
+			if(recv_east[proc_pts[0]]==1) // did Eastern neighbr signal to me to remember recv_east?
+				remember_east = 1;
 			//got_east=1;
 			// Copy eastern buffer to send_east
 			for(int i=0; i<proc_pts[1]; i++)
-				//send_east[i] = T[index(proc_pts[0]-1, i)];
 				send_east[i] = T[proc_pts[0]-1+i*proc_pts[0]];
-			MPI_Isend(send_east, proc_pts[1], MPI_DOUBLE, ranks_around[0] /*eastern rank*/, 0/*easternly tag*/, comm2d, &req[5]);
+			if(will_break)
+				send_east[proc_pts[0]] = 1; // signal to Eastern neighbor to remember this buffer
+			MPI_Isend(send_east, proc_pts[1]+1, MPI_DOUBLE, ranks_around[0] /*eastern rank*/, 0/*easternly tag*/, comm2d, &req[5]);
 		}
-		if(bound_west==0) {
+		if(bound_west==0 && remember_west==0) {
 			// Copy western buffer to send_west
 			for(int i=0; i<proc_pts[1]; i++)
-				//send_west[i] = T[index(0, i)];
 				send_west[i] = T[i*proc_pts[0]];
-			MPI_Isend(send_west, proc_pts[1], MPI_DOUBLE, ranks_around[1] /*western rank*/, 1/*westernly tag*/, comm2d, &req[6]);
-			MPI_Irecv(recv_west, proc_pts[1], MPI_DOUBLE, ranks_around[1] /*western rank*/ \
+			if(will_break)
+				send_west[proc_pts[0]] = 1; // signal to Western neighbor to remember this buffer
+			MPI_Isend(send_west, proc_pts[1]+1, MPI_DOUBLE, ranks_around[1] /*western rank*/, 1/*westernly tag*/, comm2d, &req[6]);
+			MPI_Irecv(recv_west, proc_pts[1]+1, MPI_DOUBLE, ranks_around[1] /*western rank*/ \
 									, 0 /*easternly tag*/, comm2d, &req[7]);
+			if(recv_west[proc_pts[0]]==1) // did Western neighbr signal to me to remember recv_west?
+				remember_west = 1;
 			//got_west=1;
 		}
 
@@ -345,14 +372,20 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
-		
-	
-		//MPI_Barrier(MPI_COMM_WORLD); // remove this
-		//if(myrank==ANNOUNCER_PROC) printf("%d\n", count);
-//		printf("(%d): iter %d\n", myrank, count);
+		if(will_break==1)
+			break;
+		if(count%1000==0 && verify_error(T, v, proc_size)==1) {
+			printf("(%d): Passed error thresh\n", myrank);
+			will_break = 1;
+		}
 		count++;
+
+		got_east  = 0;
+		got_west  = 0;
+		got_south = 0;
+		got_north = 0;
+		
 	}
-	//sleep(3);
 	printf("(%d): EXITED\n", myrank);
 	fflush(stdout);
 	
