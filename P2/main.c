@@ -405,11 +405,11 @@ int main(int argc, char* argv[]) {
 		}
 		count++;
 
-		got_east  = 0;
+/*		got_east  = 0;
 		got_west  = 0;
 		got_south = 0;
 		got_north = 0;
-		
+*/		
 	}
 	printf("(%d): EXITED\n", myrank);
 	fflush(stdout);
