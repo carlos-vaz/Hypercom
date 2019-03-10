@@ -401,8 +401,15 @@ int main(int argc, char* argv[]) {
 			err = get_error(T, v, proc_size);
 			verif = verify_error(T, v, proc_size);
 			printf("(%d): iteration %d... \t%lf: (%d)\n", myrank, count, err, verif);
+		}	
+		if(myrank==0) {
+			printf("\n\nPrinting T(v)\n");
+			for(int i=0; i<proc_size; i++) {
+				if(i%proc_pts[0]==0)
+					printf("...\n");
+				printf("%lf(%lf)\n", T[i], v[i]);
+			}		
 		}
-
 
 		//printf("SANITY CHECK: \n");
 		//printf("remember_south=%d, rem_north=%d, rem_east=%d, rem_west=%d\n", remember_south, remember_north, remember_east, remember_west);
