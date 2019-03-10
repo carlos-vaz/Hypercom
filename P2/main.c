@@ -248,14 +248,14 @@ int main(int argc, char* argv[]) {
 		if(bound_east==0 && remember_east==0) {
 			MPI_Irecv(recv_east, proc_pts[1]+1, MPI_DOUBLE, ranks_around[0] /*eastern rank*/ \
 									, 1 /*westernly tag*/, comm2d, &req[4]);
-			if(recv_east[proc_pts[0]]==1) // did Eastern neighbr signal to me to remember recv_east?
+			if(recv_east[proc_pts[1]]==1) // did Eastern neighbr signal to me to remember recv_east?
 				remember_east = 1;
 			//got_east=1;
 			// Copy eastern buffer to send_east
 			for(int i=0; i<proc_pts[1]; i++)
 				send_east[i] = T[proc_pts[0]-1+i*proc_pts[0]];
 			if(will_break)
-				send_east[proc_pts[0]] = 1; // signal to Eastern neighbor to remember this buffer
+				send_east[proc_pts[1]] = 1; // signal to Eastern neighbor to remember this buffer
 			MPI_Isend(send_east, proc_pts[1]+1, MPI_DOUBLE, ranks_around[0] /*eastern rank*/, 0/*easternly tag*/, comm2d, &req[5]);
 		}
 		if(bound_west==0 && remember_west==0) {
@@ -263,11 +263,11 @@ int main(int argc, char* argv[]) {
 			for(int i=0; i<proc_pts[1]; i++)
 				send_west[i] = T[i*proc_pts[0]];
 			if(will_break)
-				send_west[proc_pts[0]] = 1; // signal to Western neighbor to remember this buffer
+				send_west[proc_pts[1]] = 1; // signal to Western neighbor to remember this buffer
 			MPI_Isend(send_west, proc_pts[1]+1, MPI_DOUBLE, ranks_around[1] /*western rank*/, 1/*westernly tag*/, comm2d, &req[6]);
 			MPI_Irecv(recv_west, proc_pts[1]+1, MPI_DOUBLE, ranks_around[1] /*western rank*/ \
 									, 0 /*easternly tag*/, comm2d, &req[7]);
-			if(recv_west[proc_pts[0]]==1) // did Western neighbr signal to me to remember recv_west?
+			if(recv_west[proc_pts[1]]==1) // did Western neighbr signal to me to remember recv_west?
 				remember_west = 1;
 			//got_west=1;
 		}
