@@ -35,10 +35,11 @@ int verify_error(double *T, double *v, int len) {
 
 double get_error(double *T, double *v, int len) {
 	double ret = 100;
+	double tmp;
 	for(int i=0; i<len; i++) {
 		//printf("INSIDE get_error: T[%d]=%lf", i, T[i]);
 		//printf("\t v[%d]=%lf", i, v[i]);
-		double tmp = fabs(T[i]-v[i]);
+		tmp = fabs(T[i]-v[i]);
 		//printf("\t fabs=%lf\n", tmp);
 		if(tmp<ret) {
 			ret = tmp;
@@ -393,10 +394,12 @@ int main(int argc, char* argv[]) {
 			break;
 
 
-		double err;
+		double err=-1;
+		int verif=1;
 		if(count%1000==0) {
 			err = get_error(T, v, proc_size);
-			printf("(%d): iteration %d... \t%lf\n", myrank, count, err);
+			verif = verify_error(T, v, proc_size);
+			printf("(%d): iteration %d... \t%lf: (%d)\n", myrank, count, err, verif);
 		}
 
 
