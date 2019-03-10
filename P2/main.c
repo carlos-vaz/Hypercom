@@ -282,7 +282,8 @@ int main(int argc, char* argv[]) {
 		}
 */		if(got_north==1) {
 			for(x=1; x<proc_pts[0]-1; x++) {
-				i = index(x,proc_pts[1]-1);
+				//i = index(x,proc_pts[1]-1);
+				i = x+(proc_pts[1]-1)*proc_pts[0];
 				//i = index(x,0);
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+T[right(i)])*pow(deltas[1],2)+ \
 				(T[down(i)]+recv_north[x])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
