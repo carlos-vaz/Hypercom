@@ -387,7 +387,7 @@ int main(int argc, char* argv[]) {
 			break;
 		double err = get_error(T, v, proc_size);
 		if(count%1000==0) {
-			printf("(%d): iteration %d... \t%lf", myrank, count, err);
+			printf("(%d): iteration %d... \t%lf\n", myrank, count, err);
 		}
 
 
