@@ -393,11 +393,12 @@ int main(int argc, char* argv[]) {
 			break;
 
 
-/*		double err = get_error(T, v, proc_size);
+		double err;
 		if(count%1000==0) {
+			err = get_error(T, v, proc_size);
 			printf("(%d): iteration %d... \t%lf\n", myrank, count, err);
 		}
-*/
+
 
 		//printf("SANITY CHECK: \n");
 		//printf("remember_south=%d, rem_north=%d, rem_east=%d, rem_west=%d\n", remember_south, remember_north, remember_east, remember_west);
