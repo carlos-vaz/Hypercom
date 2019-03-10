@@ -99,13 +99,11 @@ int main(int argc, char* argv[]) {
 							proc_pts[1], proc_pts[0], proc_pts[1]);
 	MPI_Type_vector(proc_pts[1], proc_pts[0], dims_pts[0], MPI_DOUBLE, &vector);
 	MPI_Type_commit(&vector);	
-	printf("MPI_File_set_view(file, 2*sizeof(int)+%d*%d+%d*%d, MPI_DOUBLE, vector, NULL, MPI_INFO_NULL)\n", \
-								mycoord[0], proc_pts[0] ,mycoord[1], proc_size);
 	MPI_File_set_view(file, 2*sizeof(int)+2*sizeof(double)+(mycoord[0]*proc_pts[0]+mycoord[1]*proc_size*dims_procs[0])*sizeof(double), \
 								MPI_DOUBLE, vector, "native", MPI_INFO_NULL);	
 	MPI_File_read_all(file, v, proc_size, MPI_DOUBLE, MPI_STATUS_IGNORE);
 
-	fflush(stdout);
+/*	fflush(stdout);
 	MPI_Barrier(MPI_COMM_WORLD);
 	for(int i=0; i<np; i++) {
 		if(myrank==i) {
@@ -118,8 +116,7 @@ int main(int argc, char* argv[]) {
 		fflush(stdout);
 		MPI_Barrier(MPI_COMM_WORLD);
 	}
-
-
+*/
 	/*
 	 * Each process creates a temperature vector T and fills it with 
 	 * 0, except for at the boundaries, which take the initial value 
@@ -371,7 +368,7 @@ int main(int argc, char* argv[]) {
 */	
 
 
-	sleep(2*myrank);
+/*	sleep(2*myrank);
 	int count_y=0;
 	printf("\n\n\n#######   P %d; (%d, %d)   ########\n", myrank, mycoord[0], mycoord[1]);
 	for(int i=0; i<proc_size; i++) {
@@ -380,7 +377,7 @@ int main(int argc, char* argv[]) {
 		printf("%lf(%d), ", T[i], i%proc_pts[0]);
 	}
 	printf("\n\n\n####### END OF  P %d; (%d, %d)   ########\n", myrank, mycoord[0], mycoord[1]);
-
+*/
 
 	double Xmin = (ranges[0]/dims_procs[0])*mycoord[0];
 	double Ymin = (ranges[1]/dims_procs[1])*mycoord[1];
