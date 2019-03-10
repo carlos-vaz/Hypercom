@@ -386,7 +386,7 @@ int main(int argc, char* argv[]) {
 		if(will_break==1)
 			break;
 		if(count%1000==0)
-			printf("(%d): iteration %d\n", myrank, count);
+			printf("(%d): iteration %d\n... \t%lf", myrank, count, get_error(T, v, proc_size));
 		if(count%1000==0 && verify_error(T, v, proc_size)==1) {
 			printf("(%d): Passed error thresh\n", myrank);
 			will_break = 1;
