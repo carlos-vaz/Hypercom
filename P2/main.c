@@ -225,17 +225,17 @@ int main(int argc, char* argv[]) {
 									, 2 /*northernly tag*/, comm2d, &req[0]);
 			if(recv_south[proc_pts[0]]==1) // did Southern neighbr signal to me to remember recv_south?
 				remember_south = 1;
-			memcpy(send_south, T, proc_pts[0]*sizeof(double)); // Why copy if T[0->xdim] won't change?
-			//for(int i=0; i<proc_pts[0]; i++)
-			//	send_south[i] = T[i];
+			//memcpy(send_south, T, proc_pts[0]*sizeof(double)); // Why copy if T[0->xdim] won't change?
+			for(int i=0; i<proc_pts[0]; i++)
+				send_south[i] = T[i];
 			if(will_break)
 				send_south[proc_pts[0]] = 1; // signal to Southern neighbor to remember this buffer
 			MPI_Isend(send_south, proc_pts[0]+1, MPI_DOUBLE, ranks_around[3] /*southern rank*/, 3/*southernly tag*/, comm2d, &req[1]);
 		}
 		if(bound_north==0 && remember_north==0) {
-			memcpy(send_north, &T[proc_size-proc_pts[0]], proc_pts[0]*sizeof(double)); // Why copy if T[0->xdim] won't change?
-			//for(int i=0; i<proc_pts[0]; i++)
-			//	send_north[i] = T[proc_size-proc_pts[0]+i];
+			//memcpy(send_north, &T[proc_size-proc_pts[0]], proc_pts[0]*sizeof(double)); // Why copy if T[0->xdim] won't change?
+			for(int i=0; i<proc_pts[0]; i++)
+				send_north[i] = T[proc_size-proc_pts[0]+i];
 			if(will_break)
 				send_north[proc_pts[0]] = 1; // signal to Northern neighbor to remember this buffer
 
