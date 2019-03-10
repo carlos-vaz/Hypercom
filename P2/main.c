@@ -36,6 +36,8 @@ int verify_error(double *T, double *v, int len) {
 double get_error(double *T, double *v, int len) {
 	double ret = 100;
 	for(int i=0; i<len; i++) {
+		printf("INSIDE get_error: T[%d]=%lf", i, T[i]);
+		printf("\t v[%d]=%lf\n", i, v[i]);
 		double tmp = fabs(T[i]-v[i]);
 		if(tmp<ret) {
 			ret = tmp;
@@ -43,7 +45,6 @@ double get_error(double *T, double *v, int len) {
 	}
 	return ret;
 }
-
 
 int myrank, rank_2d, mycoord[2], np, dims_procs[2], num_points, dims_pts[2], proc_pts[2], proc_size, \
 	ranks_around[4] = {-1,-1,-1,-1}; // {right, left, up, down}
