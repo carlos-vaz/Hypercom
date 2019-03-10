@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define ERROR_THRESH  	1e-1	// Max tolerable error (infinity norm)
+#define ERROR_THRESH  	1e-6	// Max tolerable error (infinity norm)
 #define ANNOUNCER_PROC 	0
 //#define	   index(x,y)	(x+y*proc_pts[0])
 #define	   up(i)	(i+proc_pts[0])
@@ -31,6 +31,17 @@ int verify_error(double *T, double *v, int len) {
 		}
 	}
 	return 1;
+}
+
+double get_error(double *T, double *v, int len) {
+	double ret = 100;
+	for(int i=0; i<len; i++) {
+		double tmp = fabs(T[i]-v[i]);
+		if(tmp<ret) {
+			ret = tmp;
+		}
+	}
+	return ret;
 }
 
 
