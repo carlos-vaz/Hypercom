@@ -7,12 +7,28 @@
 
 #define ERROR_THRESH  	1e-12	// Max tolerable error (infinity norm)
 #define ANNOUNCER_PROC 	0
-#define	   index(x,y)	(x+y*proc_pts[0])
-#define	   up(i)	(i+proc_pts[0])
-#define	   down(i)	(i-proc_pts[0])
-#define    right(i)	(i+1)
-#define    left(i)	(i-1)
+//#define	   index(x,y)	(x+y*proc_pts[0])
+//#define	   up(i)	(i+proc_pts[0])
+//#define	   down(i)	(i-proc_pts[0])
+//#define    right(i)	(i+1)
+//#define    left(i)	(i-1)
 
+
+int i index(int x, int y) {
+	return (x+y*proc_pts[0]);
+}
+int u up(int i) {
+	return (i+proc_pts[0]);
+}
+int d down(int i) {
+	return (i-proc_pts[0]);
+}
+int r right(int i) {
+	return i+1;
+}
+int l left(int i) {
+	return i-1;
+}		
 
 extern 
 void VTK_out(const int N, const int M, const double *Xmin, const double *Xmax,
