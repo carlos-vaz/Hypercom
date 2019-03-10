@@ -243,7 +243,7 @@ int main(int argc, char* argv[]) {
 		int i=0, x=0, y=0;
 		if(got_south==1 && got_west==1) {
 			//i = index(0,0);
-			i = 0
+			i = 0;
 			T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(recv_west[0]+T[right(i)])*pow(deltas[1],2)+ \
 				(recv_south[0]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 		}
