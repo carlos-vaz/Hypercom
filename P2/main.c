@@ -7,11 +7,11 @@
 
 #define ERROR_THRESH  	1e-12	// Max tolerable error (infinity norm)
 #define ANNOUNCER_PROC 	0
-#define	   index(x,y)	x+y*proc_pts[0]
-#define	   up(i)	i+proc_pts[0]
-#define	   down(i)	i-proc_pts[0]
-#define    right(i)	i+1
-#define    left(i)	i-1
+#define	   index(x,y)	(x+y*proc_pts[0])
+#define	   up(i)	(i+proc_pts[0])
+#define	   down(i)	(i-proc_pts[0])
+#define    right(i)	(i+1)
+#define    left(i)	(i-1)
 
 
 extern 
@@ -282,8 +282,8 @@ int main(int argc, char* argv[]) {
 		}
 */		if(got_north==1) {
 			for(x=1; x<proc_pts[0]-1; x++) {
-				//i = index(x,proc_pts[1]-1);
-				i = x+(proc_pts[1]-1)*proc_pts[0];
+				i = index(x,proc_pts[1]-1);
+				//i = x+(proc_pts[1]-1)*proc_pts[0];
 				//i = index(x,0);
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+T[right(i)])*pow(deltas[1],2)+ \
 				(T[down(i)]+recv_north[x])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
