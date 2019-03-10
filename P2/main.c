@@ -8,27 +8,11 @@
 #define ERROR_THRESH  	1e-12	// Max tolerable error (infinity norm)
 #define ANNOUNCER_PROC 	0
 //#define	   index(x,y)	(x+y*proc_pts[0])
-//#define	   up(i)	(i+proc_pts[0])
-//#define	   down(i)	(i-proc_pts[0])
-//#define    right(i)	(i+1)
-//#define    left(i)	(i-1)
-
-
-int i index(int x, int y) {
-	return (x+y*proc_pts[0]);
-}
-int u up(int i) {
-	return (i+proc_pts[0]);
-}
-int d down(int i) {
-	return (i-proc_pts[0]);
-}
-int r right(int i) {
-	return i+1;
-}
-int l left(int i) {
-	return i-1;
-}		
+#define	   up(i)	(i+proc_pts[0])
+#define	   down(i)	(i-proc_pts[0])
+#define    right(i)	(i+1)
+#define    left(i)	(i-1)
+	
 
 extern 
 void VTK_out(const int N, const int M, const double *Xmin, const double *Xmax,
@@ -236,13 +220,15 @@ int main(int argc, char* argv[]) {
 			//got_east=1;
 			// Copy eastern buffer to send_east
 			for(int i=0; i<proc_pts[1]; i++)
-				send_east[i] = T[index(proc_pts[0]-1, i)];
+				//send_east[i] = T[index(proc_pts[0]-1, i)];
+				send_east[i] = T[proc_pts[0]-1+i*proc_pts[0]];
 			MPI_Isend(send_east, proc_pts[1], MPI_DOUBLE, ranks_around[0] /*eastern rank*/, 0/*easternly tag*/, comm2d, &req[5]);
 		}
 		if(bound_west==0) {
 			// Copy western buffer to send_west
 			for(int i=0; i<proc_pts[1]; i++)
-				send_west[i] = T[index(0, i)];
+				//send_west[i] = T[index(0, i)];
+				send_west[i] = T[i*proc_pts[0]];
 			MPI_Isend(send_west, proc_pts[1], MPI_DOUBLE, ranks_around[1] /*western rank*/, 1/*westernly tag*/, comm2d, &req[6]);
 			MPI_Irecv(recv_west, proc_pts[1], MPI_DOUBLE, ranks_around[1] /*western rank*/ \
 									, 0 /*easternly tag*/, comm2d, &req[7]);
@@ -256,58 +242,63 @@ int main(int argc, char* argv[]) {
 		 */
 		int i=0, x=0, y=0;
 /*		if(got_south==1 && got_west==1) {
-			i = index(0,0);
+			//i = index(0,0);
+			i = 0
 			T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(recv_west[0]+T[right(i)])*pow(deltas[1],2)+ \
 				(recv_south[0]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 		}
 */		if(got_south==1) {
 			for(x=1; x<proc_pts[0]-1; x++) {
-				i = index(x,0);
-				//i = index(x,proc_pts[1]-1);
-				//printf("(%d): v[%d] = %lf\n", myrank, i, v[i]);
+				//i = index(x,0);
+				i = x;
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+T[right(i)])*pow(deltas[1],2)+ \
 					(recv_south[x]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 			}
 		}
 /*		if(got_south==1 && got_east==1) {
-			i = index(proc_pts[0]-1,0);
+			//i = index(proc_pts[0]-1,0);
+			i = proc_pts[0]-1;
 			T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+recv_east[0])*pow(deltas[1],2)+ \
 				(recv_south[proc_pts[0]-1]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 		}
 */		for(y=1; y<proc_pts[1]-1; y++) {
 			if(got_west==1) {
-				i = index(0,y);
+				//i = index(0,y);
+				i = y*proc_pts[0];
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(recv_west[y]+T[right(i)])*pow(deltas[1],2)+ \
 					(T[down(i)]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 			}
 			for(x=1; x<proc_pts[0]-1; x++) {
-				i = index(x,y);
+				//i = index(x,y);
+				i = x+y*proc_pts[0];
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+T[right(i)])*pow(deltas[1],2)+ \
 					(T[down(i)]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 			}
 			if(got_east==1) {
-				i = index(proc_pts[0]-1, y);
+				//i = index(proc_pts[0]-1, y);
+				i = proc_pts[0]-1+y*proc_pts[0];
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+recv_east[y])*pow(deltas[1],2)+ \
 					(T[down(i)]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 			}
 		}
 /*		if(got_north==1 && got_west==1) {
-			i = index(0,proc_pts[1]-1);
+			//i = index(0,proc_pts[1]-1);
+			i = (proc_pts[1]-1)*proc_pts[0];
 			T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(recv_west[proc_pts[1]-1]+T[right(i)])*pow(deltas[1],2)+ \
 				(recv_north[0]+T[down(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 		}
 */		if(got_north==1) {
 			for(x=1; x<proc_pts[0]-1; x++) {
-				i = index(x,proc_pts[1]-1);
-				//i = x+(proc_pts[1]-1)*proc_pts[0];
-				//i = index(x,0);
+				//i = index(x,proc_pts[1]-1);
+				i = x+(proc_pts[1]-1)*proc_pts[0];
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+T[right(i)])*pow(deltas[1],2)+ \
 				(T[down(i)]+recv_north[x])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 				printf("\t\tSUSPICIOUS T[%d] = %lf\n", i, T[i]);
 			}
 		}
 /*		if(got_north==1 && got_east==1) {
-			i = index(proc_pts[0]-1,proc_pts[1]-1);
+			//i = index(proc_pts[0]-1,proc_pts[1]-1);
+			i = proc_pts[0]-1+(proc_pts[1]-1)*proc_pts[0];
 			T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(recv_east[proc_pts[1]-1]+T[left(i)])*pow(deltas[1],2)+ \
 				(recv_north[proc_pts[0]-1]+T[down(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 		}
