@@ -293,7 +293,7 @@ int main(int argc, char* argv[]) {
 				i = x+(proc_pts[1]-1)*proc_pts[0];
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+T[right(i)])*pow(deltas[1],2)+ \
 				(T[down(i)]+recv_north[x])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
-				printf("\t\tSUSPICIOUS T[%d] = %lf\n", i, T[i]);
+				//printf("\t\tSUSPICIOUS T[%d] = %lf\n", i, T[i]);
 			}
 		}
 /*		if(got_north==1 && got_east==1) {
