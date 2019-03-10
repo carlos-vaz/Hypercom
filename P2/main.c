@@ -387,11 +387,13 @@ int main(int argc, char* argv[]) {
 
 		if(will_break==1)
 			break;
-		double err = get_error(T, v, proc_size);
+
+
+/*		double err = get_error(T, v, proc_size);
 		if(count%1000==0) {
 			printf("(%d): iteration %d... \t%lf\n", myrank, count, err);
 		}
-
+*/
 
 		if(count%1000==0 && verify_error(T, v, proc_size)==1) {
 			printf("(%d): Passed error thresh\n", myrank);
