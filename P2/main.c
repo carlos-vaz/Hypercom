@@ -364,7 +364,7 @@ int main(int argc, char* argv[]) {
 
 
 	sleep(2*myrank);
-	printf("#######   P %d; (%d, %d)   ########\n", myrank, mycoord[0], mycoord[1]);
+	printf("\n\n\n#######   P %d; (%d, %d)   ########\n", myrank, mycoord[0], mycoord[1]);
 	for(int i=0; i<proc_size; i++) {
 		if(i%proc_pts[0]==0)
 			printf("...\n");
