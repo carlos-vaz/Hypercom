@@ -395,6 +395,10 @@ int main(int argc, char* argv[]) {
 		}
 */
 
+		printf("SANITY CHECK: \n");
+		printf("remember_south=%d, rem_north=%d, rem_east=%d, rem_west=%d\n", remember_south, remember_north, remember_east, remember_west);
+
+
 		if(count%1000==0 && verify_error(T, v, proc_size)==1) {
 			printf("(%d): Passed error thresh\n", myrank);
 			will_break = 1;
