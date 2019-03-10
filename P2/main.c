@@ -215,8 +215,8 @@ int main(int argc, char* argv[]) {
 
 	int count = 0;
 	int will_break = 0;
-//	while(count < 10000) {
-	while(1) {
+	while(count < 10000) {
+//	while(1) {
 		/*
 		 * Post a non-blocking send and a non-blocking receive to all neighbors.
 		 * While you update your internal temperatures, hopefully the requests
@@ -430,6 +430,18 @@ int main(int argc, char* argv[]) {
 	printf("(%d): EXITED\n", myrank);
 	fflush(stdout);
 	
+
+//		if(myrank==0) {
+			printf("\n\n(%d):  Printing T(v)\n", myrank);
+			for(int i=0; i<proc_size; i++) {
+				if(i%proc_pts[0]==0)
+					printf("...\n");
+				printf("%lf(%lf), ", T[i], v[i]);
+			}		
+//		}
+
+
+
 /*	if(myrank==0) {
 		printf("\nPrinting V\n");
 		for(int i=0; i<proc_size; i++) {
