@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define ERROR_THRESH  	1e-6	// Max tolerable error (infinity norm)
+#define ERROR_THRESH  	1e-4	// Max tolerable error (infinity norm)
 #define ANNOUNCER_PROC 	0
 //#define	   index(x,y)	(x+y*proc_pts[0])
 #define	   up(i)	(i+proc_pts[0])
@@ -36,10 +36,10 @@ int verify_error(double *T, double *v, int len) {
 double get_error(double *T, double *v, int len) {
 	double ret = 100;
 	for(int i=0; i<len; i++) {
-		printf("INSIDE get_error: T[%d]=%lf", i, T[i]);
-		printf("\t v[%d]=%lf", i, v[i]);
+		//printf("INSIDE get_error: T[%d]=%lf", i, T[i]);
+		//printf("\t v[%d]=%lf", i, v[i]);
 		double tmp = fabs(T[i]-v[i]);
-		printf("\t fabs=%lf\n", tmp);
+		//printf("\t fabs=%lf\n", tmp);
 		if(tmp<ret) {
 			ret = tmp;
 		}
@@ -213,8 +213,8 @@ int main(int argc, char* argv[]) {
 
 	int count = 0;
 	int will_break = 0;
-	while(count < 10000) {
-//	while(1) {
+//	while(count < 10000) {
+	while(1) {
 		/*
 		 * Post a non-blocking send and a non-blocking receive to all neighbors.
 		 * While you update your internal temperatures, hopefully the requests
