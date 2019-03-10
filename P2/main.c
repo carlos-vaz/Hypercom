@@ -370,6 +370,7 @@ int main(int argc, char* argv[]) {
 			printf("...\n");
 		printf("%lf, ", T[i]);
 	}
+	printf("\n\n\n####### END OF  P %d; (%d, %d)   ########\n", myrank, mycoord[0], mycoord[1]);
 
 
 	double Xmin = (ranges[0]/dims_procs[0])*mycoord[0];
