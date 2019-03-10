@@ -246,8 +246,8 @@ int main(int argc, char* argv[]) {
 		}
 */		if(got_south==1) {
 			for(x=1; x<proc_pts[0]-1; x++) {
-				//i = index(x,0);
-				i = index(x,proc_pts[1]-1);
+				i = index(x,0);
+				//i = index(x,proc_pts[1]-1);
 				//printf("(%d): v[%d] = %lf\n", myrank, i, v[i]);
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+T[right(i)])*pow(deltas[1],2)+ \
 					(recv_south[x]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
@@ -282,8 +282,8 @@ int main(int argc, char* argv[]) {
 		}
 */		if(got_north==1) {
 			for(x=1; x<proc_pts[0]-1; x++) {
-				//i = index(x,proc_pts[1]-1);
-				i = index(x,0);
+				i = index(x,proc_pts[1]-1);
+				//i = index(x,0);
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+T[right(i)])*pow(deltas[1],2)+ \
 				(T[down(i)]+recv_north[x])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 			}
@@ -351,7 +351,7 @@ int main(int argc, char* argv[]) {
 	printf("(%d): EXITED\n", myrank);
 	fflush(stdout);
 	
-	if(myrank==0) {
+/*	if(myrank==0) {
 		printf("\nPrinting V\n");
 		for(int i=0; i<proc_size; i++) {
 			if(i%proc_pts[0]==0)
@@ -360,8 +360,16 @@ int main(int argc, char* argv[]) {
 		}
 		
 	}
-	
+*/	
 
+
+	sleep(2*myrank);
+	printf("#######   P %d; (%d, %d)   ########\n", myrank, mycoord[0], mycoord[1]);
+	for(int i=0; i<proc_size; i++) {
+		if(i%proc_pts[0]==0)
+			printf("...\n");
+		printf("%lf, " T[i]);
+	}
 
 
 	double Xmin = (ranges[0]/dims_procs[0])*mycoord[0];
