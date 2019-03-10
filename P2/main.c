@@ -247,7 +247,7 @@ int main(int argc, char* argv[]) {
 */		if(got_south==1) {
 			for(x=1; x<proc_pts[0]-1; x++) {
 				i = index(x,0);
-				printf("(%d): v[%d] = %lf\n", myrank, i, v[i]);
+				//printf("(%d): v[%d] = %lf\n", myrank, i, v[i]);
 				T[i] = (-1*v[i]*pow((deltas[0]*deltas[1]),2)+(T[left(i)]+T[right(i)])*pow(deltas[1],2)+ \
 					(recv_south[x]+T[up(i)])*pow(deltas[0],2))/(2*pow(deltas[0],2)+2*pow(deltas[1],2));
 			}
