@@ -39,7 +39,7 @@ double get_error(double *T, double *v, int len) {
 		printf("INSIDE get_error: T[%d]=%lf", i, T[i]);
 		printf("\t v[%d]=%lf", i, v[i]);
 		double tmp = fabs(T[i]-v[i]);
-		printf("\t fabs=%lf\n", tmp)
+		printf("\t fabs=%lf\n", tmp);
 		if(tmp<ret) {
 			ret = tmp;
 		}
