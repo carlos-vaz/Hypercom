@@ -128,25 +128,25 @@ int main(int argc, char* argv[]) {
 	int bound_west = 0;
 	double *T = (double*)calloc(proc_size, sizeof(double));
 	if(mycoord[1]==0) {
-		printf("Process (%d, %d): I have a southern boundary\n", mycoord[0], mycoord[1]);
+		//printf("Process (%d, %d): I have a southern boundary\n", mycoord[0], mycoord[1]);
 		bound_south = 1;
 		memcpy(v, T, proc_pts[0]*sizeof(double));
 	}
 	if(mycoord[1]==dims_procs[1]-1) {
-		printf("Process (%d, %d): I have a northern boundary\n", mycoord[0], mycoord[1]);
+		//printf("Process (%d, %d): I have a northern boundary\n", mycoord[0], mycoord[1]);
 		bound_north = 1;
 		for(int x=0; x<proc_pts[0]; x++)
 			T[(proc_pts[1]-1)*proc_pts[0]+x] = v[(proc_pts[1]-1)*proc_pts[0]+x]; // copy from 'v'
 	}
 	if(mycoord[0]==0) {
-		printf("Process (%d, %d): I have a western boundary\n", mycoord[0], mycoord[1]);
+		//printf("Process (%d, %d): I have a western boundary\n", mycoord[0], mycoord[1]);
 		bound_west = 1;
 		for(int y=0; y<proc_pts[1]; y++)
 			T[y*proc_pts[0]] = v[y*proc_pts[0]]; // copy from 'v'
 		
 	}
 	if(mycoord[0]==dims_procs[0]-1) {
-		printf("Process (%d, %d): I have an eastern boundary\n", mycoord[0], mycoord[1]);
+		//printf("Process (%d, %d): I have an eastern boundary\n", mycoord[0], mycoord[1]);
 		bound_east = 1;
 		for(int y=0; y<proc_pts[1]; y++)
 			T[(y+1)*proc_pts[0]-1] = v[(y+1)*proc_pts[0]-1];  // copy from 'v'
@@ -173,8 +173,8 @@ int main(int argc, char* argv[]) {
 	MPI_Cart_shift(comm2d, 0, -1, &rank_2d, &ranks_around[1]);
 	MPI_Cart_shift(comm2d, 1, +1, &rank_2d, &ranks_around[2]);
 	MPI_Cart_shift(comm2d, 1, -1, &rank_2d, &ranks_around[3]);
-	printf("RANK %d (%d,%d): rank_east/west/north/south=%d/%d/%d/%d\n", myrank, mycoord[0], mycoord[1], \
-								ranks_around[0], ranks_around[1], ranks_around[2], ranks_around[3]);
+	//printf("RANK %d (%d,%d): rank_east/west/north/south=%d/%d/%d/%d\n", myrank, mycoord[0], mycoord[1], \
+	//							ranks_around[0], ranks_around[1], ranks_around[2], ranks_around[3]);
 	MPI_Request req[8];
 	MPI_Status stati[8];
 
