@@ -223,52 +223,52 @@ int main(int argc, char* argv[]) {
 		if(bound_south==0 && remember_south==0) {
 			MPI_Irecv(recv_south, proc_pts[0]+1, MPI_DOUBLE, ranks_around[3] /*southern rank*/ \
 									, 2 /*northernly tag*/, comm2d, &req[0]);
-			if(recv_south[proc_pts[0]]==1) // did Southern neighbr signal to me to remember recv_south?
-				remember_south = 1;
+//			if(recv_south[proc_pts[0]]==1) // did Southern neighbr signal to me to remember recv_south?
+//				remember_south = 1;
 			//memcpy(send_south, T, proc_pts[0]*sizeof(double)); // Why copy if T[0->xdim] won't change?
 			for(int i=0; i<proc_pts[0]; i++)
 				send_south[i] = T[i];
-			if(will_break)
-				send_south[proc_pts[0]] = 1; // signal to Southern neighbor to remember this buffer
+//			if(will_break)
+//				send_south[proc_pts[0]] = 1; // signal to Southern neighbor to remember this buffer
 			MPI_Isend(send_south, proc_pts[0]+1, MPI_DOUBLE, ranks_around[3] /*southern rank*/, 3/*southernly tag*/, comm2d, &req[1]);
 		}
 		if(bound_north==0 && remember_north==0) {
 			//memcpy(send_north, &T[proc_size-proc_pts[0]], proc_pts[0]*sizeof(double)); // Why copy if T[0->xdim] won't change?
 			for(int i=0; i<proc_pts[0]; i++)
 				send_north[i] = T[proc_size-proc_pts[0]+i];
-			if(will_break)
-				send_north[proc_pts[0]] = 1; // signal to Northern neighbor to remember this buffer
+//			if(will_break)
+//				send_north[proc_pts[0]] = 1; // signal to Northern neighbor to remember this buffer
 
 			MPI_Isend(send_north, proc_pts[0]+1, MPI_DOUBLE, ranks_around[2] /*northern rank*/, 2/*northernly tag*/, comm2d, &req[2]);
 			MPI_Irecv(recv_north, proc_pts[0]+1, MPI_DOUBLE, ranks_around[2] /*northern rank*/ \
 									, 3 /*southernly tag*/, comm2d, &req[3]);
-			if(recv_north[proc_pts[0]]==1) // did Northern neighbr signal to me to remember recv_north?
-				remember_north = 1;
+//			if(recv_north[proc_pts[0]]==1) // did Northern neighbr signal to me to remember recv_north?
+//				remember_north = 1;
 		}
 		if(bound_east==0 && remember_east==0) {
 			MPI_Irecv(recv_east, proc_pts[1]+1, MPI_DOUBLE, ranks_around[0] /*eastern rank*/ \
 									, 1 /*westernly tag*/, comm2d, &req[4]);
-			if(recv_east[proc_pts[1]]==1) // did Eastern neighbr signal to me to remember recv_east?
-				remember_east = 1;
+//			if(recv_east[proc_pts[1]]==1) // did Eastern neighbr signal to me to remember recv_east?
+//				remember_east = 1;
 			//got_east=1;
 			// Copy eastern buffer to send_east
 			for(int i=0; i<proc_pts[1]; i++)
 				send_east[i] = T[proc_pts[0]-1+i*proc_pts[0]];
-			if(will_break)
-				send_east[proc_pts[1]] = 1; // signal to Eastern neighbor to remember this buffer
+//			if(will_break)
+//				send_east[proc_pts[1]] = 1; // signal to Eastern neighbor to remember this buffer
 			MPI_Isend(send_east, proc_pts[1]+1, MPI_DOUBLE, ranks_around[0] /*eastern rank*/, 0/*easternly tag*/, comm2d, &req[5]);
 		}
 		if(bound_west==0 && remember_west==0) {
 			// Copy western buffer to send_west
 			for(int i=0; i<proc_pts[1]; i++)
 				send_west[i] = T[i*proc_pts[0]];
-			if(will_break)
-				send_west[proc_pts[1]] = 1; // signal to Western neighbor to remember this buffer
+//			if(will_break)
+//				send_west[proc_pts[1]] = 1; // signal to Western neighbor to remember this buffer
 			MPI_Isend(send_west, proc_pts[1]+1, MPI_DOUBLE, ranks_around[1] /*western rank*/, 1/*westernly tag*/, comm2d, &req[6]);
 			MPI_Irecv(recv_west, proc_pts[1]+1, MPI_DOUBLE, ranks_around[1] /*western rank*/ \
 									, 0 /*easternly tag*/, comm2d, &req[7]);
-			if(recv_west[proc_pts[1]]==1) // did Western neighbr signal to me to remember recv_west?
-				remember_west = 1;
+//			if(recv_west[proc_pts[1]]==1) // did Western neighbr signal to me to remember recv_west?
+//				remember_west = 1;
 			//got_west=1;
 		}
 
