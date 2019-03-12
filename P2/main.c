@@ -417,6 +417,7 @@ int main(int argc, char* argv[]) {
 		got_west  = 0;
 		got_south = 0;
 		got_north = 0;
+		fflush(stdout);
 		MPI_Barrier(MPI_COMM_WORLD);
 		
 	}
