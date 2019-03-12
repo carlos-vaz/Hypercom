@@ -447,9 +447,9 @@ int main(int argc, char* argv[]) {
 */
 
 
-	printf("\nPrinting y=0 v[]: \n\n");
-	for(int i=0; i<proc_pts[0]; i++) {
-		printf("%lf\n, ", v[i]);
+	printf("\nPrinting x=0 v[]: \n\n");
+	for(int i=0; i<proc_pts[1]; i++) {
+		printf("%lf\n, ", v[i*proc_pts[0]]);
 	}
 
 	double Xmin = (ranges[0]/dims_procs[0])*mycoord[0];
