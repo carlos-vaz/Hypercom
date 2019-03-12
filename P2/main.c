@@ -448,7 +448,7 @@ int main(int argc, char* argv[]) {
 
 
 	printf("\nPrinting y=1 v[]: \n\n");
-	for(int i=0; i<proc_pts[1]; i++) {
+	for(int i=0; i<proc_pts[0]; i++) {
 		printf("%lf\n, ", v[proc_pts[0]+i]);
 	}
 
