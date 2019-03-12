@@ -24,23 +24,20 @@ void VTK_out(const int N, const int M, const double *Xmin, const double *Xmax,
 	0 = Fail
 	1 = Pass
  */
-int verify_error(double *T, double *v, int len) {
+int verify_error(double *T, double *T_prev, int len) {
 	for(int i=0; i<len; i++) {
-		if(fabs(T[i]-v[i])>ERROR_THRESH) {
+		if(fabs(T[i]-T_prev[i])>ERROR_THRESH) {
 			return 0;
 		}
 	}
 	return 1;
 }
 
-double get_error(double *T, double *v, int len) {
+double get_error(double *T, double *T_prev, int len) {
 	double ret = 0;
 	double tmp;
 	for(int i=0; i<len; i++) {
-		//printf("INSIDE get_error: T[%d]=%lf", i, T[i]);
-		//printf("\t v[%d]=%lf", i, v[i]);
-		tmp = fabs(T[i]-v[i]);
-		//printf("\t fabs=%lf\n", tmp);
+		tmp = fabs(T[i]-T_prev[i]);
 		if(tmp>ret) {
 			ret = tmp;
 		}
@@ -212,9 +209,10 @@ int main(int argc, char* argv[]) {
 	// Rank order: east/west/north/south = 0/1/2/3
 	MPI_Request req[8];
 	MPI_Status stati[8];
-
+	double * test_buffer = (double*)malloc(proc_size*sizeof(double));
 	int count = 0;
 	int will_break = 0;
+	
 	while(count < 10000) {
 //	while(1) {
 		/*
@@ -395,11 +393,17 @@ int main(int argc, char* argv[]) {
 			break;
 
 
-		double err=-1;
-		int verif=1;
 		if(count%1000==0) {
+			memcpy(test_buffer, T, proc_size*sizeof(double));
+		}
+		if(count%1000==1 && verify_error(T, test_buffer, proc_size)==1) {
+			will_break = 1;
+		}
+
+		double err=-1;
+		if(count%1000==1) {
 			err = get_error(T, v, proc_size);
-			verif = verify_error(T, v, proc_size);
+			verif = verify_error(T, test_buffer, proc_size);
 			printf("(%d): iteration %d... \t%lf: (%d)\n", myrank, count, err, verif);
 		}	
 
@@ -407,10 +411,6 @@ int main(int argc, char* argv[]) {
 		//printf("remember_south=%d, rem_north=%d, rem_east=%d, rem_west=%d\n", remember_south, remember_north, remember_east, remember_west);
 
 
-		if(count%1000==0 && verify_error(T, v, proc_size)==1) {
-			printf("(%d): Passed error thresh\n", myrank);
-			will_break = 1;
-		}
 		count++;
 
 		got_east  = 0;
@@ -467,6 +467,7 @@ int main(int argc, char* argv[]) {
 
 	free(v);
 	free(T);
+	free(test_buffer);
 	free(send_south);
 	free(send_north);
 	free(send_east);
