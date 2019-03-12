@@ -403,8 +403,7 @@ int main(int argc, char* argv[]) {
 		double err=-1;
 		if(count%1000==1) {
 			err = get_error(T, v, proc_size);
-			verif = verify_error(T, test_buffer, proc_size);
-			printf("(%d): iteration %d... \t%lf: (%d)\n", myrank, count, err, verif);
+			printf("(%d): iteration %d... \t%lf\n", myrank, count, err);
 		}	
 
 		//printf("SANITY CHECK: \n");
