@@ -129,6 +129,12 @@ int main(int argc, char* argv[]) {
 								MPI_DOUBLE, vector, "native", MPI_INFO_NULL);	
 	MPI_File_read_all(file, v, proc_size, MPI_DOUBLE, MPI_STATUS_IGNORE);
 
+	printf("\nPrinting y=0 v[]: \n\n");
+	for(int i=0; i<proc_pts[0]; i++) {
+		printf("%lf\n, ", v[i]);
+	}
+
+
 /*	fflush(stdout);
 	MPI_Barrier(MPI_COMM_WORLD);
 	for(int i=0; i<np; i++) {
@@ -447,7 +453,7 @@ int main(int argc, char* argv[]) {
 */
 
 
-	printf("\nPrinting y=1 v[]: \n\n");
+/*	printf("\nPrinting y=1 v[]: \n\n");
 	for(int i=0; i<proc_pts[0]; i++) {
 		printf("%lf\n, ", v[proc_pts[0]+i]);
 	}
@@ -455,7 +461,7 @@ int main(int argc, char* argv[]) {
 	for(int i=0; i<proc_pts[1]; i++) {
 		printf("%lf\n, ", v[proc_pts[0]*i+1]);
 	}
-	
+*/	
 
 	double Xmin = (ranges[0]/dims_procs[0])*mycoord[0];
 	double Ymin = (ranges[1]/dims_procs[1])*mycoord[1];
