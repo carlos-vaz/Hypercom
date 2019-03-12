@@ -39,6 +39,7 @@ int main(int argc, char* argv[]) {
 
 
 	// Write data into file
+	int counter = 0;
 	double e = 2.718281828, xval, yval, val, xinc, yinc; 
 	xinc = x_range/(double)x_dim;
 	yinc = y_range/(double)y_dim;
@@ -49,8 +50,9 @@ int main(int argc, char* argv[]) {
 			//val = yval*x_dim+xval;
 			write(fd, &val, sizeof(double));
 			if(yval==0) {
-				printf("%lf  *  pow( e,  %lf ) = %lf\n", xval, yval, val);
+				printf("%d... %lf  *  pow( e,  %lf ) = %lf\n",counter, xval, yval, val);
 			}
+			counter++;
 		}
 	close(fd);
 }
