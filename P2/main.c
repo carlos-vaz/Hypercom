@@ -396,10 +396,10 @@ int main(int argc, char* argv[]) {
 		if(count%1000==0) {
 			memcpy(test_buffer, T, proc_size*sizeof(double));
 		}
-/*		if(count%1000==1 && verify_error(T, test_buffer, proc_size)==1) {
+		if(count%1000==1 && verify_error(T, test_buffer, proc_size)==1) {
 			will_break = 1;
 		}
-*/
+
 		double err=-1;
 		if(count%1000==1) {
 			err = get_error(T, test_buffer, proc_size);
@@ -416,7 +416,7 @@ int main(int argc, char* argv[]) {
 		got_west  = 0;
 		got_south = 0;
 		got_north = 0;
-		fflush(stdout);
+		//fflush(stdout);
 		//MPI_Barrier(MPI_COMM_WORLD);
 		
 	}
