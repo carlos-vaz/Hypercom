@@ -162,7 +162,7 @@ int main(int argc, char* argv[]) {
 	if(mycoord[1]==0) {
 		//printf("Process (%d, %d): I have a southern boundary\n", mycoord[0], mycoord[1]);
 		bound_south = 1;
-		memcpy(v, T, proc_pts[0]*sizeof(double));
+		memcpy(T, v, proc_pts[0]*sizeof(double));
 	}
 	if(mycoord[1]==dims_procs[1]-1) {
 		//printf("Process (%d, %d): I have a northern boundary\n", mycoord[0], mycoord[1]);
