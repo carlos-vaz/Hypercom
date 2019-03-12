@@ -450,7 +450,7 @@ int main(int argc, char* argv[]) {
 	double Ymin = (ranges[1]/dims_procs[1])*mycoord[1];
 	double Xmax = Xmin+(ranges[0]/dims_procs[0]);	
 	double Ymax = Ymin+(ranges[1]/dims_procs[1]);
-	VTK_out(proc_pts[0], proc_pts[1], &Xmin, &Xmax, &Ymin, &Ymax, v, myrank);
+	VTK_out(proc_pts[0], proc_pts[1], &Xmin, &Xmax, &Ymin, &Ymax, T, myrank);
 
 	free(v);
 	free(T);
