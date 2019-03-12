@@ -213,8 +213,8 @@ int main(int argc, char* argv[]) {
 	int count = 0;
 	int will_break = 0;
 	
-//	while(count < 10000) {
-	while(1) {
+	while(count < 1000) {
+//	while(1) {
 		/*
 		 * Post a non-blocking send and a non-blocking receive to all neighbors.
 		 * While you update your internal temperatures, hopefully the requests
@@ -445,6 +445,12 @@ int main(int argc, char* argv[]) {
 	}
 	printf("\n\n\n####### END OF  P %d; (%d, %d)   ########\n", myrank, mycoord[0], mycoord[1]);
 */
+
+
+	printf("\nPrinting y=0 v[]: \n\n");
+	for(int i=0; i<proc_pts[0]; i++) {
+		printf("%lf\n, ", v[i]);
+	}
 
 	double Xmin = (ranges[0]/dims_procs[0])*mycoord[0];
 	double Ymin = (ranges[1]/dims_procs[1])*mycoord[1];
