@@ -430,7 +430,7 @@ int main(int argc, char* argv[]) {
 	fflush(stdout);
 	
 
-/*		if(myrank==0) {
+		if(myrank==0) {
 			printf("\n\n(%d):  Printing T(v)\n", myrank);
 			for(int i=0; i<proc_size; i++) {
 				if(i%proc_pts[0]==0)
@@ -438,7 +438,7 @@ int main(int argc, char* argv[]) {
 				printf("%lf(%lf), ", T[i], v[i]);
 			}		
 		}
-*/
+
 
 
 /*	sleep(2*myrank);
@@ -466,7 +466,7 @@ int main(int argc, char* argv[]) {
 	double Ymin = (ranges[1]/dims_procs[1])*mycoord[1];
 	double Xmax = Xmin+(ranges[0]/dims_procs[0]);	
 	double Ymax = Ymin+(ranges[1]/dims_procs[1]);
-	VTK_out(proc_pts[0], proc_pts[1], &Xmin, &Xmax, &Ymin, &Ymax, v, myrank);
+	VTK_out(proc_pts[0], proc_pts[1], &Xmin, &Xmax, &Ymin, &Ymax, T, myrank);
 
 	free(v);
 	free(T);
