@@ -451,6 +451,11 @@ int main(int argc, char* argv[]) {
 	for(int i=0; i<proc_pts[0]; i++) {
 		printf("%lf\n, ", v[proc_pts[0]+i]);
 	}
+	printf("\nPrinting x=1 v[]: \n\n");
+	for(int i=0; i<proc_pts[1]; i++) {
+		printf("%lf\n, ", v[proc_pts[0]*i+1]);
+	}
+	
 
 	double Xmin = (ranges[0]/dims_procs[0])*mycoord[0];
 	double Ymin = (ranges[1]/dims_procs[1])*mycoord[1];
