@@ -473,7 +473,7 @@ int main(int argc, char* argv[]) {
 
 
 	MPI_Barrier(MPI_COMM_WORLD);
-	if(myrank==ANNOUNCER_PROC) printf("Elapsed time = %lf seconds\n", t_stop - t_start);
+	if(myrank==ANNOUNCER_PROC) printf("\n\nElapsed time = %lf seconds\n", t_stop - t_start);
 
 	MPI_Finalize();
 	return 0;
