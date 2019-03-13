@@ -223,10 +223,10 @@ int main(int argc, char* argv[]) {
 		 */
 		if(bound_south==0 && remember_south==0) {
 			got_south = 1;
-		//	MPI_Irecv(recv_south, proc_pts[0]+1, MPI_DOUBLE, ranks_around[3] /*southern rank*/ \
-		//							, 2 /*northernly tag*/, comm2d, &req[0]);
-			MPI_Recv(recv_south, proc_pts[0]+1, MPI_DOUBLE, ranks_around[3] /*southern rank*/ \
-									, 2 /*northernly tag*/, comm2d, &stati[0]);
+			MPI_Irecv(recv_south, proc_pts[0]+1, MPI_DOUBLE, ranks_around[3] /*southern rank*/ \
+									, 2 /*northernly tag*/, comm2d, &req[0]);
+		//	MPI_Recv(recv_south, proc_pts[0]+1, MPI_DOUBLE, ranks_around[3] /*southern rank*/ \
+		//							, 2 /*northernly tag*/, comm2d, &stati[0]);
 			if(recv_south[proc_pts[0]]==1) // did Southern neighbr signal to me to remember recv_south?
 				remember_south = 1;
 			memcpy(send_south, T, proc_pts[0]*sizeof(double)); // Why copy if T[0->xdim] won't change?
@@ -234,8 +234,8 @@ int main(int argc, char* argv[]) {
 			//	send_south[i] = T[i];
 			if(will_break)
 				send_south[proc_pts[0]] = 1; // signal to Southern neighbor to remember this buffer
-		//	MPI_Isend(send_south, proc_pts[0]+1, MPI_DOUBLE, ranks_around[3] /*southern rank*/, 3/*southernly tag*/, comm2d, &req[1]);
-			MPI_Send(send_south, proc_pts[0]+1, MPI_DOUBLE, ranks_around[3] /*southern rank*/, 3/*southernly tag*/, comm2d);
+			MPI_Isend(send_south, proc_pts[0]+1, MPI_DOUBLE, ranks_around[3] /*southern rank*/, 3/*southernly tag*/, comm2d, &req[1]);
+		//	MPI_Send(send_south, proc_pts[0]+1, MPI_DOUBLE, ranks_around[3] /*southern rank*/, 3/*southernly tag*/, comm2d);
 		}
 		if(bound_north==0 && remember_north==0) {
 			got_north = 1;
@@ -245,21 +245,21 @@ int main(int argc, char* argv[]) {
 			if(will_break)
 				send_north[proc_pts[0]] = 1; // signal to Northern neighbor to remember this buffer
 
-		//	MPI_Isend(send_north, proc_pts[0]+1, MPI_DOUBLE, ranks_around[2] /*northern rank*/, 2/*northernly tag*/, comm2d, &req[2]);
-			MPI_Send(send_north, proc_pts[0]+1, MPI_DOUBLE, ranks_around[2] /*northern rank*/, 2/*northernly tag*/, comm2d);
-		//	MPI_Irecv(recv_north, proc_pts[0]+1, MPI_DOUBLE, ranks_around[2] /*northern rank*/ \
-		//							, 3 /*southernly tag*/, comm2d, &req[3]);
-			MPI_Recv(recv_north, proc_pts[0]+1, MPI_DOUBLE, ranks_around[2] /*northern rank*/ \
-									, 3 /*southernly tag*/, comm2d, &stati[3]);
+			MPI_Isend(send_north, proc_pts[0]+1, MPI_DOUBLE, ranks_around[2] /*northern rank*/, 2/*northernly tag*/, comm2d, &req[2]);
+		//	MPI_Send(send_north, proc_pts[0]+1, MPI_DOUBLE, ranks_around[2] /*northern rank*/, 2/*northernly tag*/, comm2d);
+			MPI_Irecv(recv_north, proc_pts[0]+1, MPI_DOUBLE, ranks_around[2] /*northern rank*/ \
+									, 3 /*southernly tag*/, comm2d, &req[3]);
+		//	MPI_Recv(recv_north, proc_pts[0]+1, MPI_DOUBLE, ranks_around[2] /*northern rank*/ \
+		//							, 3 /*southernly tag*/, comm2d, &stati[3]);
 			if(recv_north[proc_pts[0]]==1) // did Northern neighbr signal to me to remember recv_north?
 				remember_north = 1;
 		}
 		if(bound_east==0 && remember_east==0) {
 			got_east = 1;
-		//	MPI_Irecv(recv_east, proc_pts[1]+1, MPI_DOUBLE, ranks_around[0] /*eastern rank*/ \
-		//							, 1 /*westernly tag*/, comm2d, &req[4]);
-			MPI_Recv(recv_east, proc_pts[1]+1, MPI_DOUBLE, ranks_around[0] /*eastern rank*/ \
-									, 1 /*westernly tag*/, comm2d, &stati[4]);
+			MPI_Irecv(recv_east, proc_pts[1]+1, MPI_DOUBLE, ranks_around[0] /*eastern rank*/ \
+									, 1 /*westernly tag*/, comm2d, &req[4]);
+		//	MPI_Recv(recv_east, proc_pts[1]+1, MPI_DOUBLE, ranks_around[0] /*eastern rank*/ \
+		//							, 1 /*westernly tag*/, comm2d, &stati[4]);
 			if(recv_east[proc_pts[1]]==1) // did Eastern neighbr signal to me to remember recv_east?
 				remember_east = 1;
 			//got_east=1;
@@ -268,8 +268,8 @@ int main(int argc, char* argv[]) {
 				send_east[i] = T[proc_pts[0]-1+i*proc_pts[0]];
 			if(will_break)
 				send_east[proc_pts[1]] = 1; // signal to Eastern neighbor to remember this buffer
-		//	MPI_Isend(send_east, proc_pts[1]+1, MPI_DOUBLE, ranks_around[0] /*eastern rank*/, 0/*easternly tag*/, comm2d, &req[5]);
-			MPI_Send(send_east, proc_pts[1]+1, MPI_DOUBLE, ranks_around[0] /*eastern rank*/, 0/*easternly tag*/, comm2d);
+			MPI_Isend(send_east, proc_pts[1]+1, MPI_DOUBLE, ranks_around[0] /*eastern rank*/, 0/*easternly tag*/, comm2d, &req[5]);
+		//	MPI_Send(send_east, proc_pts[1]+1, MPI_DOUBLE, ranks_around[0] /*eastern rank*/, 0/*easternly tag*/, comm2d);
 		}
 		if(bound_west==0 && remember_west==0) {
 			got_west = 1;
@@ -278,12 +278,12 @@ int main(int argc, char* argv[]) {
 				send_west[i] = T[i*proc_pts[0]];
 			if(will_break)
 				send_west[proc_pts[1]] = 1; // signal to Western neighbor to remember this buffer
-		//	MPI_Isend(send_west, proc_pts[1]+1, MPI_DOUBLE, ranks_around[1] /*western rank*/, 1/*westernly tag*/, comm2d, &req[6]);
-			MPI_Send(send_west, proc_pts[1]+1, MPI_DOUBLE, ranks_around[1] /*western rank*/, 1/*westernly tag*/, comm2d);
-		//	MPI_Irecv(recv_west, proc_pts[1]+1, MPI_DOUBLE, ranks_around[1] /*western rank*/ \
-		//							, 0 /*easternly tag*/, comm2d, &req[7]);
-			MPI_Recv(recv_west, proc_pts[1]+1, MPI_DOUBLE, ranks_around[1] /*western rank*/ \
-									, 0 /*easternly tag*/, comm2d, &stati[7]);
+			MPI_Isend(send_west, proc_pts[1]+1, MPI_DOUBLE, ranks_around[1] /*western rank*/, 1/*westernly tag*/, comm2d, &req[6]);
+		//	MPI_Send(send_west, proc_pts[1]+1, MPI_DOUBLE, ranks_around[1] /*western rank*/, 1/*westernly tag*/, comm2d);
+			MPI_Irecv(recv_west, proc_pts[1]+1, MPI_DOUBLE, ranks_around[1] /*western rank*/ \
+									, 0 /*easternly tag*/, comm2d, &req[7]);
+		//	MPI_Recv(recv_west, proc_pts[1]+1, MPI_DOUBLE, ranks_around[1] /*western rank*/ \
+		//							, 0 /*easternly tag*/, comm2d, &stati[7]);
 			if(recv_west[proc_pts[1]]==1) // did Western neighbr signal to me to remember recv_west?
 				remember_west = 1;
 			//got_west=1;
@@ -360,7 +360,7 @@ int main(int argc, char* argv[]) {
 		/*
 		 * Check the status of your send and receive requests. 
 		 */
-/*		if(mycoord[1]%2==0) {
+		if(mycoord[1]%2==0) {
 			if(got_south==1) {
 				MPI_Waitall(2, &req[0], &stati[0]);
 				got_south = 1;
@@ -401,7 +401,7 @@ int main(int argc, char* argv[]) {
 				got_east = 1;
 			}
 		}
-*/
+
 		if(will_break==1)
 			break;
 
