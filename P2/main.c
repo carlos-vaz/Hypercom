@@ -431,7 +431,6 @@ int main(int argc, char* argv[]) {
 	}
 
 	double t_stop = MPI_Wtime();
-	printf("Elapsed time = %lf seconds\n", t_stop - t_start);
 
 /*	sleep(2*myrank);
 	int count_y=0;
@@ -474,6 +473,7 @@ int main(int argc, char* argv[]) {
 
 
 	MPI_Barrier(MPI_COMM_WORLD);
+	if(myrank==ANNOUNCER_PROC) printf("Elapsed time = %lf seconds\n", t_stop - t_start);
 
 	MPI_Finalize();
 	return 0;
