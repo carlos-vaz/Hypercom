@@ -130,20 +130,6 @@ int main(int argc, char* argv[]) {
 	MPI_File_read_all(file, v, proc_size, MPI_DOUBLE, MPI_STATUS_IGNORE);
 
 
-/*	fflush(stdout);
-	MPI_Barrier(MPI_COMM_WORLD);
-	for(int i=0; i<np; i++) {
-		if(myrank==i) {
-			printf("\nRANK %d (%d, %d)\n", myrank, mycoord[0], mycoord[1]);
-			for(int j=0; j<proc_size; j++) {
-				printf("%d, ", (int)v[j]);
-			}
-			printf("\n\n");
-		}
-		fflush(stdout);
-		MPI_Barrier(MPI_COMM_WORLD);
-	}
-*/
 	/*
 	 * Each process creates a temperature vector T and fills it with 
 	 * 0, except for at the boundaries, which take the initial value 
@@ -182,6 +168,7 @@ int main(int argc, char* argv[]) {
 
 
 	// Preparation complete... Start the timer
+	double t_start = MPI_Wtime();
 
 	// Allocate 1 extra element to signal when the neighbor should remember
 	// the sent buffer because the sender will stop sending (due to exit)
@@ -422,19 +409,13 @@ int main(int argc, char* argv[]) {
 			printf("(%d): iteration %d... \t%lf\n", myrank, count, err);
 		}	
 
-		//printf("SANITY CHECK: \n");
-		//printf("remember_south=%d, rem_north=%d, rem_east=%d, rem_west=%d\n", remember_south, remember_north, remember_east, remember_west);
-
-
 		count++;
 
 		got_east  = 0;
 		got_west  = 0;
 		got_south = 0;
 		got_north = 0;
-		fflush(stdout);
-		//MPI_Barrier(MPI_COMM_WORLD);
-		
+		fflush(stdout);	
 	}
 	printf("(%d): EXITED\n", myrank);
 	fflush(stdout);
@@ -449,7 +430,8 @@ int main(int argc, char* argv[]) {
 		}		
 	}
 
-
+	double t_stop = MPI_Wtime();
+	printf("Elapsed time = %lf seconds\n", t_stop - t_start);
 
 /*	sleep(2*myrank);
 	int count_y=0;
