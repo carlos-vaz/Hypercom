@@ -227,8 +227,6 @@ int main(int argc, char* argv[]) {
 									, 2 /*northernly tag*/, comm2d, &req[0]);
 		//	MPI_Recv(recv_south, proc_pts[0]+1, MPI_DOUBLE, ranks_around[3] /*southern rank*/ \
 		//							, 2 /*northernly tag*/, comm2d, &stati[0]);
-			if(recv_south[proc_pts[0]]==1) // did Southern neighbr signal to me to remember recv_south?
-				remember_south = 1;
 			memcpy(send_south, T, proc_pts[0]*sizeof(double)); // Why copy if T[0->xdim] won't change?
 			//for(int i=0; i<proc_pts[0]; i++)
 			//	send_south[i] = T[i];
@@ -251,8 +249,6 @@ int main(int argc, char* argv[]) {
 									, 3 /*southernly tag*/, comm2d, &req[3]);
 		//	MPI_Recv(recv_north, proc_pts[0]+1, MPI_DOUBLE, ranks_around[2] /*northern rank*/ \
 		//							, 3 /*southernly tag*/, comm2d, &stati[3]);
-			if(recv_north[proc_pts[0]]==1) // did Northern neighbr signal to me to remember recv_north?
-				remember_north = 1;
 		}
 		if(bound_east==0 && remember_east==0) {
 			got_east = 1;
@@ -260,8 +256,6 @@ int main(int argc, char* argv[]) {
 									, 1 /*westernly tag*/, comm2d, &req[4]);
 		//	MPI_Recv(recv_east, proc_pts[1]+1, MPI_DOUBLE, ranks_around[0] /*eastern rank*/ \
 		//							, 1 /*westernly tag*/, comm2d, &stati[4]);
-			if(recv_east[proc_pts[1]]==1) // did Eastern neighbr signal to me to remember recv_east?
-				remember_east = 1;
 			//got_east=1;
 			// Copy eastern buffer to send_east
 			for(int i=0; i<proc_pts[1]; i++)
@@ -284,8 +278,6 @@ int main(int argc, char* argv[]) {
 									, 0 /*easternly tag*/, comm2d, &req[7]);
 		//	MPI_Recv(recv_west, proc_pts[1]+1, MPI_DOUBLE, ranks_around[1] /*western rank*/ \
 		//							, 0 /*easternly tag*/, comm2d, &stati[7]);
-			if(recv_west[proc_pts[1]]==1) // did Western neighbr signal to me to remember recv_west?
-				remember_west = 1;
 			//got_west=1;
 		}
 
@@ -401,6 +393,17 @@ int main(int argc, char* argv[]) {
 				got_east = 1;
 			}
 		}
+
+
+		if(got_south==1 && recv_south[proc_pts[0]]==1) // did Southern neighbr signal to me to remember recv_south?
+			remember_south = 1;
+		if(got_north==1 && recv_north[proc_pts[0]]==1) // did Northern neighbr signal to me to remember recv_north?
+			remember_north = 1;
+		if(got_east==1 && recv_east[proc_pts[1]]==1) // did Eastern neighbr signal to me to remember recv_east?
+			remember_east = 1;
+		if(got_west==1 && recv_west[proc_pts[1]]==1) // did Western neighbr signal to me to remember recv_west?
+			remember_west = 1;
+
 
 		if(will_break==1)
 			break;
