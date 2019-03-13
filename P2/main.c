@@ -349,42 +349,42 @@ int main(int argc, char* argv[]) {
 		 * Check the status of your send and receive requests. 
 		 */
 		if(mycoord[1]%2==0) {
-			if(bound_south==0) {
+			if(got_south==1) {
 				MPI_Waitall(2, &req[0], &stati[0]);
 				got_south = 1;
 			}
-			if(bound_north==0) {
+			if(got_north==1) {
 				MPI_Waitall(2, &req[2], &stati[2]);
 				got_north = 1;
 			}
 		}
 		else {
-			if(bound_north==0) {
+			if(got_north==1) {
 				MPI_Waitall(2, &req[2], &stati[2]);
 				got_north = 1;
 			}
-			if(bound_south==0) {
+			if(got_south==1) {
 				MPI_Waitall(2, &req[0], &stati[0]);
 				got_south = 1;
 			}
 			
 		}
 		if(mycoord[0]%2==0) {
-			if(bound_east==0) {
+			if(got_east==1) {
 				MPI_Waitall(2, &req[4], &stati[4]);
 				got_east = 1;
 			}
-			if(bound_west==0) {
+			if(got_west==1) {
 				MPI_Waitall(2, &req[6], &stati[6]);
 				got_west = 1;
 			}
 		}
 		else {
-			if(bound_west==0) {
+			if(got_west==1) {
 				MPI_Waitall(2, &req[6], &stati[6]);
 				got_west = 1;
 			}
-			if(bound_east==0) {
+			if(got_east==1) {
 				MPI_Waitall(2, &req[4], &stati[4]);
 				got_east = 1;
 			}
@@ -425,14 +425,14 @@ int main(int argc, char* argv[]) {
 	fflush(stdout);
 	
 
-		if(myrank==0) {
-			printf("\n\n(%d):  Printing T(v)\n", myrank);
-			for(int i=0; i<proc_size; i++) {
-				if(i%proc_pts[0]==0)
-					printf("...\n");
-				printf("%lf(%lf), ", T[i], v[i]);
-			}		
-		}
+	if(myrank==0) {
+		printf("\n\n(%d):  Printing T(v)\n", myrank);
+		for(int i=0; i<proc_size; i++) {
+			if(i%proc_pts[0]==0)
+				printf("...\n");
+			printf("%lf(%lf), ", T[i], v[i]);
+		}		
+	}
 
 
 
