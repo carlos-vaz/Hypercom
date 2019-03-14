@@ -42,9 +42,9 @@ double get_error(double *T, double *T_prev, int len) {
 			ret = tmp;
 		}
 	}
-	printf("\tget_error returnint %lf\n", ret);
 	return ret;
 }
+
 
 int myrank, rank_2d, mycoord[2], np, dims_procs[2], num_points, dims_pts[2], proc_pts[2], proc_size, \
 	ranks_around[4] = {-1,-1,-1,-1}; // {right, left, up, down}
@@ -403,12 +403,12 @@ int main(int argc, char* argv[]) {
 			will_break = 1;
 		}
 
-/*		double err=-1;			// Display Error every 1000 cycles
+		double err=-1;			// Display Error every 1000 cycles
 		if(count%1000==1) {
 			err = get_error(T, test_buffer, proc_size);
-			printf("(%d): iteration %d... \t%lf\n", myrank, count, err);
+			printf("(%d): iteration %d... \t%.10e\n", myrank, count, err);
 		}	
-*/
+
 		count++;
 
 		got_east  = 0;
