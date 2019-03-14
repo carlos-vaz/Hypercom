@@ -410,21 +410,25 @@ int main(int argc, char* argv[]) {
 		}
 
 		// For convergence Analysis only
-		double max = 0;
-		double recv;
-		MPI_Status st;
-		if(myrank==0) {
-			for(int i=0; i<np-1; i++) {
-				MPI_Recv(&max, 1, MPI_DOUBLE, i, 10, comm2d, &st);
-				if(recv > max)
-					max = recv;
+		if(count%1000==1) {
+			double max = 0;
+			double recv;
+			MPI_Status st;
+			if(myrank==0) {
+				for(int i=0; i<np-1; i++) {
+					MPI_Recv(&max, 1, MPI_DOUBLE, i, 10, comm2d, &st);
+					if(recv > max)
+						max = recv;
+				}
 			}
+			else {
+				MPI_Send(&err, 1, MPI_DOUBLE, 0, 10, comm2d);
+			}
+			if(myrank==0)
+				printf("(%d): MAX: iteration %d... \t%.10e\n", myrank, count, max);
 		}
-		else {
-			MPI_Send(&err, 1, MPI_DOUBLE, 0, 10, comm2d);
-		}
-		if(myrank==0)
-			printf("(%d): MAX: iteration %d... \t%.10e\n", myrank, count, max);
+
+
 
 		count++;
 
