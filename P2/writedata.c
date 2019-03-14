@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
 	sscanf(argv[2], "%lf", &x_range);
 	printf("x_range = %lf, y_range = %lf\n", x_range, y_range);
 	char * filename = malloc(20);
-	sprintf(filename, "data_%dx%d.txt", y_dim, x_dim);
+	sprintf(filename, "Input_Data/data_%dx%d.txt", y_dim, x_dim);
 	printf("x_dim=%d\ny_dim=%d\nWriting data to %s\n",x_dim, y_dim, filename);
 	int fd = open(filename, O_WRONLY | O_CREAT, 0644, 1);
 
