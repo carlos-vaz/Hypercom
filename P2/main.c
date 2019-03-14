@@ -421,7 +421,7 @@ int main(int argc, char* argv[]) {
 			}
 		}
 		else {
-			MPI_Recv(&err, 1, MPI_DOUBLE, 0, 10, comm2d);
+			MPI_Send(&err, 1, MPI_DOUBLE, 0, 10, comm2d);
 		}
 		if(myrank==0)
 			printf("(%d): MAX: iteration %d... \t%.10e\n", myrank, count, max);
