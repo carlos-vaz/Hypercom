@@ -415,7 +415,7 @@ int main(int argc, char* argv[]) {
 		MPI_Status st;
 		if(myrank==0) {
 			for(int i=0; i<np-1; i++) {
-				MPI_Recv(&max, 1, MPI_DOUBLE, i, 10, comm2d, st);
+				MPI_Recv(&max, 1, MPI_DOUBLE, i, 10, comm2d, &st);
 				if(recv > max)
 					max = recv;
 			}
