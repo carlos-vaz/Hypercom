@@ -494,6 +494,7 @@ int main(int argc, char* argv[]) {
 
 	MPI_Barrier(MPI_COMM_WORLD);
 	if(myrank==ANNOUNCER_PROC) printf("\n\nElapsed time for %d procs = %lf seconds\n", np, t_stop - t_start);
+	if(myrank==ANNOUNCER_PROC) printf("\n\nNumber of cycles for %d procs = %d\n", np, count);
 
 	MPI_Finalize();
 	return 0;
