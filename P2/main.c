@@ -406,7 +406,7 @@ int main(int argc, char* argv[]) {
 		double err=-1;			// Display Error every 1000 cycles
 		if(count%1000==1) {
 			err = get_error(T, test_buffer, proc_size);
-			printf("(%d): iteration %d... \t%.10e\n", myrank, count, err);
+			//printf("(%d): iteration %d... \t%.10e\n", myrank, count, err);
 		}
 
 		// For convergence Analysis only
