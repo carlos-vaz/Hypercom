@@ -80,14 +80,14 @@ int main(int argc, char* argv[]) {
 	 */
 	dims_procs[0] = atoi(argv[3]);
 	dims_procs[1] = atoi(argv[2]);
-	if(myrank == ANNOUNCER_PROC) printf("Will solve %s with %d (x) by %d (y) processes\n", argv[1], dims_procs[0], dims_procs[1]);
+	//if(myrank == ANNOUNCER_PROC) printf("Will solve %s with %d (x) by %d (y) processes\n", argv[1], dims_procs[0], dims_procs[1]);
 	MPI_File file; 
 	MPI_File_open(MPI_COMM_WORLD, argv[1], MPI_MODE_RDONLY, MPI_INFO_NULL, &file);
 	MPI_File_read_all(file, &dims_pts, 2, MPI_INT, MPI_STATUS_IGNORE);
 	MPI_File_read_at_all(file, 2*sizeof(int), &ranges, 2, MPI_DOUBLE, MPI_STATUS_IGNORE);
 	deltas[0] = ranges[0]/(double)dims_pts[0];
 	deltas[1] = ranges[1]/(double)dims_pts[1];
-	if(myrank == ANNOUNCER_PROC) printf("FILE READ... DIMENSIONS (MATRIX FORM): %d BY %d\n", dims_pts[1], dims_pts[0]);
+	//if(myrank == ANNOUNCER_PROC) printf("FILE READ... DIMENSIONS (MATRIX FORM): %d BY %d\n", dims_pts[1], dims_pts[0]);
 	if( (dims_pts[0]%dims_procs[0]!=0 || dims_pts[1]%dims_procs[1]!=0) && myrank==ANNOUNCER_PROC) {
 		printf("Number of points must be divisible by number of procs in that dimension.\n");
 		MPI_Abort(MPI_COMM_WORLD, -1);
@@ -109,7 +109,7 @@ int main(int argc, char* argv[]) {
 	MPI_Cart_create(MPI_COMM_WORLD, 2,dims_procs,periodic,1,&comm2d);
 	MPI_Cart_coords(comm2d,myrank, 2,mycoord);
 	MPI_Cart_rank(comm2d,mycoord,&rank_2d);
-	printf("I am %d: (%d,%d); originally %d\n",rank_2d,mycoord[0],mycoord[1],myrank);
+	//printf("I am %d: (%d,%d); originally %d\n",rank_2d,mycoord[0],mycoord[1],myrank);
 	
 
 
@@ -121,7 +121,7 @@ int main(int argc, char* argv[]) {
 	proc_pts[1] = dims_pts[1]/dims_procs[1]; // # pts in X dim of process partition
 	proc_size = proc_pts[0]*proc_pts[1];
 	double *v = (double*)malloc(proc_size*sizeof(double));
-	if( myrank == ANNOUNCER_PROC) printf("# blocks per process = %d\t# pts per proc (X) = %d\t# pts per proc (Y) = %d\n", \
+	//if( myrank == ANNOUNCER_PROC) printf("# blocks per process = %d\t# pts per proc (X) = %d\t# pts per proc (Y) = %d\n", \
 							proc_pts[1], proc_pts[0], proc_pts[1]);
 	MPI_Type_vector(proc_pts[1], proc_pts[0], dims_pts[0], MPI_DOUBLE, &vector);
 	MPI_Type_commit(&vector);	
@@ -403,12 +403,12 @@ int main(int argc, char* argv[]) {
 			will_break = 1;
 		}
 
-		double err=-1;
+/*		double err=-1;			// Display Error every 1000 cycles
 		if(count%1000==1) {
 			err = get_error(T, test_buffer, proc_size);
 			printf("(%d): iteration %d... \t%lf\n", myrank, count, err);
 		}	
-
+*/
 		count++;
 
 		got_east  = 0;
@@ -417,11 +417,11 @@ int main(int argc, char* argv[]) {
 		got_north = 0;
 		fflush(stdout);	
 	}
-	printf("(%d): EXITED\n", myrank);
+//	printf("(%d): EXITED\n", myrank);
 	fflush(stdout);
 	
 
-	if(myrank==0) {
+/*	if(myrank==0) {			// Print T and v side-by-side
 		printf("\n\n(%d):  Printing T(v)\n", myrank);
 		for(int i=0; i<proc_size; i++) {
 			if(i%proc_pts[0]==0)
@@ -429,7 +429,7 @@ int main(int argc, char* argv[]) {
 			printf("%lf(%lf), ", T[i], v[i]);
 		}		
 	}
-
+*/
 	double t_stop = MPI_Wtime();
 
 /*	sleep(2*myrank);
@@ -473,7 +473,7 @@ int main(int argc, char* argv[]) {
 
 
 	MPI_Barrier(MPI_COMM_WORLD);
-	if(myrank==ANNOUNCER_PROC) printf("\n\nElapsed time = %lf seconds\n", t_stop - t_start);
+//	if(myrank==ANNOUNCER_PROC) printf("\n\nElapsed time = %lf seconds\n", t_stop - t_start);
 
 	MPI_Finalize();
 	return 0;
