@@ -410,7 +410,7 @@ int main(int argc, char* argv[]) {
 		}
 
 		// For convergence Analysis only
-		if(count%1000==1) {
+/*		if(count%1000==1) {
 			double max = err;
 			double recv;
 			MPI_Status st;
@@ -427,7 +427,7 @@ int main(int argc, char* argv[]) {
 			if(myrank==0)
 				printf("(%d): MAX: iteration %d... \t%.10e\n", myrank, count, max);
 		}
-
+*/
 
 		count++;
 
@@ -493,7 +493,7 @@ int main(int argc, char* argv[]) {
 
 
 	MPI_Barrier(MPI_COMM_WORLD);
-//	if(myrank==ANNOUNCER_PROC) printf("\n\nElapsed time = %lf seconds\n", t_stop - t_start);
+	if(myrank==ANNOUNCER_PROC) printf("\n\nElapsed time = %lf seconds\n", t_stop - t_start);
 
 	MPI_Finalize();
 	return 0;
