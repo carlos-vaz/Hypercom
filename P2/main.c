@@ -243,12 +243,8 @@ int main(int argc, char* argv[]) {
 			if(will_break)
 				send_west[proc_pts[1]] = 1; // signal to Western neighbor to remember this buffer
 			MPI_Isend(send_west, proc_pts[1]+1, MPI_DOUBLE, ranks_around[1] /*western rank*/, 1/*westernly tag*/, comm2d, &req[6]);
-		//	MPI_Send(send_west, proc_pts[1]+1, MPI_DOUBLE, ranks_around[1] /*western rank*/, 1/*westernly tag*/, comm2d);
 			MPI_Irecv(recv_west, proc_pts[1]+1, MPI_DOUBLE, ranks_around[1] /*western rank*/ \
 									, 0 /*easternly tag*/, comm2d, &req[7]);
-		//	MPI_Recv(recv_west, proc_pts[1]+1, MPI_DOUBLE, ranks_around[1] /*western rank*/ \
-		//							, 0 /*easternly tag*/, comm2d, &stati[7]);
-			//got_west=1;
 		}
 
 
@@ -392,7 +388,11 @@ int main(int argc, char* argv[]) {
 			//printf("(%d): iteration %d... \t%.10e\n", myrank, count, err);
 		}
 
-		// For convergence Analysis only
+
+		/* 
+		 * Prints out Max error (all processes) every 1000 cycles. 
+		 * Used for convergence analysis only. 
+		 */
 /*		if(count%1000==1) {
 			double max = err;
 			double recv;
@@ -420,42 +420,11 @@ int main(int argc, char* argv[]) {
 		got_north = 0;
 		fflush(stdout);	
 	}
-//	printf("(%d): EXITED\n", myrank);
 	fflush(stdout);
 	
 
-/*	if(myrank==0) {			// Print T and v side-by-side
-		printf("\n\n(%d):  Printing T(v)\n", myrank);
-		for(int i=0; i<proc_size; i++) {
-			if(i%proc_pts[0]==0)
-				printf("...\n");
-			printf("%lf(%lf), ", T[i], v[i]);
-		}		
-	}
-*/
 	double t_stop = MPI_Wtime();
 
-/*	sleep(2*myrank);
-	int count_y=0;
-	printf("\n\n\n#######   P %d; (%d, %d)   ########\n", myrank, mycoord[0], mycoord[1]);
-	for(int i=0; i<proc_size; i++) {
-		if(i%proc_pts[0]==0)
-			printf("\n(%d)...", count_y++);
-		printf("%lf(%d), ", T[i], i%proc_pts[0]);
-	}
-	printf("\n\n\n####### END OF  P %d; (%d, %d)   ########\n", myrank, mycoord[0], mycoord[1]);
-*/
-
-
-/*	printf("\nPrinting y=0 v[]: \n\n");
-	for(int i=0; i<proc_pts[0]; i++) {
-		printf("%lf\n, ", v[i]);
-	}
-	printf("\nPrinting x=1 v[]: \n\n");
-	for(int i=0; i<proc_pts[1]; i++) {
-		printf("%lf\n, ", v[proc_pts[0]*i+1]);
-	}	
-*/
 	double Xmin = (ranges[0]/dims_procs[0])*mycoord[0];
 	double Ymin = (ranges[1]/dims_procs[1])*mycoord[1];
 	double Xmax = Xmin+(ranges[0]/dims_procs[0]);	
