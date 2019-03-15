@@ -419,7 +419,7 @@ int main(int argc, char* argv[]) {
 				MPI_Send(&err, 1, MPI_DOUBLE, 0, 10, comm2d);
 			}
 			if(myrank==0)
-				printf("(%d): MAX: iteration %d... \t%.10e\n", myrank, count, max);
+				printf("(%d): MAX conv error: iteration %d... \t%.10e\n", myrank, count, max);
 		}
 
 
@@ -455,7 +455,7 @@ int main(int argc, char* argv[]) {
 			MPI_Send(&max, 1, MPI_DOUBLE, 0, 10, comm2d);
 		}
 		if(myrank==0)
-			printf("(%d): MAX ABSOLUTE: iteration %d... \t%.10e\n", myrank, count, max);
+			printf("(%d): MAX ABSOLUTE error: iteration %d... \t%.10e\n", myrank, count, max);
 
 
 
