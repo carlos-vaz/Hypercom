@@ -7,7 +7,8 @@ March 15, 2019
 Description of the files: 
 
 main.c	
-	2D Poisson Solver using MPI. Outputs .vtk files into VTK_Data directory. 
+	2D Poisson Solver using MPI. Reads .txt files from Input_Data directory, 
+	and outputs .vtk files into VTK_Data directory. 
 	Usage:	mpirun -np X FILENAME Py Px
 
 writedata.c
