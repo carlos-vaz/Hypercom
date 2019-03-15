@@ -45,6 +45,17 @@ double get_error(double *T, double *T_prev, int len) {
 	return ret;
 }
 
+double get_absolute_error(double *T, double *v, int len) {
+	double ret = 0;
+	double tmp;
+	for(int i=0; i<len; i++) {
+		tmp = fabs(T[i]-v[i]);
+		if(tmp>ret) {
+			ret = tmp;
+		}
+	}
+	return ret;
+}
 
 int myrank, rank_2d, mycoord[2], np, dims_procs[2], num_points, dims_pts[2], proc_pts[2], proc_size, \
 	ranks_around[4] = {-1,-1,-1,-1}; // {right, left, up, down}
@@ -390,16 +401,16 @@ int main(int argc, char* argv[]) {
 
 
 		/* 
-		 * Prints out Max error (all processes) every 1000 cycles. 
+		 * Prints out Max convergence error (out of all processes) every 1000 cycles. 
 		 * Used for convergence analysis only. 
 		 */
-/*		if(count%1000==1) {
+		if(count%1000==1) {
 			double max = err;
 			double recv;
 			MPI_Status st;
 			if(myrank==0) {
 				for(int i=1; i<np; i++) {
-					MPI_Recv(&max, 1, MPI_DOUBLE, i, 10, comm2d, &st);
+					MPI_Recv(&recv, 1, MPI_DOUBLE, i, 10, comm2d, &st);
 					if(recv > max)
 						max = recv;
 				}
@@ -410,7 +421,7 @@ int main(int argc, char* argv[]) {
 			if(myrank==0)
 				printf("(%d): MAX: iteration %d... \t%.10e\n", myrank, count, max);
 		}
-*/
+
 
 		count++;
 
@@ -421,9 +432,32 @@ int main(int argc, char* argv[]) {
 		fflush(stdout);	
 	}
 	fflush(stdout);
-	
 
 	double t_stop = MPI_Wtime();
+
+
+		/* 
+		 * Prints out Max absolute error (out of all processes).  
+		 * Used for grid convergence analysis only. 
+		 */
+		
+		double max = get_absolute_error(T, v, proc_size);
+		double recv;
+		MPI_Status st;
+		if(myrank==0) {
+			for(int i=1; i<np; i++) {
+				MPI_Recv(&recv, 1, MPI_DOUBLE, i, 10, comm2d, &st);
+				if(recv > max)
+					max = recv;
+			}
+		}
+		else {
+			MPI_Send(&max, 1, MPI_DOUBLE, 0, 10, comm2d);
+		}
+		if(myrank==0)
+			printf("(%d): MAX ABSOLUTE: iteration %d... \t%.10e\n", myrank, count, max);
+
+
 
 	double Xmin = (ranges[0]/dims_procs[0])*mycoord[0];
 	double Ymin = (ranges[1]/dims_procs[1])*mycoord[1];
