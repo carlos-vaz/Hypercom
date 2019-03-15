@@ -80,14 +80,12 @@ int main(int argc, char* argv[]) {
 	 */
 	dims_procs[0] = atoi(argv[3]);
 	dims_procs[1] = atoi(argv[2]);
-	//if(myrank == ANNOUNCER_PROC) printf("Will solve %s with %d (x) by %d (y) processes\n", argv[1], dims_procs[0], dims_procs[1]);
 	MPI_File file; 
 	MPI_File_open(MPI_COMM_WORLD, argv[1], MPI_MODE_RDONLY, MPI_INFO_NULL, &file);
 	MPI_File_read_all(file, &dims_pts, 2, MPI_INT, MPI_STATUS_IGNORE);
 	MPI_File_read_at_all(file, 2*sizeof(int), &ranges, 2, MPI_DOUBLE, MPI_STATUS_IGNORE);
 	deltas[0] = ranges[0]/(double)dims_pts[0];
 	deltas[1] = ranges[1]/(double)dims_pts[1];
-	//if(myrank == ANNOUNCER_PROC) printf("FILE READ... DIMENSIONS (MATRIX FORM): %d BY %d\n", dims_pts[1], dims_pts[0]);
 	if( (dims_pts[0]%dims_procs[0]!=0 || dims_pts[1]%dims_procs[1]!=0) && myrank==ANNOUNCER_PROC) {
 		printf("Number of points must be divisible by number of procs in that dimension.\n");
 		MPI_Abort(MPI_COMM_WORLD, -1);
@@ -109,7 +107,6 @@ int main(int argc, char* argv[]) {
 	MPI_Cart_create(MPI_COMM_WORLD, 2,dims_procs,periodic,1,&comm2d);
 	MPI_Cart_coords(comm2d,myrank, 2,mycoord);
 	MPI_Cart_rank(comm2d,mycoord,&rank_2d);
-	//printf("I am %d: (%d,%d); originally %d\n",rank_2d,mycoord[0],mycoord[1],myrank);
 	
 
 
@@ -212,45 +209,31 @@ int main(int argc, char* argv[]) {
 			got_south = 1;
 			MPI_Irecv(recv_south, proc_pts[0]+1, MPI_DOUBLE, ranks_around[3] /*southern rank*/ \
 									, 2 /*northernly tag*/, comm2d, &req[0]);
-		//	MPI_Recv(recv_south, proc_pts[0]+1, MPI_DOUBLE, ranks_around[3] /*southern rank*/ \
-		//							, 2 /*northernly tag*/, comm2d, &stati[0]);
-			memcpy(send_south, T, proc_pts[0]*sizeof(double)); // Why copy if T[0->xdim] won't change?
-			//for(int i=0; i<proc_pts[0]; i++)
-			//	send_south[i] = T[i];
+			memcpy(send_south, T, proc_pts[0]*sizeof(double)); 
 			if(will_break)
 				send_south[proc_pts[0]] = 1; // signal to Southern neighbor to remember this buffer
 			MPI_Isend(send_south, proc_pts[0]+1, MPI_DOUBLE, ranks_around[3] /*southern rank*/, 3/*southernly tag*/, comm2d, &req[1]);
-		//	MPI_Send(send_south, proc_pts[0]+1, MPI_DOUBLE, ranks_around[3] /*southern rank*/, 3/*southernly tag*/, comm2d);
 		}
 		if(bound_north==0 && remember_north==0) {
 			got_north = 1;
-			memcpy(send_north, &T[proc_size-proc_pts[0]], proc_pts[0]*sizeof(double)); // Why copy if T[0->xdim] won't change?
-			//for(int i=0; i<proc_pts[0]; i++)
-			//	send_north[i] = T[proc_size-proc_pts[0]+i];
+			memcpy(send_north, &T[proc_size-proc_pts[0]], proc_pts[0]*sizeof(double));
 			if(will_break)
 				send_north[proc_pts[0]] = 1; // signal to Northern neighbor to remember this buffer
 
 			MPI_Isend(send_north, proc_pts[0]+1, MPI_DOUBLE, ranks_around[2] /*northern rank*/, 2/*northernly tag*/, comm2d, &req[2]);
-		//	MPI_Send(send_north, proc_pts[0]+1, MPI_DOUBLE, ranks_around[2] /*northern rank*/, 2/*northernly tag*/, comm2d);
 			MPI_Irecv(recv_north, proc_pts[0]+1, MPI_DOUBLE, ranks_around[2] /*northern rank*/ \
 									, 3 /*southernly tag*/, comm2d, &req[3]);
-		//	MPI_Recv(recv_north, proc_pts[0]+1, MPI_DOUBLE, ranks_around[2] /*northern rank*/ \
-		//							, 3 /*southernly tag*/, comm2d, &stati[3]);
 		}
 		if(bound_east==0 && remember_east==0) {
 			got_east = 1;
 			MPI_Irecv(recv_east, proc_pts[1]+1, MPI_DOUBLE, ranks_around[0] /*eastern rank*/ \
 									, 1 /*westernly tag*/, comm2d, &req[4]);
-		//	MPI_Recv(recv_east, proc_pts[1]+1, MPI_DOUBLE, ranks_around[0] /*eastern rank*/ \
-		//							, 1 /*westernly tag*/, comm2d, &stati[4]);
-			//got_east=1;
 			// Copy eastern buffer to send_east
 			for(int i=0; i<proc_pts[1]; i++)
 				send_east[i] = T[proc_pts[0]-1+i*proc_pts[0]];
 			if(will_break)
 				send_east[proc_pts[1]] = 1; // signal to Eastern neighbor to remember this buffer
 			MPI_Isend(send_east, proc_pts[1]+1, MPI_DOUBLE, ranks_around[0] /*eastern rank*/, 0/*easternly tag*/, comm2d, &req[5]);
-		//	MPI_Send(send_east, proc_pts[1]+1, MPI_DOUBLE, ranks_around[0] /*eastern rank*/, 0/*easternly tag*/, comm2d);
 		}
 		if(bound_west==0 && remember_west==0) {
 			got_west = 1;
