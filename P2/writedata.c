@@ -47,11 +47,7 @@ int main(int argc, char* argv[]) {
 	for(yval=0; yval<y_range; yval+=yinc)
 		for(xval=0; xval<x_range; xval+=xinc) {
 			val = xval*pow(e, yval);
-			//val = yval*x_dim+xval;
 			write(fd, &val, sizeof(double));
-			//if(yval==0) {
-			//	printf("%d... %lf  *  pow( e,  %lf ) = %lf\n",counter, xval, yval, val);
-			//}
 			counter++;
 		}
 	close(fd);
