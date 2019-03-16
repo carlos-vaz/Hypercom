@@ -431,7 +431,6 @@ int main(int argc, char* argv[]) {
 		got_north = 0;
 		fflush(stdout);	
 	}
-	fflush(stdout);
 
 	double t_stop = MPI_Wtime();
 
