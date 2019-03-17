@@ -47,8 +47,8 @@ int main(int argc, char* argv[]) {
 	for(yval=0; counter<stop; yval+=yinc) {
 		for(xval=0; x_counter<x_dim; xval+=xinc) {
 			val = xval*pow(e, yval);
-			if(xval==0)
-				printf("\n\n");
+			//if(xval==0)
+			//	printf("\n\n");
 			//printf("writing @(%lf, %lf)=(%d, %d):   %lf\n", xval, yval, counter%x_dim, counter/x_dim, val);
 			write(fd, &val, sizeof(double));
 			counter++;
