@@ -131,12 +131,13 @@ int main(int argc, char* argv[]) {
 
 
 	// Read File ourselves without MPI 
-	double * v_correct;
+	double * v_correct = (double*)malloc(proc_size*np*sizeof(double));
 	FILE *fp;
 	if(myrank==0) {
 		fp = fopen(argv[1], "r");
 		fseek(fp, 2*sizeof(int)+2*sizeof(double), SEEK_SET);
 		fread(v_correct, sizeof(double), proc_size*np, fp);
+		fclose(fp);
 	}
 
 
