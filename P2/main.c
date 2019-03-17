@@ -140,6 +140,15 @@ int main(int argc, char* argv[]) {
 		fclose(fp);
 	}
 
+	if(myrank==0) {
+		for(int i=0; i<proc_size*np; i++) {
+			printf("reading @(%lf, %lf):   %lf\n", xval, yval, v_correct[i]);
+			if(i%(proc_pts[0]*dims_procs[0])==0)
+				printf("\n\n");
+		}
+	}
+
+
 
 	/*
 	 * Each process creates a temperature vector T and fills it with 
@@ -467,14 +476,14 @@ int main(int argc, char* argv[]) {
 
 
 
-	sleep(2*myrank);			// Print T(v)
+/*	sleep(2*myrank);			// Print T(v)
 	printf("\n\nT(v) from proc %d\n", myrank);
 	for(int i=0; i<proc_size; i++) {
 		if(i%proc_pts[0]==0)
 			printf("\n...");
 		printf("%lf(%lf), ", T[i], v[i]);
 	}
-
+*/
 
 	double Xmin = (ranges[0]/dims_procs[0])*mycoord[0];
 	double Ymin = (ranges[1]/dims_procs[1])*mycoord[1];
