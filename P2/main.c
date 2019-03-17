@@ -442,7 +442,7 @@ int main(int argc, char* argv[]) {
 			MPI_Send(&max, 1, MPI_DOUBLE, 0, 10, comm2d);
 		}
 		if(myrank==0)
-			printf("(%d, pts=%dx%d): MAX ABSOLUTE error: iteration %d... \t%.10e\n", myrank, proc_pts[0], proc_pts[1], count, max);
+			printf("(%d, pts=%dx%d, t=%lf): MAX ABSOLUTE error: iteration %d... \t%.10e\n", myrank, proc_pts[0], proc_pts[1], t_stop - t_start, count, max);
 
 
 
