@@ -455,6 +455,15 @@ int main(int argc, char* argv[]) {
 
 
 
+	sleep(2*myrank);			// Print T(v)
+	printf("\n\nT(v) from proc %d\n", myrank);
+	for(int i=0; i<proc_size; i++) {
+		if(proc_size%proc_pts[0]==0)
+			printf("\n...");
+		printf("%lf(%lf), ", T[i], v[i]);
+	}
+
+
 	double Xmin = (ranges[0]/dims_procs[0])*mycoord[0];
 	double Ymin = (ranges[1]/dims_procs[1])*mycoord[1];
 	double Xmax = Xmin+(ranges[0]/dims_procs[0]);	
