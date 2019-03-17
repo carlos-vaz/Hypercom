@@ -39,19 +39,20 @@ int main(int argc, char* argv[]) {
 
 
 	// Write data into file
-	int counter = 0;
+	int counter = 0, x_counter = 0, stop = x_dim*y_dim;
 	double e = 2.718281828, xval, yval, val, xinc, yinc; 
 	xinc = x_range/(double)x_dim;
 	yinc = y_range/(double)y_dim;
 	printf("x_inc = %lf, y_inc = %lf\n", xinc, yinc);
-	for(yval=0; yval<y_range; yval+=yinc)
-		for(xval=0; xval<x_range; xval+=xinc) {
+	for(yval=0; counter<stop; yval+=yinc)
+		for(xval=0; x_counter<x_dim; xval+=xinc) {
 			val = xval*pow(e, yval);
 			if(xval==0)
 				printf("\n\n");
 			printf("writing @(%lf, %lf)=(%d, %d):   %lf\n", xval, yval, counter%x_dim, counter/x_dim, val);
 			write(fd, &val, sizeof(double));
 			counter++;
+			x_counter++;
 		}
 	close(fd);
 }
