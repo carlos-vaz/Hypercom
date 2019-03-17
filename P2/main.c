@@ -491,8 +491,8 @@ int main(int argc, char* argv[]) {
 	double Ymax = Ymin+(ranges[1]/dims_procs[1]);
 	VTK_out(proc_pts[0], proc_pts[1], &Xmin, &Xmax, &Ymin, &Ymax, v, myrank);
 	double Xmin_a = 0, Xmax_a= 2, Ymin_a = 0, Ymax_a = 1;
-	if(myrank==0)
-		VTK_out(proc_pts[0]*dims_procs[0], proc_pts[1]*dims_procs[1], &Xmin_a, &Xmax_a, &Ymin_a, &Ymax_a, v_correct, np+100);
+//	if(myrank==0)
+//		VTK_out(proc_pts[0]*dims_procs[0], proc_pts[1]*dims_procs[1], &Xmin_a, &Xmax_a, &Ymin_a, &Ymax_a, v_correct, np+100);
 
 	free(v);
 	free(T);
