@@ -44,12 +44,12 @@ int main(int argc, char* argv[]) {
 	xinc = x_range/(double)x_dim;
 	yinc = y_range/(double)y_dim;
 	printf("x_inc = %lf, y_inc = %lf\n", xinc, yinc);
-	for(yval=0; yval<=y_range; yval+=yinc)
-		for(xval=0; xval<=x_range; xval+=xinc) {
+	for(yval=0; yval<y_range; yval+=yinc)
+		for(xval=0; xval<x_range; xval+=xinc) {
 			val = xval*pow(e, yval);
-			printf("writing @(%lf, %lf):   %lf\n", xval, yval, val);
 			if(xval==0)
 				printf("\n\n");
+			printf("writing @(%lf, %lf)=(%d, %d):   %lf\n", xval, yval, count%x_dim, count/x_dim, val);
 			write(fd, &val, sizeof(double));
 			counter++;
 		}
