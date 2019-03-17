@@ -54,6 +54,7 @@ int main(int argc, char* argv[]) {
 			counter++;
 			x_counter++;
 		}
+		x_counter = 0;
 	close(fd);
 }
 
