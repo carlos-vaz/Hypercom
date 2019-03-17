@@ -434,7 +434,7 @@ int main(int argc, char* argv[]) {
 				printf("(%d): MAX conv error: iteration %d... \t%.10e\n", myrank, count, max);
 		}
 
-
+*/
 		count++;
 
 		got_east  = 0;
@@ -443,7 +443,7 @@ int main(int argc, char* argv[]) {
 		got_north = 0;
 		fflush(stdout);	
 	}
-*/
+
 	double t_stop = MPI_Wtime();
 
 
