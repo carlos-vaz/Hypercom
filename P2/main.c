@@ -76,6 +76,7 @@ int main(int argc, char* argv[]) {
 	}
 
 
+
 	/*
 	 * Read the file metadata and check for do-ablility
 	 * File metadata in the form: X dimensions, Y dimensions, X range, Y range (CARTESIAN FORM)
@@ -127,6 +128,15 @@ int main(int argc, char* argv[]) {
 	MPI_File_set_view(file, 2*sizeof(int)+2*sizeof(double)+(mycoord[0]*proc_pts[0]+mycoord[1]*proc_size*dims_procs[0])*sizeof(double), \
 								MPI_DOUBLE, vector, "native", MPI_INFO_NULL);	
 	MPI_File_read_all(file, v, proc_size, MPI_DOUBLE, MPI_STATUS_IGNORE);
+
+
+	// Read File ourselves without MPI 
+	double * v_correct;
+	FILE *fp;
+	if(myrank==0) {
+		fp = fopen(argv[1], "r");
+		fread(v_correct, sizeof(double), proc_size*np, fp);
+	}
 
 
 	/*
@@ -469,6 +479,7 @@ int main(int argc, char* argv[]) {
 	double Xmax = Xmin+(ranges[0]/dims_procs[0]);	
 	double Ymax = Ymin+(ranges[1]/dims_procs[1]);
 	VTK_out(proc_pts[0], proc_pts[1], &Xmin, &Xmax, &Ymin, &Ymax, v, myrank);
+	VTK_out(proc_pts[0]*dims_procs[0], proc_pts[1]*dims_procs[1], 0, 2, 0, 1, v_correct, np+100);
 
 	free(v);
 	free(T);
