@@ -416,7 +416,7 @@ int main(int argc, char* argv[]) {
 		 * Prints out Max convergence error (out of all processes) every 1000 cycles. 
 		 * Used for convergence analysis only. 
 		 */
-		if(count%1000==1) {
+/*		if(count%1000==1) {
 			double max = err;
 			double recv;
 			MPI_Status st;
@@ -443,7 +443,7 @@ int main(int argc, char* argv[]) {
 		got_north = 0;
 		fflush(stdout);	
 	}
-
+*/
 	double t_stop = MPI_Wtime();
 
 
