@@ -14,6 +14,8 @@
 #define    left(i)	(i-1)
 	
 
+int len_probe;
+
 extern 
 void VTK_out(const int N, const int M, const double *Xmin, const double *Xmax,
              const double *Ymin, const double *Ymax, const double *T,
@@ -40,6 +42,7 @@ double get_error(double *T, double *T_prev, int len) {
 		tmp = fabs(T[i]-T_prev[i]);
 		if(tmp>ret) {
 			ret = tmp;
+			len_probe = i;
 		}
 	}
 	return ret;
@@ -430,19 +433,25 @@ int main(int argc, char* argv[]) {
 		
 		double max = get_error(T, v, proc_size);
 		double recv;
+		double recv_index;
+		double abs_index = len_probe;
 		MPI_Status st;
 		if(myrank==0) {
 			for(int i=1; i<np; i++) {
 				MPI_Recv(&recv, 1, MPI_DOUBLE, i, 10, comm2d, &st);
-				if(recv > max)
+				MPI_Recv(&recv_index, 1, MPI_INT, i, 11 comm2d, &st);
+				if(recv > max) {
 					max = recv;
+					abs_index = recv_index;
+				}
 			}
 		}
 		else {
 			MPI_Send(&max, 1, MPI_DOUBLE, 0, 10, comm2d);
+			MPI_Send(&len_probe, 1, MPI_INT, 0, 11, comm2d);
 		}
 		if(myrank==0)
-			printf("(%d, pts=%dx%d, t=%lf): MAX ABSOLUTE error: iteration %d... \t%.10e\n", myrank, proc_pts[0], proc_pts[1], t_stop - t_start, count, max);
+			printf("(%d, pts=%dx%d, (@x=%d, y=%d), t=%lf): MAX ABSOLUTE error: iteration %d... \t%.10e\n", myrank, proc_pts[0], proc_pts[1], len_probe%proc_pts[0], len_probe/proc_pts[0], t_stop - t_start, count, max);
 
 
 
