@@ -135,6 +135,7 @@ int main(int argc, char* argv[]) {
 	FILE *fp;
 	if(myrank==0) {
 		fp = fopen(argv[1], "r");
+		fseek(fp, 2*sizeof(int)+2*sizeof(double), SEEK_SET);
 		fread(v_correct, sizeof(double), proc_size*np, fp);
 	}
 
