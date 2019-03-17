@@ -131,7 +131,7 @@ int main(int argc, char* argv[]) {
 
 
 	// Read File ourselves without MPI 
-	double * v_correct = (double*)malloc(proc_size*np*sizeof(double));
+/*	double * v_correct = (double*)malloc(proc_size*np*sizeof(double));
 	FILE *fp;
 	if(myrank==0) {
 		fp = fopen(argv[1], "r");
@@ -147,7 +147,7 @@ int main(int argc, char* argv[]) {
 				printf("\n\n");
 		}
 	}
-
+*/
 
 
 	/*
