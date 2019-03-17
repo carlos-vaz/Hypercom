@@ -439,7 +439,7 @@ int main(int argc, char* argv[]) {
 		if(myrank==0) {
 			for(int i=1; i<np; i++) {
 				MPI_Recv(&recv, 1, MPI_DOUBLE, i, 10, comm2d, &st);
-				MPI_Recv(&recv_index, 1, MPI_INT, i, 11 comm2d, &st);
+				MPI_Recv(&recv_index, 1, MPI_INT, i, 11, comm2d, &st);
 				if(recv > max) {
 					max = recv;
 					abs_index = recv_index;
