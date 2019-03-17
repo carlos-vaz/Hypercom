@@ -47,6 +47,7 @@ int main(int argc, char* argv[]) {
 	for(yval=0; yval<y_range; yval+=yinc)
 		for(xval=0; xval<x_range; xval+=xinc) {
 			val = xval*pow(e, yval);
+			printf("writing @(%lf, %lf):   %lf", xval, yval, val);
 			write(fd, &val, sizeof(double));
 			counter++;
 		}
