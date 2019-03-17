@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
 	xinc = x_range/(double)x_dim;
 	yinc = y_range/(double)y_dim;
 	printf("x_inc = %lf, y_inc = %lf\n", xinc, yinc);
-	for(yval=0; counter<stop; yval+=yinc)
+	for(yval=0; counter<stop; yval+=yinc) {
 		for(xval=0; x_counter<x_dim; xval+=xinc) {
 			val = xval*pow(e, yval);
 			if(xval==0)
@@ -55,6 +55,7 @@ int main(int argc, char* argv[]) {
 			x_counter++;
 		}
 		x_counter = 0;
+	}
 	close(fd);
 }
 
