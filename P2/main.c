@@ -142,7 +142,7 @@ int main(int argc, char* argv[]) {
 
 	if(myrank==0) {
 		for(int i=0; i<proc_size*np; i++) {
-			printf("reading @(%lf, %lf):   %lf\n", xval, yval, v_correct[i]);
+			printf("reading @(%d, %d):   %lf\n", i%proc_pts[0], i/proc_pts[0], v_correct[i]);
 			if(i%(proc_pts[0]*dims_procs[0])==0)
 				printf("\n\n");
 		}
