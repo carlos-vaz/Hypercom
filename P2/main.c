@@ -45,18 +45,6 @@ double get_error(double *T, double *T_prev, int len) {
 	return ret;
 }
 
-double get_absolute_error(double *T, double *v, int len) {
-	double ret = 0;
-	double tmp;
-	for(int i=0; i<len; i++) {
-		tmp = fabs(T[i]-v[i]);
-		if(tmp>ret) {
-			ret = tmp;
-		}
-	}
-	return ret;
-}
-
 int myrank, rank_2d, mycoord[2], np, dims_procs[2], num_points, dims_pts[2], proc_pts[2], proc_size, \
 	ranks_around[4] = {-1,-1,-1,-1}; // {right, left, up, down}
 double ranges[2], deltas[2];
@@ -440,7 +428,7 @@ int main(int argc, char* argv[]) {
 		 * Used for grid convergence analysis only. 
 		 */
 		
-		double max = get_absolute_error(T, v, proc_size);
+		double max = get_error(T, v, proc_size);
 		double recv;
 		MPI_Status st;
 		if(myrank==0) {
