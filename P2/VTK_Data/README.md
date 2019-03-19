@@ -1,1 +1,1 @@
-Directory to store outputs of main.c
+### Directory to store outputs of main.c
