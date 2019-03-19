@@ -416,7 +416,7 @@ int main(int argc, char* argv[]) {
 		 * Prints out Max convergence error (out of all processes) every 1000 cycles. 
 		 * Used for convergence analysis only. 
 		 */
-/*		if(count%1000==1) {
+		if(count%1000==1) {
 			double max = err;
 			double recv;
 			MPI_Status st;
@@ -434,7 +434,7 @@ int main(int argc, char* argv[]) {
 				printf("(%d): MAX conv error: iteration %d... \t%.10e\n", myrank, count, max);
 		}
 
-*/
+
 		count++;
 
 		got_east  = 0;
