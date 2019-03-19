@@ -1,6 +1,6 @@
 # Project 2: 2D Poisson Solver using MPI
-Carlos Vazquez Gomez
-March 15, 2019
+Carlos Vazquez Gomez  
+March 15, 2019  
 
 
 
