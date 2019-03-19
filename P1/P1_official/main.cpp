@@ -2,21 +2,21 @@
 #include "surface.h"
 
 #define ERROR_THRESH  1e-12	// Max tolerable error (infinity norm)
-#define UPDATE_PERIOD 10	// Display error after this many grid updates
+#define UPDATE_PERIOD 1000	// Display error after this many grid updates
 
 /*extern void VTK_out(const int N, const int M, const double *Xmin, const double *Xmax,
              const double *Ymin, const double *Ymax, const double *T,
              const int index);*/	// be sure to comment out `main` in vtk.c if using this line
 
 int main(void) {
-	int N = 21, M = 21;
-	double X = 1, Y = 1;
+	int N = 201, M = 201;
+	double X = 2, Y = 1;
 	Surface S(X, Y, N, M);
-	//S.setExpBoundaryT();	// Set boundary temperatures
-	S.setConstBoundaryT(0);
-	//S.setExpS();		// Set source terms
-	S.setConstS(-0.2);
-	//S.setExpSolution();	// Set analytic solution (for error calculation)
+	S.setExpBoundaryT();	// Set boundary temperatures
+	//S.setConstBoundaryT(0);
+	S.setExpS();		// Set source terms
+	//S.setConstS(-0.2);
+	S.setExpSolution();	// Set analytic solution (for error calculation)
 	S.printS();		// Print source terms
 	S.printT();		// print initial temperatures
 
@@ -36,7 +36,6 @@ int main(void) {
 		iter++;
 	}
 	time_t elapsed = clock() - start;
-
 
 
 	// ##########	HELPFUL INFORMATION NOW PRINTED   ##########
