@@ -26,10 +26,11 @@ Makefile
 	Usage:	make clean; make all;
 
 Slurm/
-	Directory with slurm scripts for weak scaling, convergence, and heterogenous
-	grid tests. The output of each script is a .out file which can be parsed
-	by awk to retrieve timing and cycle counts. 
+	Directory with slurm scripts for weak scaling, convergence, grid convergence, 
+	and heterogenous grid tests. The output of each script is a .out file which
+	can be parsed by awk to retrieve timing and cycle counts. 
 	Usage (example):
 		sbatch Slurm/slurm_weak_analysis
 		grep weak_analysis.out -e "time" | awk -F"= " '{ print $2 }'
+		grep weak_analysis.out -e "cycles" | awk -F"= " '{ print $2 }'
 
