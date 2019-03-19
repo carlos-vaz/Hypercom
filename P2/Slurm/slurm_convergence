@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+
+#########################################
+
+#SBATCH --time=0-00:30:00
+
+##SBATCH --cluster=smp
+##SBATCH --partition=smp
+
+## number of nodes should be bigger than one otherwise it will complain
+#SBATCH --cluster=mpi
+#SBATCH --partition=ib
+
+#########################################
+
+#    Some Namings and email 
+
+#########################################
+
+#SBATCH --job-name=Convergence
+#SBATCH --output=convergence.out
+#SBATCH --mail-user=cdv16@pitt.edu
+#SBATCH --mail-type=END,FAIL 
+
+########################################## 
+
+#           Node Count 
+
+########################################## 
+
+
+##SBATCH --nodes=1
+#SBATCH --nodes=4
+##SBATCH --ntasks-per-node=10
+##SBATCH --cpus-per-task=1
+
+## if you specify only this the system automatically finds out the number of nodes
+## on some systems they might force specification of nodes
+#SBATCH --ntasks=4
+
+# -O is used to overspecify the cores, especially beneficial for debugging
+##SBATCH -O
+###########################################
+
+             # Load modules
+
+###########################################
+# module purge removes all the previously loaded modules
+#module purge
+module load gcc/5.4.0
+module load intel/2017.1.132
+module load intel-mpi/2017.1.132
+module load paraview/5.3.0
+module load hdf5/1.10.0
+module load cmake/3.7.1
+module load openmpi/2.0.2
+module load zoltan/3.83.0
+module load clang/5.0.0
+module load doxygen/1.8.13
+
+## you can use srun as well, or you can give the full path if you need a specific version 
+
+
+./writedata 1 2 200 200
+mpirun -np 1 main Input_Data/data_200x200.txt 1 1
+mpirun -np 2 main Input_Data/data_200x200.txt 1 2
+mpirun -np 4 main Input_Data/data_200x200.txt 2 2
+
+
+
