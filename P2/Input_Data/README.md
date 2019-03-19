@@ -1,1 +1,1 @@
-## Directory to store inputs into main.c
+### Directory to store inputs into main.c
