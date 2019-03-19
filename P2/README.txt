@@ -9,7 +9,7 @@ Description of the files:
 main.c	
 	2D Poisson Solver using MPI. Reads .txt files from Input_Data directory, 
 	and outputs .vtk files into VTK_Data directory. 
-	Usage:	mpirun -np X FILENAME Py Px
+	Usage:	mpirun -np [P] FILENAME [Py] [Px]
 
 writedata.c
 	Writes data in the form x*e^y to .txt file in Input_Data directory. 
@@ -25,11 +25,11 @@ Makefile
 	'main' and 'writedata'. 
 	Usage:	make clean; make all;
 
-crc_slurm
-	Slurm script that allocates 100 processes on H2P cluster and loops through 
-	the weak scaling analysis tests. The output is Toro.out, which can be parsed
+Slurm/
+	Directory with slurm scripts for weak scaling, convergence, and heterogenous
+	grid tests. The output of each script is a .out file which can be parsed
 	by awk to retrieve timing and cycle counts. 
-	Usage:	sbatch crc_slurm
-		grep Toro.out -e "time" | awk -F"= " '{ print $2 }'
-		grep Toro.out -e "cycles" | awk -F"= " '{ print $2 }'
+	Usage (example):
+		sbatch Slurm/slurm_weak_analysis
+		grep weak_analysis.out -e "time" | awk -F"= " '{ print $2 }'
 
