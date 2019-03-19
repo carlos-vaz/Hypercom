@@ -1,6 +1,4 @@
 # Project 2: 2D Poisson Solver using MPI
-Carlos Vazquez Gomez  
-March 15, 2019  
 
 
 
@@ -10,7 +8,7 @@ March 15, 2019
 2D Poisson Solver using MPI. Reads .txt files from Input_Data directory, and outputs .vtk files into VTK_Data directory.  
 Usage:	
 ```
-mpirun -np [P] FILENAME [Py] [Px]
+mpirun -np [# procs] FILENAME [# Y procs] [# X procs]
 ```
 
 ### writedata.c
@@ -41,3 +39,8 @@ sbatch Slurm/slurm_weak_analysis
 grep weak_analysis.out -e "time" | awk -F"= " '{ print $2 }'
 grep weak_analysis.out -e "cycles" | awk -F"= " '{ print $2 }'
 ```
+
+## Author
+Carlos Vazquez Gomez  
+March 15, 2019  
+
