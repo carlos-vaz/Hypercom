@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
 	 */
 	double *buf = malloc(np*sizeof(double));
 	double x;
-	for(int i=0; i<pts; i++) {
+	for(int i=0; i<np; i++) {
 		buf[i] = function( i/np );
 		printf("buf[%d] = %lf\n",i, buf[i]);
 	}
