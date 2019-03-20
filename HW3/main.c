@@ -19,7 +19,7 @@ pthread_mutex_t sum_mutex = PTHREAD_MUTEX_INITIALIZER;
  * of the integral
  */ 
 void *thread_routine(void *ID) {
-	printf("Thread %d checking in\n", *(int*)ID);
+	//printf("Thread %d checking in\n", *(int*)ID);
 	double mysum = 0;
 	double del_x = (double)(END-START)/np;
 	for(int i=(*(int*)ID)*np/nt; i<(*(int*)ID+1)*np/nt; i++) {
