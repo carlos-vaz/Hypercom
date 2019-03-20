@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
 		printf("Usage:\n\t./main [# points] [# threads]\n");
 		exit(0);
 	}
-	np = atoi(argv[1]);
+	np = strtol(argv[1], NULL, 10);
 	nt = atoi(argv[2]);
 	if(np%nt!=0) {
 		printf("Error: # threads must divide # points\n");
