@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
 	for(int i=0; i<nt; i++) {
 		pthread_join(threads[i], NULL);
 	}
-	printf("FINAL VALUE: %.10f\n", sum);
+	printf("FINAL VALUE (%d threads): %.10f\n", nt, sum);
 
 	/* 
 	 * Display elapsed time
@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
 	clock_gettime(CLOCK_MONOTONIC, &end);
 	elapsed = end.tv_sec - start.tv_sec;
 	elapsed += (end.tv_nsec - start.tv_nsec)/1000000000.0;
-	printf("ELAPSED TIME: %lf\n", elapsed);
+	printf("ELAPSED TIME (%d threads): %lf\n", nt, elapsed);
 
 	free(buf);
 	free(threads);
