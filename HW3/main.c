@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
 	int *ID = malloc(nt*sizeof(int));
 	for(int i=0; i<nt; i++) {
 		ID[i] = i;
-		pthreads_create(threads[i], NULL, thread_routine, &ID[i]);
+		pthread_create(threads[i], NULL, thread_routine, &ID[i]);
 	}
 
 	return 0;
