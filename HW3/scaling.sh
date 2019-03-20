@@ -9,6 +9,7 @@ do
 	printf "|"
 	printf "#%.0s" {1..$((i*3))}
 	printf " %.0s" {1..$(( (7-i)*3 ))}
+	printf "|"
 done
 
 echo "Timings:
