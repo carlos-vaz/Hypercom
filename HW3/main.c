@@ -7,7 +7,7 @@
 int nt, np;
 
 void *thread_routine(void *ID) {
-	printf("Thread %d checking in\n", (int*)*ID);
+	printf("Thread %d checking in\n", *(int*)ID);
 }
 
 double function(double x) {
