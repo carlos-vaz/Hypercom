@@ -80,7 +80,7 @@ int main(int argc, char *argv[]) {
 	for(int i=0; i<nt; i++) {
 		pthread_join(threads[i], NULL);
 	}
-	printf("FINAL VALUE: %lf\n", sum);
+	printf("FINAL VALUE: %.10lf\n", sum);
 
 	/* 
 	 * Display elapsed time
