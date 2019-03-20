@@ -9,7 +9,7 @@ $
 
 ### Run
 Example:  
-Integrate 4/(1+x^2) from 0 to 1 using (defined internally in main.c) 4000000 points and 8 threads:
+Integrate 4/(1+x^2) from 0 to 1 (defined internally in main.c) using 4000000 points and 8 threads:
 ```
 $ ./main 4000000 8
 Running 8 threads on 4000000 points
