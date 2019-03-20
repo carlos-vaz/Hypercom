@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <math.h>
+#include <time.h>
 
 int nt, np;
 
@@ -34,6 +35,8 @@ int main(int argc, char *argv[]) {
 		buf[i] = function( (double)i/np );
 	}
 	
+	time_t start = clock();
+
 
 
 	return 0;
