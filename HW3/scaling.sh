@@ -8,7 +8,7 @@ do
 	printf "\xd"
 	printf "|"
 	printf "#%.0s" $(seq 1 $((n*3)) )
-	printf " %.0s" $(seq 1..$(( (7-n)*3 )) )
+	printf " %.0s" $(seq 1 $(( (7-n)*3 )) )
 	printf "|"
 done
 
