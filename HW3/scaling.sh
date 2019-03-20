@@ -4,7 +4,7 @@ echo > log.out
 for i in {1 2 4 8 16 32 64}
 do
 	./main 40000000 $i >> log.out
-	let "n = $( (echo 'l('$i')/l(2)' | bc -l) | cut -c1-1)"
+	let "n = $( (echo 'l('$i')/l(2)' | bc -l) | cut -c1-1) + 1"
 	printf "\xd"
 	printf "|"
 	printf "#%.0s" $(seq 1 $((n*3)) )
