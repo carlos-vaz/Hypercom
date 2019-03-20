@@ -8,11 +8,11 @@ done
 echo "Timings:
 ____________________
 "
-grep log.out -e "ELAPSED" | awk -F": " '{print "$i threads:" $2}' 
+grep log.out -e "ELAPSED" | awk -F": " '{print $i " threads: " $2}' 
 
 echo "
 Values:
 ____________________
 "
-grep log.out -e "FINAL" | awk -F": " '{print "$i threads:" $2}' 
+grep log.out -e "FINAL" | awk -F": " '{print $i " threads: " $2}' 
 
