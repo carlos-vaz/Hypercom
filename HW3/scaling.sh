@@ -7,8 +7,8 @@ do
 	let "n = $( (echo 'l('$i')/l(2)' | bc -l) | cut -c1-1)"
 	printf "\xd"
 	printf "|"
-	printf "#%.0s" $(seq 1 $((i*3)) )
-	printf " %.0s" $(seq 1..$(( (7-i)*3 )) )
+	printf "#%.0s" $(seq 1 $((n*3)) )
+	printf " %.0s" $(seq 1..$(( (7-n)*3 )) )
 	printf "|"
 done
 
