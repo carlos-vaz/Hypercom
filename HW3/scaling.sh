@@ -4,7 +4,7 @@ echo > log.out
 echo "Testing on 400000000 points with 1, 2, 4, 8, 16, 32, 64 threads..."
 printf "\xd"
 printf "|"
-printf " %.0s" $(seq 1 7)
+printf " %.0s" $(seq 1 $((7*7)))
 printf "|"
 for i in 1 2 4 8 16 32 64
 do
