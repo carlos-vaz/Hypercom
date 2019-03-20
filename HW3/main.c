@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
 		printf("Error: # threads must divide # points\n");
 		exit(1);
 	}
-	printf("Running %d threads on %ln points\n", nt, np);
+	printf("Running %d threads on %ld points\n", nt, np);
 
 	/* 
 	 * Build function
