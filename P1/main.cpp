@@ -2,21 +2,21 @@
 #include "surface.h"
 
 #define ERROR_THRESH  1e-12	// Max tolerable error (infinity norm)
-#define UPDATE_PERIOD 10	// Display error after this many grid updates
+#define UPDATE_PERIOD 1000	// Display error after this many grid updates
 
-/*extern void VTK_out(const int N, const int M, const double *Xmin, const double *Xmax,
+extern void VTK_out(const int N, const int M, const double *Xmin, const double *Xmax,
              const double *Ymin, const double *Ymax, const double *T,
-             const int index);*/	// be sure to comment out `main` in vtk.c if using this line
+             const int index);	// be sure to comment out `main` in vtk.c if using this line
 
 int main(void) {
 	int N = 21, M = 21;
-	double X = 1, Y = 1;
+	double X = 2, Y = 1;
 	Surface S(X, Y, N, M);
-	//S.setExpBoundaryT();	// Set boundary temperatures
-	S.setConstBoundaryT(0);
-	//S.setExpS();		// Set source terms
-	S.setConstS(-0.2);
-	//S.setExpSolution();	// Set analytic solution (for error calculation)
+	S.setExpBoundaryT();	// Set boundary temperatures
+	//S.setConstBoundaryT(0);
+	S.setExpS();		// Set source terms
+	//S.setConstS(-0.2);
+	S.setExpSolution();	// Set analytic solution (for error calculation)
 	S.printS();		// Print source terms
 	S.printT();		// print initial temperatures
 
@@ -38,7 +38,6 @@ int main(void) {
 	time_t elapsed = clock() - start;
 
 
-
 	// ##########	HELPFUL INFORMATION NOW PRINTED   ##########
 	std::cout << "\nCALCULATED SOLUTION: \n"; S.printT();
 	if(S.solution_provided) {std::cout << "\nANALYTICAL SOLUTION: \n"; S.printSolution();}
@@ -58,7 +57,7 @@ int main(void) {
 	VTK_out(N, M, &Xmin, &Xmax, &Ymin, &Ymax, T, 1);
 
 	// Output value of MIDDLE POINT of region
-	std::cout << "MIDDLE POINT value: " << T[N*(M/2)+N/2] << std::endl;
+	std::cout << "MIDDLE POINT value: " << S.getT(M/2,N/2) << std::endl;
 	// Output TIME ELAPSED
 	std::cout << "TIME ELAPSED: " << (double)elapsed/CLOCKS_PER_SEC << " seconds\n";
 	return 0;
