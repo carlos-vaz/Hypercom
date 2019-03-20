@@ -10,7 +10,8 @@
 #define END	1
 
 double * buf, sum;
-int nt, np;
+int nt;
+long np;
 pthread_mutex_t sum_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 
