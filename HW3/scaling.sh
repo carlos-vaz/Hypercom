@@ -5,9 +5,14 @@ do
 	./main 4000000 $i >> log.out
 done
 
-echo "Timings:\n____________________"
+echo "Timings:
+____________________
+"
 grep log.out -e "ELAPSED" | awk -F": " '{print $2}' 
 
-echo "\nValues:\n____________________"
+echo "
+Values:
+____________________
+"
 grep log.out -e "FINAL" | awk -F": " '{print $2}' 
 
