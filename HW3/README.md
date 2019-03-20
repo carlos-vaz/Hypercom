@@ -11,7 +11,14 @@ ELAPSED TIME: 0.003656
 $ 
 ```
 
-You can also run a strong scaling analysis script. 
+You can also run a strong scaling analysis script, which tests on 4
+```
+$ bash scaling.sh 
+Testing on 400000000 points with 1, 2, 4, 8, 16, 32, 64 threads...
+Progress:   |#####################                            |
+```
+
+and eventually: 
 ```
 $ bash scaling.sh 
 Running:  |################################### |
