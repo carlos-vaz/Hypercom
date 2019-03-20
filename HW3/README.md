@@ -10,11 +10,13 @@ $
 ### Run
 Example:  
 Integrate 4/(1+x^2) from 0 to 1 using (defined internally in main.c) 4000000 points and 8 threads:
+```
 $ ./main 4000000 8
 Running 8 threads on 4000000 points
 FINAL VALUE: 3.141593
 ELAPSED TIME: 0.003656
 $
+```
 
 
 ### Strong Scaling Analysis
