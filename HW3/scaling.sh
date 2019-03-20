@@ -13,14 +13,14 @@ do
 done
 
 echo "
+
 Timings:
-____________________
-"
+____________________"
 grep log.out -e "ELAPSED" | awk -F": " '{print $2}' 
 
 echo "
 Values:
-____________________
-"
+____________________"
 grep log.out -e "FINAL" | awk -F": " '{print $2}' 
+echo 
 
