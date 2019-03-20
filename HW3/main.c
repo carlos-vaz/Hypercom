@@ -6,8 +6,8 @@
 
 int nt, np;
 
-void thread_routine() {
-	printf("Thread %d checking in\n");
+void *thread_routine(void *ID) {
+	printf("Thread %d checking in\n", (int*)*ID);
 }
 
 double function(double x) {
@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
 	int *ID = malloc(nt*sizeof(int));
 	for(int i=0; i<nt; i++) {
 		ID[i] = i;
-		pthread_create(threads[i], NULL, thread_routine, &ID[i]);
+		pthread_create(&threads[i], NULL, thread_routine, &ID[i]);
 	}
 
 	return 0;
