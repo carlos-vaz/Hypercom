@@ -35,9 +35,16 @@ int main(int argc, char *argv[]) {
 		buf[i] = function( (double)i/np );
 	}
 	
+	/* 
+	 * Dispatch threads. 
+	 * Start timer. 
+	 */
 	time_t start = clock();
 
-
+	pthread_t *threads = malloc(nt*sizeof(pthread_t);
+	for(int i=0; i<nt; i++) {
+	
+	}
 
 	return 0;
 }
