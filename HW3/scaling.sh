@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 
 echo > log.out
+echo "Testing on 400000000 points with 1, 2, 4, 8, 16, 32, 64 threads...\n"
 for i in 1 2 4 8 16 32 64
 do
-	./main 40000000 $i >> log.out
+	./main 400000000 $i >> log.out
 	let "n = $( (echo 'l('$i')/l(2)' | bc -l) | cut -c1-1) + 1"
 	printf "\xd"
-	printf "Running:  |"
-	printf "#%.0s" $(seq 1 $((n*5)) )
-	printf " %.0s" $(seq 1 $(( (7-n)*5 )) )
+	printf "|"
+	printf "#%.0s" $(seq 1 $((n*7)) )
+	printf " %.0s" $(seq 1 $(( (7-n)*7 )) )
 	printf "|"
 done
 
