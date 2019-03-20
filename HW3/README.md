@@ -1,6 +1,6 @@
 ### Numerical Integration with Posix threads
 
-Example: The following commands compile main and invoke it to integrate 4/(1+x^2) from 0 to 1 using 4000000 points and 8 threads. 
+Example: The following commands compile main and invoke it to integrate 4/(1+x^2) from 0 to 1 using 4000000 points and 8 threads: 
 ```
 $ make
 [BUILDING main...]
@@ -11,7 +11,7 @@ ELAPSED TIME: 0.003656
 $ 
 ```
 
-You can also run a strong scaling analysis script, which tests on 4
+You can also run a strong scaling analysis script: 
 ```
 $ bash scaling.sh 
 Testing on 400000000 points with 1, 2, 4, 8, 16, 32, 64 threads...
