@@ -91,5 +91,8 @@ int main(int argc, char *argv[]) {
 	elapsed += (end.tv_nsec - start.tv_nsec)/1000000000.0;
 	printf("ELAPSED TIME: %lf\n", elapsed);
 
+	free(buf);
+	free(threads);
+
 	return 0;
 }
