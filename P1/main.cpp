@@ -1,3 +1,4 @@
+#include <stdlib>
 #include <time.h>
 #include "surface.h"
 
