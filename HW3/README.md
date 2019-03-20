@@ -28,23 +28,23 @@ Progress:   |################################################# |
 
 Timings:
 ____________________
-7.946787
-4.803657
-2.523130
-5.185251
-1.196787
-1.107933
-0.918316
+ELAPSED TIME (1 threads): 8.528089
+ELAPSED TIME (2 threads): 4.873009
+ELAPSED TIME (4 threads): 2.846566
+ELAPSED TIME (8 threads): 1.717208
+ELAPSED TIME (16 threads): 1.197903
+ELAPSED TIME (32 threads): 1.026930
+ELAPSED TIME (64 threads): 0.967940
 
 Values:
 ____________________
-3.1415926561
-3.1415926561
-3.1415926561
-3.1415926561
-3.1415926561
-3.1415926561
-3.1415926561
+FINAL VALUE (1 threads): 3.1415926561
+FINAL VALUE (2 threads): 3.1415926561
+FINAL VALUE (4 threads): 3.1415926561
+FINAL VALUE (8 threads): 3.1415926561
+FINAL VALUE (16 threads): 3.1415926561
+FINAL VALUE (32 threads): 3.1415926561
+FINAL VALUE (64 threads): 3.1415926561
 
 $
 ```
