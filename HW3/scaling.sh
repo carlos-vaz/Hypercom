@@ -6,7 +6,7 @@ do
 	./main 40000000 $i >> log.out
 	let "n = $( (echo 'l('$i')/l(2)' | bc -l) | cut -c1-1) + 1"
 	printf "\xd"
-	printf "|"
+	printf "Running:  |"
 	printf "#%.0s" $(seq 1 $((n*5)) )
 	printf " %.0s" $(seq 1 $(( (7-n)*5 )) )
 	printf "|"
