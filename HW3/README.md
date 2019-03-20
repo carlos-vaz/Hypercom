@@ -10,3 +10,8 @@ FINAL VALUE: 3.141593
 ELAPSED TIME: 0.003656
 $ 
 ```
+
+You can also run a strong scaling analysis script. 
+```
+
+```

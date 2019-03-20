@@ -12,7 +12,8 @@ do
 	printf "|"
 done
 
-echo "Timings:
+echo "
+Timings:
 ____________________
 "
 grep log.out -e "ELAPSED" | awk -F": " '{print $2}' 
