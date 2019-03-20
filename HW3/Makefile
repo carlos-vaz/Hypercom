@@ -1,5 +1,7 @@
 CC = gcc
-LFLAGS = -lpthread
+CFLAGS = -std=c99
+LFLAGS = -lpthread \
+	 -lm
 OBJ = main
 
 build = \
@@ -7,7 +9,7 @@ build = \
 	$1; 
 
 % : %.c
-	$(call build, $(CC) $< -o $@ $(LFLAGS))
+	$(call build, $(CC) $< -o $@ $(CFLAGS) $(LFLAGS))
 
 all: $(OBJ)
 
