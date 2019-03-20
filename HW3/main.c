@@ -11,6 +11,10 @@ int main(int argc, char *argv[]) {
 	}
 	np = atoi(argv[1]);
 	nt = atoi(argv[2]);
+	if(np%nt!=0) {
+		printf("Error: # threads must divide # points\n");
+		exit(1);
+	}
 	printf("Running %d threads on %d points\n", nt, np);
 	return 0;
 }
