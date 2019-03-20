@@ -32,7 +32,6 @@ int main(int argc, char *argv[]) {
 	double x;
 	for(int i=0; i<np; i++) {
 		buf[i] = function( (double)i/np );
-		printf("buf[%d] = %lf\n",i, buf[i]);
 	}
 	
 
