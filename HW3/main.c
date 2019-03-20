@@ -23,9 +23,9 @@ void *thread_routine(void *ID) {
 	for(int i=(*(int*)ID)*np/nt; i<(*(int*)ID+1)*np/nt; i++) {
 		mysum += buf[i]*del_x;
 	}
-	pthread_mutex_lock(sum_mutex);
+	pthread_mutex_lock(&sum_mutex);
 	sum += mysum;
-	pthread_mutex_unlock(sum_mutex);	
+	pthread_mutex_unlock(&sum_mutex);	
 }
 
 
