@@ -71,9 +71,9 @@ int main(int argc, char** argv) {
 
 	double Xmin = 0;
 	double Ymin = 0;
-	double Xmax = XRANGE;	
+	double Xmax = XRANGE;
 	double Ymax = YRANGE;
-	//VTK_out(Px, Py, &Xmin, &Xmax, &Ymin, &Ymax, T, 0);
+	VTK_out(Px, Py, &Xmin, &Xmax, &Ymin, &Ymax, T, 0);
 	print_grid(T, grid_size, Px);
 
 
