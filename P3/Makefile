@@ -2,7 +2,7 @@ CC = gcc
 
 TGT = main
 
-CFLAGS = -lm
+CFLAGS = -lm -std=c99
 
 LFLAGS = -fopenmp
 
