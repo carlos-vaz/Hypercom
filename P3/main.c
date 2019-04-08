@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
 				printf("\tSubroutine from thread %d (i=%d, Px = %d)\n", id, i, Px);
 				if(i/Px!=0 && i/Px!=Py-1 && i%Px!=0 && i%Px!=Px-1) {
 					T[i] = (-1*S[i]*pow(((double)(XRANGE/Px)*(double)(YRANGE/Py)),2)+(T[i-1]+T[i+1])*pow((double)(YRANGE/Py),2)+ \
-					(T[i-Px]+T[i+Px])*pow((double)(XRANGE/Px),2))///(2*pow((double)(XRANGE/Px),2)+2*pow((double)(YRANGE/Py),2));
+					(T[i-Px]+T[i+Px])*pow((double)(XRANGE/Px),2));///(2*pow((double)(XRANGE/Px),2)+2*pow((double)(YRANGE/Py),2));
 
 				}
 			}
