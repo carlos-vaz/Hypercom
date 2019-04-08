@@ -50,6 +50,7 @@ int main(int argc, char** argv) {
 	}
 	//print_grid(T, grid_size, Px);
 
+	print_grid(T, grid_size, Px);
 
 	omp_set_num_threads(Tx*Ty);
 	int id, i;
