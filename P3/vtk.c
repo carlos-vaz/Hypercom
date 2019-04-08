@@ -32,7 +32,7 @@ void VTK_out(const int N, const int M, const double *Xmin, const double *Xmax,
 
   FILE *fp = NULL;
   char filename[64];
-  sprintf(filename, "VTK_Data/out%d.vtk", index);
+  sprintf(filename, "out%d.vtk", index);
   fp = fopen(filename, "w");
 
   fprintf(fp, "# vtk DataFile Version 2.0 \n");

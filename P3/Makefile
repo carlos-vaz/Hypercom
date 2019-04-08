@@ -6,7 +6,7 @@ CFLAGS = -lm -std=c99
 
 LFLAGS = -fopenmp
 
-% : %.c
+% : %.c vtk.c
 	$(CC) $< vtk.c -o $@ $(CFLAGS) $(LFLAGS)
 
 all: $(TGT)
