@@ -110,7 +110,7 @@ int main(int argc, char** argv) {
 
 			#pragma omp barrier
 			if(id==0 & count%100==0)
-				printf("%d: Error this round = %lf\n", count, conv_error);
+				printf("%d: Error this round = %.10e\n", count, conv_error);
 
 			/*#pragma omp for
 				for(i=0; i<grid_size; i++) {
