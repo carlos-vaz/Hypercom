@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
 	double * T_tmp = (double * )calloc(grid_size, sizeof(double));
 	for(long i=0; i<grid_size; i++) {
 		double val = (i%Px)*((double)XRANGE/Px)*powf(2.718281828, (i/Px)*((double)YRANGE/Py));
-		printf("TEST: %ld/%d = %lf\n", i, Px, (double)(i/Px));
+		//printf("TEST: %ld/%d = %lf\n", i, Px, (double)(i/Px));
 		S[i] = val;
 		if(i/Px==0 || i/Px==Py-1 || i%Px==0 || i%Px==Px-1) {
 			T[i] = val;
@@ -61,44 +61,56 @@ int main(int argc, char** argv) {
 		}
 	}
 
-	print_grid(T, grid_size, Px);
+	//print_grid(T, grid_size, Px);
 
 	omp_set_num_threads(Tx*Ty);
 	int id, i, unlock=0;
 	int count = 0;
-	double conv_error, mymax = TOLERANCE+1;
-	while(conv_error < TOLERANCE) {
-		#pragma omp parallel default(none) shared(S,T,T_tmp,grid_size,Tx,Ty,Px,Py,Ptx,Pty,conv_error,count,per_thread) private(id,i,unlock,mymax)
+	double conv_error = TOLERANCE+1, mymax, candidate;
+	while(conv_error > TOLERANCE) {
+
+		#pragma omp parallel default(none) shared(S,T,T_tmp,grid_size,Tx,Ty,Px,Py,Ptx,Pty,conv_error,count,per_thread) private(id,i,unlock,mymax,candidate)
 		{
 			id = omp_get_thread_num();
-			printf("Hello from thread %d\n", id);
+			//printf("Hello from thread %d\n", id);
 
 			#pragma omp for
 				for(i=0; i<grid_size; i++) {
-					printf("\tSubroutine from thread %d (i=%d, Px = %d)\n", id, i, Px);
+					//printf("\tSubroutine from thread %d (i=%d, Px = %d)\n", id, i, Px);
 					if(i/Px!=0 && i/Px!=Py-1 && i%Px!=0 && i%Px!=Px-1) {
 						T_tmp[i] = (-1*S[i]*pow((((double)XRANGE/Px)*((double)YRANGE/Py)),2)+(T[i-1]+T[i+1])*pow(((double)YRANGE/Py),2)+ \
 						(T[i-Px]+T[i+Px])*pow(((double)XRANGE/Px),2))/(2*pow(((double)XRANGE/Px),2)+2*pow(((double)YRANGE/Py),2));
 					}
 				}
 
-			if(count%1000==0) {
-			#pragma omp for
+			if(count%100==0) {
+				mymax = 0;
+				conv_error = 0;
+				#pragma omp for
 				for(i=0; i<grid_size; i++) {
 					if(i/Px!=0 && i/Px!=Py-1 && i%Px!=0 && i%Px!=Px-1) {
-						double candidate = fabs(T_tmp[i] - T[i]);
+						candidate = fabs(T_tmp[i] - T[i]);
+						//printf("Candidate: %lf\n", candidate);
 						if(mymax < candidate)
 							mymax = candidate;
 					}
 				}
+
+				#pragma omp critical
+				{
+					if(mymax > conv_error)
+						conv_error = mymax;
+				}
 			}
 
-			#pragma omp critical
-			{
-				if(mymax > conv_error)
-					conv_error = mymax;
-			}
+			//printf("(thread %d): mymax = %lf, conv_error = %lf\n", mymax, conv_error);
 
+
+			//printf("\t (thread %d AFTER):  CONV ERROR= %lf\n", conv_error);
+
+			#pragma omp barrier
+			if(id==0 & count%100==0)
+				printf("%d: Error this round = %lf\n", count, conv_error);
 
 			/*#pragma omp for
 				for(i=0; i<grid_size; i++) {
@@ -109,6 +121,8 @@ int main(int argc, char** argv) {
 
 			
 		}
+		//printf("Left parallel part\n");
+		count++;
 	}
 
 
@@ -117,7 +131,7 @@ int main(int argc, char** argv) {
 	double Xmax = XRANGE;
 	double Ymax = YRANGE;
 	VTK_out(Px, Py, &Xmin, &Xmax, &Ymin, &Ymax, T, 0);
-	print_grid(T, grid_size, Px);
+	//print_grid(T, grid_size, Px);
 
 
 
