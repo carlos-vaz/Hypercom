@@ -28,6 +28,17 @@ void print_grid(double * G, long size, int sizex) {
 	}
 }
 
+double AbsoluteError(double * T, double * S) {
+	double max = 0, this = 0;
+	for(int i=0; i<grid_size; i++) {
+		this = fabs(T[i]-S[i]);
+		if(max > this) {
+			max = this;
+		}
+	}
+	return max;
+}
+
 int main(int argc, char** argv) {
 	if(argc!=5) {
 		printf("Usage:\n\t./main [# points X] [# points Y] [# threads X] [# threads Y]\n");
@@ -67,10 +78,11 @@ int main(int argc, char** argv) {
 	omp_set_num_threads(Tx*Ty);
 	int id, i, unlock=0;
 	int count = 0;
+	double myAbsError = 0, AbsError = 0;
 	double conv_error = TOLERANCE+1, mymax, candidate;
 	while(conv_error > TOLERANCE) {
 
-		#pragma omp parallel default(none) shared(S,T,T_tmp,grid_size,Tx,Ty,Px,Py,Ptx,Pty,conv_error,count,per_thread) private(id,i,unlock,mymax,candidate)
+		#pragma omp parallel default(none) shared(S,T,T_tmp,grid_size,Tx,Ty,Px,Py,Ptx,Pty,conv_error,count,per_thread,AbsError) private(id,i,unlock,mymax,myAbsError,candidate)
 		{
 			id = omp_get_thread_num();
 			//printf("Hello from thread %d\n", id);
@@ -96,12 +108,29 @@ int main(int argc, char** argv) {
 							mymax = candidate;
 					}
 				}
-
 				#pragma omp critical
 				{
 					if(mymax > conv_error)
 						conv_error = mymax;
 				}
+
+
+				#pragma omp for
+				for(i=0; i<grid_size; i++) {
+					if(i/Px!=0 && i/Px!=Py-1 && i%Px!=0 && i%Px!=Px-1) {
+						candidate = fabs(S[i] - T[i]);
+						//printf("Candidate: %lf\n", candidate);
+						if(myAbsError < candidate)
+							myAbsError = candidate;
+					}
+				}
+				#pragma omp critical
+				{
+					if(myAbsError > AbsError)
+						AbsError = myAbsError;
+				}
+				
+		
 			}
 
 			//printf("(thread %d): mymax = %lf, conv_error = %lf\n", mymax, conv_error);
@@ -110,8 +139,11 @@ int main(int argc, char** argv) {
 			//printf("\t (thread %d AFTER):  CONV ERROR= %lf\n", conv_error);
 
 			#pragma omp barrier
-			if(id==0 & count%ROUNDS==0)
-				printf("%d: Error this round = %.10e\n", count, conv_error);
+			if(id==0 & count%ROUNDS==0) {
+				printf("%d: CONV Error this round = %.10e\n", count, conv_error);
+				printf("%d: ABS Error this round = %.10e\n", count, AbsError);
+			}
+
 
 			/*#pragma omp for
 				for(i=0; i<grid_size; i++) {
