@@ -1,9 +1,10 @@
+#define _POSIX_C_SOURCE 199309L
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
 #include <omp.h>
-#define _POSIX_C_SOURCE 199309L
 #include <time.h>
 
 #define XRANGE 2
