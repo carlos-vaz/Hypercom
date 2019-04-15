@@ -3,6 +3,7 @@
 #include <math.h>
 #include <string.h>
 #include <omp.h>
+#include <time.h>
 
 #define XRANGE 2
 #define YRANGE 1
@@ -75,6 +76,10 @@ int main(int argc, char** argv) {
 
 	//print_grid(T, grid_size, Px);
 
+	struct timespec start, end; 
+	double elapsed;
+	clock_gettime(CLOCK_MONOTONIC, &start);
+
 	omp_set_num_threads(Tx*Ty);
 	int id, i, unlock=0;
 	int count = 0;
@@ -114,7 +119,7 @@ int main(int argc, char** argv) {
 						conv_error = mymax;
 				}
 
-				AbsError = 0;
+			/*	AbsError = 0;
 				myAbsError = 0;
 				#pragma omp for
 				for(i=0; i<grid_size; i++) {
@@ -130,34 +135,34 @@ int main(int argc, char** argv) {
 					if(myAbsError > AbsError)
 						AbsError = myAbsError;
 				}
-				
+			*/
 		
 			}
 
-			//printf("(thread %d): mymax = %lf, conv_error = %lf\n", mymax, conv_error);
-
-
-			//printf("\t (thread %d AFTER):  CONV ERROR= %lf\n", conv_error);
 
 			#pragma omp barrier
+
 			if(id==0 & count%ROUNDS==0) {
-				printf("%d: CONV Error this round = %.10e\n", count, conv_error);
-				printf("%d: ABS Error this round = %.10e\n", count, AbsError);
+				//printf("%d: CONV Error this round = %.10e\n", count, conv_error);
+				//printf("%d: ABS Error this round = %.10e\n", count, AbsError);
 			}
 
 
-			/*#pragma omp for
-				for(i=0; i<grid_size; i++) {
-					if(i/Px!=0 && i/Px!=Py-1 && i%Px!=0 && i%Px!=Px-1)
-						T[i] = T_tmp[i];
-				}*/
 			memcpy(&T[id*per_thread], &T_tmp[id*per_thread], per_thread*sizeof(double));
 
 			
 		}
-		//printf("Left parallel part\n");
 		count++;
 	}
+
+
+	/* 
+	 * Display elapsed time
+	 */
+	clock_gettime(CLOCK_MONOTONIC, &end);
+	elapsed = end.tv_sec - start.tv_sec;
+	elapsed += (end.tv_nsec - start.tv_nsec)/1000000000.0;
+	printf("ELAPSED TIME (%dx%d): %lf\n", Px, Py, elapsed);
 
 
 	double Xmin = 0;
