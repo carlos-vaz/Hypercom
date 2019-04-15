@@ -114,7 +114,8 @@ int main(int argc, char** argv) {
 						conv_error = mymax;
 				}
 
-
+				AbsError = 0;
+				myAbsError = 0;
 				#pragma omp for
 				for(i=0; i<grid_size; i++) {
 					if(i/Px!=0 && i/Px!=Py-1 && i%Px!=0 && i%Px!=Px-1) {
