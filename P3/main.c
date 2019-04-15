@@ -4,10 +4,11 @@
 #include <string.h>
 #include <omp.h>
 
-#define XRANGE 1
+#define XRANGE 2
 #define YRANGE 1
 
-#define TOLERANCE 1e-12
+#define TOLERANCE	1e-12
+#define ROUNDS 		1000
 
 int Px, Py, Tx, Ty, Ptx, Pty, shared_pts;
 long grid_size;
@@ -83,7 +84,7 @@ int main(int argc, char** argv) {
 					}
 				}
 
-			if(count%100==0) {
+			if(count%ROUNDS==0) {
 				mymax = 0;
 				conv_error = 0;
 				#pragma omp for
@@ -109,7 +110,7 @@ int main(int argc, char** argv) {
 			//printf("\t (thread %d AFTER):  CONV ERROR= %lf\n", conv_error);
 
 			#pragma omp barrier
-			if(id==0 & count%100==0)
+			if(id==0 & count%ROUNDS==0)
 				printf("%d: Error this round = %.10e\n", count, conv_error);
 
 			/*#pragma omp for
