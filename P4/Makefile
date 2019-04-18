@@ -4,7 +4,7 @@ CFLAGS = -arch=sm_60
 
 TGT = main
 
-% : %.c
+% : %.cu
 	$(CC) $< -o $@ $(CFLAGS)
 
 all : $(TGT)
