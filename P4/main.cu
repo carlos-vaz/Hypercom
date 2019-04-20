@@ -6,8 +6,17 @@
 #define XRANGE 1
 #define YRANGE 1
 
+#define THRESH 1e-12
+
+__device__
+double reduce_conv_error(double * T, double * T_tmp, double * errors, int internal_size) {
+	
+	return 0;
+}
+
 __global__
-void kernel(double * T, double * T_tmp, double * S, int grid_size, int Px, int Py) {
+void kernel(double * T, double * T_tmp, double * S, double * errors, int grid_size, int internal_size, int Px, int Py) {
+	// First, fill grids with boundary conditions
 	int id = blockIdx.x*blockDim.x + threadIdx.x;
 	if(id >= grid_size)
 		return;
@@ -15,13 +24,28 @@ void kernel(double * T, double * T_tmp, double * S, int grid_size, int Px, int P
 	S[id] = val;
 	T[id] = 0;
 	T_tmp[id] = 0;
-	if(id/Px!=0 && id/Px!=Py-1 && id%Px!=0 && id%Px!=Px-1)
+	if(id/Px==0 || id/Px==Py-1 || id%Px==0 || id%Px==Px-1) {
+		T[id] = S[id];
+		T_tmp[id] = S[id];
 		return;
-	T[id] 	  = S[id];	
-	T_tmp[id] = S[id];
+	}
+
 	__syncthreads();
 
-
+	// Then, begin computing solution
+	int iter = 0;
+	double error = THRESH+1;
+	while(iter < 1000) {
+		T_tmp[id] = (-1*S[id]*pow((((double)XRANGE/Px)*((double)YRANGE/Py)),2)+(T[id-1]+T[id+1])*pow(((double)YRANGE/Py),2)+ \
+		(T[id-Px]+T[id+Px])*pow(((double)XRANGE/Px),2))/(2*pow(((double)XRANGE/Px),2)+2*pow(((double)YRANGE/Py),2));
+		__syncthreads();
+		T[id] = T_tmp[id];
+		__syncthreads();
+		if(iter%1000==0) {
+			error = reduce_conv_error(T, T_tmp, errors, internal_size);
+		}
+		iter++;
+	}
 }
 
 int Px, Py, grid_size;
@@ -34,9 +58,10 @@ int main(int argc, char **argv) {
 	Px = atoi(argv[1]);
 	Py = atoi(argv[2]);
 	long grid_size = Px*Py;
+	long internal_size = grid_size - 2*Px - 2*Py + 4;
 
 	// Allocate grids in Host to recieve from GPU (pinned memory)
-	double * h_S;
+double * h_S;
 	double * h_T;
 	double * h_T_tmp;
 	cudaMallocHost((void**)&h_S, grid_size*sizeof(double));
@@ -47,17 +72,16 @@ int main(int argc, char **argv) {
 	double * d_S;
 	double * d_T;
 	double * d_T_tmp;
+	double * d_errors;
 	cudaMalloc((double**)&d_S, grid_size*sizeof(double));
 	cudaMalloc((double**)&d_T, grid_size*sizeof(double));	
 	cudaMalloc((double**)&d_T_tmp, grid_size*sizeof(double));
-	//cudaMemcpy(d_S, h_S, grid_size*sizeof(double), cudaMemcpyHostToDevice);
-	//cudaMemcpy(d_T, h_T_tmp, grid_size*sizeof(double), cudaMemcpyHostToDevice);
-	//cudaMemcpy(d_T_tmp, h_T_tmp, grid_size*sizeof(double), cudaMemcpyHostToDevice);
+	cudaMalloc((double**)&d_errors, grid_size*sizeof(double));
 
 	int blocks = ceil((double)Px*Py/1000);
 	int threadsperblock = 1000;
 	printf("Running on %d blocks each with %d threads\n",blocks,threadsperblock);
-	kernel<<<blocks,threadsperblock>>>(d_T,d_T_tmp,d_S,grid_size,Px,Py);
+	kernel<<<blocks,threadsperblock>>>(d_T,d_T_tmp,d_S,d_errors,grid_size,internal_size,Px,Py);
 
 	cudaDeviceSynchronize();
 
