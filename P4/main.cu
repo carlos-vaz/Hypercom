@@ -22,12 +22,12 @@ int main(int argc, char **argv) {
 	Py = atoi(argv[2]);
 	long grid_size = Px*Py;
 
-	// Allocate Grids (pinned memory)
+	// Make initial grids (pinned memory)
 	double * h_S;
-	cudaMallocHost((void**)&h_S, grid_size*sizeof(double));
 	double * h_T;
-	cudaMallocHost((void**)&h_T, grid_size*sizeof(double));
 	double * h_T_tmp;
+	cudaMallocHost((void**)&h_S, grid_size*sizeof(double));
+	cudaMallocHost((void**)&h_T, grid_size*sizeof(double));
 	cudaMallocHost((void**)&h_T_tmp, grid_size*sizeof(double));
 	for(long i=0; i<grid_size; i++) {
 		double val = (i%Px)*((double)XRANGE/Px)*powf(2.718281828, (i/Px)*((double)YRANGE/Py));
@@ -37,6 +37,8 @@ int main(int argc, char **argv) {
 			h_T_tmp[i] = val;
 		}
 	}
+	
+	// Transfer grids to GPU memory
 	double * d_S;
 	double * d_T;
 	double * d_T_tmp;
