@@ -9,6 +9,7 @@
 __global__
 void kernel(double * T, double * S) {
 	int id = blockIdx.x*blockDim.x + threadIdx.x;
+	printf("Hello from thread %d\n", id);
 }
 
 int Px, Py, grid_size;
@@ -49,8 +50,11 @@ int main(int argc, char **argv) {
 	cudaMemcpy(d_T, h_T_tmp, grid_size*sizeof(double), cudaMemcpyHostToDevice);
 	cudaMemcpy(d_T_tmp, h_T_tmp, grid_size*sizeof(double), cudaMemcpyHostToDevice);
 
-	int blocks = 1;
-	int threadsperblock = 1;
-	kernel<<<blocks,threadsperblock>>>(d_T,d_S);
+	int blocks = ceil((double)Px*Py/1000);
+	int threadsperblock = 1000;
+	printf("Running on %d blocks each with %d threads\n",blocks,threadsperblock);
+	//kernel<<<blocks,threadsperblock>>>(d_T,d_S);
+
+	cudaDeviceSynchronize();
 
 }
