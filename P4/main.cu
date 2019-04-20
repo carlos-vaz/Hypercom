@@ -9,9 +9,20 @@
 #define THRESH 1e-12
 
 __device__
-double reduce_conv_error(double * T, double * T_tmp, double * errors, int internal_size) {
-	
-	return 0;
+double reduce_conv_error(double * T, double * T_tmp, double * errors, int internal_size, int map_id) {
+	int stride = 2;
+	while(stride < internal_size) {
+		if(map_id % stride == 0) {
+			errors[map_id] = fmax(errors[map_id], errors[map_id+stride/2]);
+			if(internal_size % stride == (stride/2) && map_id==internal_size-3*stride/2) {
+				// This threads should collect the max of THREE values, not two
+				errors[map_id] = fmax(errors[map_id], errors[map_id+stride]);
+			}
+		}
+		stride <<= 1;
+		__syncthreads();
+	}
+	return errors[0];
 }
 
 __global__
@@ -35,6 +46,7 @@ void kernel(double * T, double * T_tmp, double * S, double * errors, int grid_si
 	// Then, begin computing solution
 	int iter = 0;
 	double error = THRESH+1;
+	int map_id;
 	while(iter < 1000) {
 		T_tmp[id] = (-1*S[id]*pow((((double)XRANGE/Px)*((double)YRANGE/Py)),2)+(T[id-1]+T[id+1])*pow(((double)YRANGE/Py),2)+ \
 		(T[id-Px]+T[id+Px])*pow(((double)XRANGE/Px),2))/(2*pow(((double)XRANGE/Px),2)+2*pow(((double)YRANGE/Py),2));
@@ -42,7 +54,9 @@ void kernel(double * T, double * T_tmp, double * S, double * errors, int grid_si
 		T[id] = T_tmp[id];
 		__syncthreads();
 		if(iter%1000==0) {
-			error = reduce_conv_error(T, T_tmp, errors, internal_size);
+			// Remap id to index only internal grid points
+			map_id = id-(2*(id/Px)-1)-(Px);
+			error = reduce_conv_error(T, T_tmp, errors, internal_size, map_id);
 		}
 		iter++;
 	}
@@ -76,7 +90,7 @@ double * h_S;
 	cudaMalloc((double**)&d_S, grid_size*sizeof(double));
 	cudaMalloc((double**)&d_T, grid_size*sizeof(double));	
 	cudaMalloc((double**)&d_T_tmp, grid_size*sizeof(double));
-	cudaMalloc((double**)&d_errors, grid_size*sizeof(double));
+	cudaMalloc((double**)&d_errors, internal_size*sizeof(double));
 
 	int blocks = ceil((double)Px*Py/1000);
 	int threadsperblock = 1000;
