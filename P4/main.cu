@@ -9,24 +9,32 @@
 #define THRESH 1e-12
 
 __device__
-double reduce_conv_error(double * T, double * T_tmp, double * errors, int internal_size, int map_id) {
+double reduce_conv_error(double * T, double * T_tmp, double * errors, long internal_size, int map_id) {
 	int stride = 2;
-	while(stride < internal_size) {
-		if(map_id % stride == 0) {
-			errors[map_id] = fmax(errors[map_id], errors[map_id+stride/2]);
-			if(internal_size % stride == (stride/2) && map_id==internal_size-3*stride/2) {
-				// This threads should collect the max of THREE values, not two
-				errors[map_id] = fmax(errors[map_id], errors[map_id+stride]);
-			}
+	int num_active = internal_size/2;
+	int prev_active = internal_size;
+	int  active = map_id%2==0 ? 1 : 0;
+	if(internal_size % 2 == 1 && map_id == internal_size-1) active = 0;
+	while(num_active > 0) {
+		if(active==1) errors[map_id] += errors[map_id + stride/2];
+		if(active==1) printf("[%d] <-- [%d]\n", map_id, map_id+stride/2);
+		if(active==1 && prev_active%2==1 && map_id==(num_active-1)*stride) {
+			errors[map_id] += errors[map_id + stride];
+			printf("special. [%d] <-- [%d]\n", map_id, map_id+stride);//, map_id, map_id + stride);
 		}
 		stride <<= 1;
+		if(map_id % stride != 0 || (num_active%2==1 && map_id==(num_active-1)*stride/2))
+			active = 0;
+		prev_active = num_active;
+		num_active /= 2;
+		if(map_id==0) printf("----------\n");
 		__syncthreads();
 	}
 	return errors[0];
 }
 
 __global__
-void kernel(double * T, double * T_tmp, double * S, double * errors, int grid_size, int internal_size, int Px, int Py) {
+void kernel(double * T, double * T_tmp, double * S, double * errors, long grid_size, long internal_size, int Px, int Py) {
 	// First, fill grids with boundary conditions
 	int id = blockIdx.x*blockDim.x + threadIdx.x;
 	if(id >= grid_size)
@@ -44,9 +52,9 @@ void kernel(double * T, double * T_tmp, double * S, double * errors, int grid_si
 	__syncthreads();
 
 	// Then, begin computing solution
+	int mapped_id = id-(2*(id/Px)-1)-(Px);
 	int iter = 0;
 	double error = THRESH+1;
-	int map_id;
 	while(iter < 1000) {
 		T_tmp[id] = (-1*S[id]*pow((((double)XRANGE/Px)*((double)YRANGE/Py)),2)+(T[id-1]+T[id+1])*pow(((double)YRANGE/Py),2)+ \
 		(T[id-Px]+T[id+Px])*pow(((double)XRANGE/Px),2))/(2*pow(((double)XRANGE/Px),2)+2*pow(((double)YRANGE/Py),2));
@@ -54,15 +62,16 @@ void kernel(double * T, double * T_tmp, double * S, double * errors, int grid_si
 		T[id] = T_tmp[id];
 		__syncthreads();
 		if(iter%1000==0) {
-			// Remap id to index only internal grid points
-			map_id = id-(2*(id/Px)-1)-(Px);
-			error = reduce_conv_error(T, T_tmp, errors, internal_size, map_id);
+			errors[mapped_id] = 1; // test reduce to sum
+			//printf("Calling reduce... %d\n", 1);
+			error = reduce_conv_error(T, T_tmp, errors, internal_size, mapped_id);
+			if(mapped_id==0) printf("TEST SUM REDUCTION = %lf (size internal = %ld)\n", error, internal_size);
 		}
 		iter++;
 	}
 }
 
-int Px, Py, grid_size;
+int Px, Py;
 
 int main(int argc, char **argv) {
 	if(argc!=3) {
