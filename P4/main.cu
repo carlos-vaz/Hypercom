@@ -129,6 +129,6 @@ double * h_S;
 	double Ymin = 0;
 	double Xmax = XRANGE;
 	double Ymax = YRANGE;
-	VTK_out(Px, Py, &Xmin, &Xmax, &Ymin, &Ymax, T, 0);
+	VTK_out(Px, Py, &Xmin, &Xmax, &Ymin, &Ymax, h_T, 0);
 
 }
