@@ -8,6 +8,11 @@
 
 #define THRESH 1e-12
 
+extern 
+void VTK_out(const int N, const int M, const double *Xmin, const double *Xmax,
+             const double *Ymin, const double *Ymax, const double *T,
+             const int index);
+
 __device__
 double reduce_conv_error(double * T, double * T_tmp, double * errors, long internal_size, int id, int map_id) {
 	errors[map_id] = fabs(T[id] - T_tmp[id]);
@@ -118,5 +123,12 @@ double * h_S;
 		if(i%Px==Px-1)
 			printf("...\n");
 	}
+
+	// Output .vtk file for ParaView
+	double Xmin = 0;
+	double Ymin = 0;
+	double Xmax = XRANGE;
+	double Ymax = YRANGE;
+	VTK_out(Px, Py, &Xmin, &Xmax, &Ymin, &Ymax, T, 0);
 
 }
