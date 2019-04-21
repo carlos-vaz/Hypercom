@@ -5,7 +5,7 @@ CFLAGS = -arch=sm_60
 TGT = main
 
 % : %.cu
-	$(CC) $< -o $@ $(CFLAGS)
+	$(CC) $< vtk.c -o $@ $(CFLAGS)
 
 all : $(TGT)
 
