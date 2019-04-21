@@ -8,7 +8,7 @@
 
 #define THRESH 1e-12
 
-extern 
+extern "C"
 void VTK_out(const int N, const int M, const double *Xmin, const double *Xmax,
              const double *Ymin, const double *Ymax, const double *T,
              const int index);
