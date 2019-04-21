@@ -8,7 +8,7 @@
 
 #define THRESH 1e-12
 
-__device__
+/*__device__
 double reduce_conv_error(double * T, double * T_tmp, double * errors, long internal_size, int map_id) {
 	int stride = 2;
 	int num_active = internal_size/2;
@@ -31,7 +31,35 @@ double reduce_conv_error(double * T, double * T_tmp, double * errors, long inter
 		__syncthreads();
 	}
 	return errors[0];
+}*/
+
+__device__
+double reduce_conv_error(double * T, double * T_tmp, double * errors, long internal_size, int map_id) {
+	int stride = 2;
+	int num_active = internal_size/2;
+	int prev_active = internal_size;
+	int  active = map_id%2==0 ? 1 : 0;
+	if(internal_size % 2 == 1 && map_id == internal_size-1) active = 0;
+	while(num_active > 0) {
+		if(active==1) {
+			errors[map_id] += errors[map_id + stride/2];
+			printf("[%d] <-- [%d]\n", map_id, map_id+stride/2);
+			if(prev_active%2==1 && map_id==(num_active-1)*stride) {
+				errors[map_id] += errors[map_id + stride];
+				printf("special. [%d] <-- [%d]\n", map_id, map_id+stride);//, map_id, map_id + stride);
+			}		
+		}
+		stride <<= 1;
+		if(map_id % stride != 0 || (num_active%2==1 && map_id==(num_active-1)*stride/2))
+			active = 0;
+		prev_active = num_active;
+		num_active /= 2;
+		if(map_id==0) printf("----------\n");
+		__syncthreads();
+	}
+	return errors[0];
 }
+
 
 __global__
 void kernel(double * T, double * T_tmp, double * S, double * errors, long grid_size, long internal_size, int Px, int Py) {
