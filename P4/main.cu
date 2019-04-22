@@ -6,7 +6,7 @@
 #define XRANGE 1
 #define YRANGE 1
 
-#define THRESH 1e-12
+#define THRESH 1e-5
 
 extern "C"
 void VTK_out(const int N, const int M, const double *Xmin, const double *Xmax,
@@ -14,14 +14,14 @@ void VTK_out(const int N, const int M, const double *Xmin, const double *Xmax,
              const int index);
 
 __device__
-double reduce_conv_error(double * T, double * T_tmp, double * errors, long internal_size, int id, int map_id) {
+double reduce_conv_error(double * T, double * T_tmp, double * errors, long internal_size, long id, long map_id, int useful) {
 	errors[map_id] = fabs(T[id] - T_tmp[id]);
 
 	int stride = 2;
 	int num_active = internal_size/2;
 	int prev_active = internal_size;
 	int  active = map_id%2==0 ? 1 : 0;
-	if(internal_size % 2 == 1 && map_id == internal_size-1) active = 0;
+	if((internal_size % 2 == 1 && map_id == internal_size-1) || useful==0) active = 0;
 	while(num_active > 0) {
 		if(active==1) {
 			errors[map_id] = fmax(errors[map_id], errors[map_id + stride/2]);
@@ -46,35 +46,41 @@ double reduce_conv_error(double * T, double * T_tmp, double * errors, long inter
 __global__
 void kernel(double * T, double * T_tmp, double * S, double * errors, long grid_size, long internal_size, int Px, int Py) {
 	// First, fill grids with boundary conditions
-	int id = blockIdx.x*blockDim.x + threadIdx.x;
-	//int active = 1;
+	long id = blockIdx.x*blockDim.x + threadIdx.x;
+	int active = 1;
 	if(id >= grid_size)
-		return;
-	double val = (id%Px)*((double)XRANGE/Px)*powf(2.718281828, (id/Px)*((double)YRANGE/Py));
-	S[id] = val;
-	T[id] = 0;
-	T_tmp[id] = 0;
-	if(id/Px==0 || id/Px==Py-1 || id%Px==0 || id%Px==Px-1) {
-		T[id] = S[id];
-		T_tmp[id] = S[id];
-		return;
+		active = 0;
+	if(active==1) { 
+		double val = (id%Px)*((double)XRANGE/Px)*powf(2.718281828, (id/Px)*((double)YRANGE/Py));
+		S[id] = val;
+		if(id/Px==0 || id/Px==Py-1 || id%Px==0 || id%Px==Px-1) { 
+			T[id] = val;
+			T_tmp[id] = val;
+			active = 0;
+		} else {
+			T[id] = 0;
+			T_tmp[id] = 0;
+		}
 	}
+
 	__syncthreads();
 	
 	// Then, begin computing solution
-	int mapped_id = id-(2*(id/Px)-1)-(Px);
+	long mapped_id = id-(2*(id/Px)-1)-(Px);
 	int iter = 0;
 	double error = THRESH+1;
-	while(error > THRESH) {
-		T_tmp[id] = (-1*S[id]*pow((((double)XRANGE/Px)*((double)YRANGE/Py)),2)+(T[id-1]+T[id+1])*pow(((double)YRANGE/Py),2)+ \
-		(T[id-Px]+T[id+Px])*pow(((double)XRANGE/Px),2))/(2*pow(((double)XRANGE/Px),2)+2*pow(((double)YRANGE/Py),2));
+	while(iter < 200000) {
+		if(active==1) T_tmp[id] = (-1*S[id]*powf((((double)XRANGE/Px)*((double)YRANGE/Py)),2)+(T[id-1]+T[id+1])*powf(((double)YRANGE/Py),2)+ \
+		(T[id-Px]+T[id+Px])*powf(((double)XRANGE/Px),2))/(2*powf(((double)XRANGE/Px),2)+2*powf(((double)YRANGE/Py),2));
+		//if(active==1) T_tmp[id] = (id%Px)*((double)XRANGE/Px);
 		__syncthreads();
 		if(iter%1000==0) {
 			//errors[mapped_id] = 1; // test reduce to sum
-			error = reduce_conv_error(T, T_tmp, errors, internal_size, id, mapped_id);
-			if(mapped_id==0) printf("iter %d Error = %.10e\n", iter, error);
+			//error = reduce_conv_error(T, T_tmp, errors, internal_size, id, mapped_id, active);
+			if(mapped_id==0 && active==1) printf("iter %d Error = %.10e\n", iter, error);
 		}
-		T[id] = T_tmp[id];
+		__syncthreads();
+		if(active==1) T[id] = T_tmp[id];
 		__syncthreads();
 		iter++;
 	}
@@ -118,11 +124,11 @@ double * h_S;
 	cudaDeviceSynchronize();
 
 	cudaMemcpy(h_T, d_T, grid_size*sizeof(double), cudaMemcpyDeviceToHost);
-	for(int i=0; i<grid_size; i++) {
-		printf("%lf ", h_T[i]);
-		if(i%Px==Px-1)
-			printf("...\n");
-	}
+//	for(int i=0; i<grid_size; i++) {
+//		printf("%lf ", h_T[i]);
+//		if(i%Px==Px-1)
+//			printf("...\n");
+//	}
 
 	// Output .vtk file for ParaView
 	double Xmin = 0;
