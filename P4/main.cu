@@ -110,7 +110,7 @@ int main(int argc, char **argv) {
 		if(iter%1000==0) {
 			get_error<<<blocks,threadsperblock>>>();
 			cudaDeviceSynchronize();
-			cudaMemcpy(&h_conv_error, d_conv_error, sizeof(double), cudaMemcpyDeviceToHost);
+			cudaMemcpy(&h_conv_error, &d_conv_error, sizeof(double), cudaMemcpyDeviceToHost);
 			printf("iter = %d... Error = %lf\n", iter, h_conv_error);
 		}
 		iter++;
