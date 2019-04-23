@@ -23,7 +23,7 @@ void prepare_grids(double *T, double * T_tmp, double *S, double * errors, long *
 	long mapped_id = id-(2*(id/Px[0])-1)-(Px[0]);
 	if(id >= grid_size[0])
 		return;
-	double val = (id%Px[0])*((double)XRANGE/Px[0])*powf(2.718281828, (id/Px[0])*((double)YRANGE/Py[0][0]));
+	double val = (id%Px[0])*((double)XRANGE/Px[0])*powf(2.718281828, (id/Px[0])*((double)YRANGE/Py[0]));
 	S[id] = val;
 	if(id/Px[0]==0 || id/Px[0]==Py[0]-1 || id%Px[0]==0 || id%Px[0]==Px[0]-1) { 
 		T[id] = val;
