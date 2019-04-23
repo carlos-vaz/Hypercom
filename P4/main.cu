@@ -88,11 +88,11 @@ int main(int argc, char **argv) {
 	cudaMalloc((double**)&d_T_tmp, h_grid_size*sizeof(double));
 	cudaMalloc((double**)&d_errors, h_internal_size*sizeof(double));
 
-	int blocks = (ceil((double)(Px*Py)/1000));
+	int blocks = (ceil((double)(h_Px*h_Py)/1000));
 	int threadsperblock = 1000;
 	printf("Running on %d blocks each with %d threads\n",blocks,threadsperblock);
 
-	prepare_grids<<<blocks, threadsperblock>>>(d_T,d_T_tmp,d_S,d_errors,grid_size,d_internal_size,d_Px,d_Py);
+	prepare_grids<<<blocks, threadsperblock>>>(d_T,d_T_tmp,d_S,d_errors,d_grid_size,d_internal_size,d_Px,d_Py);
 	int iter = 0;
 	while(iter < 100000) {
 		update_temporary<<<blocks,threadsperblock>>>(d_T,d_T_tmp,d_S,d_errors,d_grid_size,d_Px,d_Py);
