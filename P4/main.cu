@@ -8,8 +8,6 @@
 
 #define THRESH 1e-5
 
-using namespace cooperative_groups;
-
 extern "C"
 void VTK_out(const int N, const int M, const double *Xmin, const double *Xmax,
              const double *Ymin, const double *Ymax, const double *T,
@@ -20,7 +18,7 @@ __device__ long d_grid_size, d_internal_size;
 
 
 __global__
-void prepare_grids(double *T, double T_tmp, double *S, double * errors, long grid_size, long internal_size, int Px, int Py) {
+void prepare_grids(double *T, double * T_tmp, double *S, double * errors, long grid_size, long internal_size, int Px, int Py) {
 	long id = blockIdx.x*blockDim.x + threadIdx.x;
 	long mapped_id = id-(2*(id/Px)-1)-(Px);
 	if(id >= grid_size)
@@ -64,7 +62,7 @@ int main(int argc, char **argv) {
 	}
 	h_Px = atoi(argv[1]);
 	h_Py = atoi(argv[2]);
-	h_grid_size = h_Px*Py;
+	h_grid_size = h_Px*h_Py;
 	h_internal_size = h_grid_size - 2*h_Px - 2*h_Py + 4;
 	cudaMemcpy(&d_Px, &h_Px, sizeof(int), cudaMemcpyHostToDevice);
 	cudaMemcpy(&d_Py, &h_Py, sizeof(int), cudaMemcpyHostToDevice);
