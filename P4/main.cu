@@ -19,7 +19,7 @@ void prepare_grids(double *T, double * T_tmp, double *S, double * errors, long *
 	long mapped_id = id-(2*(id/Px[0])-1)-(Px[0]);
 	if(id >= grid_size[0])
 		return;
-	if(id==0) printf("Px = %d\n", Px[0]);
+	//if(id==0) printf("Px = %d\n", Px[0]);
 	double val = (id%Px[0])*((double)XRANGE/Px[0])*powf(2.718281828, (id/Px[0])*((double)YRANGE/Py[0]));
 	S[id] = val;
 	if(id/Px[0]==0 || id/Px[0]==Py[0]-1 || id%Px[0]==0 || id%Px[0]==Px[0]-1) { 
@@ -95,23 +95,23 @@ int main(int argc, char **argv) {
 
 	prepare_grids<<<blocks, threadsperblock>>>(d_T,d_T_tmp,d_S,d_errors,d_grid_size,d_internal_size,d_Px,d_Py);
 	cudaDeviceSynchronize();
-	cudaMemcpy(h_S, d_S, h_grid_size*sizeof(double), cudaMemcpyDeviceToHost);	
+	/*cudaMemcpy(h_S, d_S, h_grid_size*sizeof(double), cudaMemcpyDeviceToHost);	
 	for(int i=0; i< h_grid_size; i++) {
 		printf("%lf ", h_S[i]);
 		if(i%h_Px==h_Px-1)
 			printf("...\n");
-	}
-/*	int iter = 0;
+	}*/
+	int iter = 0;
 	while(iter < 100000) {
-		update_temporary<<<blocks,threadsperblock>>>(d_T,d_T_tmp,d_S,d_errors,&d_grid_size,&d_Px,&d_Py);
+		update_temporary<<<blocks,threadsperblock>>>(d_T,d_T_tmp,d_S,d_errors,d_grid_size,d_Px,d_Py);
 		cudaDeviceSynchronize();
-		update_real<<<blocks,threadsperblock>>>(d_T,d_T_tmp,d_S,d_errors,&d_grid_size,&d_Px,&d_Py);
+		update_real<<<blocks,threadsperblock>>>(d_T,d_T_tmp,d_S,d_errors,d_grid_size,d_Px,d_Py);
 		if(iter%1000==0) {
 
 			printf("iter = %d\n", iter);
 		}
 		iter++;
-	}*/
+	}
 	printf("Finished\n");
 
 	cudaMemcpy(h_T, d_T, h_grid_size*sizeof(double), cudaMemcpyDeviceToHost);
