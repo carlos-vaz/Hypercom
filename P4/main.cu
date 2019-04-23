@@ -13,10 +13,6 @@ void VTK_out(const int N, const int M, const double *Xmin, const double *Xmax,
              const double *Ymin, const double *Ymax, const double *T,
              const int index);
 
-__device__ int d_Px, d_Py;
-__device__ long d_grid_size, d_internal_size;
-
-
 __global__
 void prepare_grids(double *T, double * T_tmp, double *S, double * errors, long * grid_size, long * internal_size, int * Px, int * Py) {
 	long id = blockIdx.x*blockDim.x + threadIdx.x;
@@ -65,10 +61,16 @@ int main(int argc, char **argv) {
 	int h_Py = atoi(argv[2]);
 	long h_grid_size = h_Px*h_Py;
 	long h_internal_size = h_grid_size - 2*h_Px - 2*h_Py + 4;
-	cudaMemcpy(&d_Px, &h_Px, sizeof(int), cudaMemcpyHostToDevice);
-	cudaMemcpy(&d_Py, &h_Py, sizeof(int), cudaMemcpyHostToDevice);
-	cudaMemcpy(&d_grid_size, &h_grid_size, sizeof(long), cudaMemcpyHostToDevice);
-	cudaMemcpy(&d_internal_size, &h_internal_size, sizeof(long), cudaMemcpyHostToDevice);
+	int *d_Px, *d_Py;
+	long *d_grid_size, *d_internal_size;
+	cudaMalloc((void**)&d_Px, sizeof(int));
+	cudaMalloc((void**)&d_Py, sizeof(int));
+	cudaMalloc((void**)&d_grid_size, sizeof(long));
+	cudaMalloc((void**)&d_internal_size, sizeof(long));
+	cudaMemcpy(d_Px, &h_Px, sizeof(int), cudaMemcpyHostToDevice);
+	cudaMemcpy(d_Py, &h_Py, sizeof(int), cudaMemcpyHostToDevice);
+	cudaMemcpy(d_grid_size, &h_grid_size, sizeof(long), cudaMemcpyHostToDevice);
+	cudaMemcpy(d_internal_size, &h_internal_size, sizeof(long), cudaMemcpyHostToDevice);
 
 
 	// Allocate grids in Host to recieve from GPU (pinned memory)
@@ -91,7 +93,8 @@ int main(int argc, char **argv) {
 	int threadsperblock = 1000;
 	printf("Running on %d blocks each with %d threads\n",blocks,threadsperblock);
 
-	prepare_grids<<<blocks, threadsperblock>>>(d_T,d_T_tmp,d_S,d_errors,&d_grid_size,&d_internal_size,&d_Px,&d_Py);
+	prepare_grids<<<blocks, threadsperblock>>>(d_T,d_T_tmp,d_S,d_errors,d_grid_size,d_internal_size,d_Px,d_Py);
+	cudaDeviceSynchronize();
 	cudaMemcpy(h_S, d_S, h_grid_size*sizeof(double), cudaMemcpyDeviceToHost);	
 	for(int i=0; i< h_grid_size; i++) {
 		printf("%lf ", h_S[i]);
