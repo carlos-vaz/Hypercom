@@ -18,14 +18,14 @@ __device__ long d_grid_size, d_internal_size;
 
 
 __global__
-void prepare_grids(double *T, double * T_tmp, double *S, double * errors, long grid_size, long internal_size, int Px, int Py) {
+void prepare_grids(double *T, double * T_tmp, double *S, double * errors, long * grid_size, long * internal_size, int * Px, int * Py) {
 	long id = blockIdx.x*blockDim.x + threadIdx.x;
-	long mapped_id = id-(2*(id/Px)-1)-(Px);
-	if(id >= grid_size)
+	long mapped_id = id-(2*(id/Px[0])-1)-(Px[0]);
+	if(id >= grid_size[0])
 		return;
-	double val = (id%Px)*((double)XRANGE/Px)*powf(2.718281828, (id/Px)*((double)YRANGE/Py));
+	double val = (id%Px[0])*((double)XRANGE/Px[0])*powf(2.718281828, (id/Px[0])*((double)YRANGE/Py[0][0]));
 	S[id] = val;
-	if(id/Px==0 || id/Px==Py-1 || id%Px==0 || id%Px==Px-1) { 
+	if(id/Px[0]==0 || id/Px[0]==Py[0]-1 || id%Px[0]==0 || id%Px[0]==Px[0]-1) { 
 		T[id] = val;
 		T_tmp[id] = val;
 		return;
@@ -38,18 +38,18 @@ void prepare_grids(double *T, double * T_tmp, double *S, double * errors, long g
 
 
 __global__
-void update_temporary(double * T, double * T_tmp, double * S, double * errors, long grid_size, int Px, int Py) {
+void update_temporary(double * T, double * T_tmp, double * S, double * errors, long * grid_size, int * Px, int * Py) {
 	long id = blockIdx.x*blockDim.x + threadIdx.x;
-	if(id>=grid_size || id/Px==0 || id/Px==Py-1 || id%Px==0 || id%Px==Px-1)
+	if(id>=grid_size[0] || id/Px[0]==0 || id/Px[0]==Py[0]-1 || id%Px[0]==0 || id%Px[0]==Px[0]-1)
 		return;
-	T_tmp[id] = (-1*S[id]*powf((((double)XRANGE/Px)*((double)YRANGE/Py)),2)+(T[id-1]+T[id+1])*powf(((double)YRANGE/Py),2)+ \
-	(T[id-Px]+T[id+Px])*powf(((double)XRANGE/Px),2))/(2*powf(((double)XRANGE/Px),2)+2*powf(((double)YRANGE/Py),2));
+	T_tmp[id] = (-1*S[id]*powf((((double)XRANGE/Px[0])*((double)YRANGE/Py[0])),2)+(T[id-1]+T[id+1])*powf(((double)YRANGE/Py[0]),2)+ \
+	(T[id-Px[0]]+T[id+Px[0]])*powf(((double)XRANGE/Px[0]),2))/(2*powf(((double)XRANGE/Px[0]),2)+2*powf(((double)YRANGE/Py[0]),2));
 }
 
 __global__
-void update_real(double * T, double * T_tmp, double * S, double * errors, long grid_size, int Px, int Py) {
+void update_real(double * T, double * T_tmp, double * S, double * errors, long * grid_size, int * Px, int * Py) {
 	long id = blockIdx.x*blockDim.x + threadIdx.x;
-	if(id>=grid_size || id/Px==0 || id/Px==Py-1 || id%Px==0 || id%Px==Px-1)
+	if(id>=grid_size[0] || id/Px[0]==0 || id/Px[0]==Py[0]-1 || id%Px[0]==0 || id%Px[0]==Px[0]-1)
 		return;
 	T[id] = T_tmp[id];
 }
@@ -92,12 +92,12 @@ int main(int argc, char **argv) {
 	int threadsperblock = 1000;
 	printf("Running on %d blocks each with %d threads\n",blocks,threadsperblock);
 
-	prepare_grids<<<blocks, threadsperblock>>>(d_T,d_T_tmp,d_S,d_errors,d_grid_size,d_internal_size,d_Px,d_Py);
+	prepare_grids<<<blocks, threadsperblock>>>(d_T,d_T_tmp,d_S,d_errors,&d_grid_size,&d_internal_size,&d_Px,&d_Py);
 	int iter = 0;
 	while(iter < 100000) {
-		update_temporary<<<blocks,threadsperblock>>>(d_T,d_T_tmp,d_S,d_errors,d_grid_size,d_Px,d_Py);
+		update_temporary<<<blocks,threadsperblock>>>(d_T,d_T_tmp,d_S,d_errors,&d_grid_size,&d_Px,&d_Py);
 		cudaDeviceSynchronize();
-		update_real<<<blocks,threadsperblock>>>(d_T,d_T_tmp,d_S,d_errors,d_grid_size,d_Px,d_Py);
+		update_real<<<blocks,threadsperblock>>>(d_T,d_T_tmp,d_S,d_errors,&d_grid_size,&d_Px,&d_Py);
 		if(iter%1000==0) {
 
 			printf("iter = %d\n", iter);
