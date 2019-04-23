@@ -60,10 +60,10 @@ int main(int argc, char **argv) {
 		printf("Usage:\n\t./main [xdim] [ydim]\n");
 		exit(0);
 	}
-	h_Px = atoi(argv[1]);
-	h_Py = atoi(argv[2]);
-	h_grid_size = h_Px*h_Py;
-	h_internal_size = h_grid_size - 2*h_Px - 2*h_Py + 4;
+	int h_Px = atoi(argv[1]);
+	int h_Py = atoi(argv[2]);
+	long h_grid_size = h_Px*h_Py;
+	long h_internal_size = h_grid_size - 2*h_Px - 2*h_Py + 4;
 	cudaMemcpy(&d_Px, &h_Px, sizeof(int), cudaMemcpyHostToDevice);
 	cudaMemcpy(&d_Py, &h_Py, sizeof(int), cudaMemcpyHostToDevice);
 	cudaMemcpy(&d_grid_size, &h_grid_size, sizeof(long), cudaMemcpyHostToDevice);
