@@ -1,8 +1,10 @@
 CC = nvcc
 
-CFLAGS = -arch=sm_60
+CFLAGS = -arch=sm_60 \
+	 -rdc=true
 
-TGT = main
+TGT = main \
+  	coop
 
 % : %.cu
 	$(CC) $< vtk.c -o $@ $(CFLAGS)
