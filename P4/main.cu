@@ -73,10 +73,8 @@ int main(int argc, char **argv) {
 	// Allocate grids in Host to recieve from GPU (pinned memory)
 	double * h_S;
 	double * h_T;
-	double * h_T_tmp;
 	cudaMallocHost((void**)&h_S, h_grid_size*sizeof(double));
 	cudaMallocHost((void**)&h_T, h_grid_size*sizeof(double));
-	cudaMallocHost((void**)&h_T_tmp, h_grid_size*sizeof(double));
 	
 	// Allocate grids in GPU memory
 	double * d_S;
@@ -93,7 +91,13 @@ int main(int argc, char **argv) {
 	printf("Running on %d blocks each with %d threads\n",blocks,threadsperblock);
 
 	prepare_grids<<<blocks, threadsperblock>>>(d_T,d_T_tmp,d_S,d_errors,&d_grid_size,&d_internal_size,&d_Px,&d_Py);
-	int iter = 0;
+	cudaMemcpy(h_S, d_S, h_grid_size*sizeof(double), cudaMemcpyDeviceToHost);	
+	for(int i=0; i< h_grid_size; i++) {
+		printf("%lf ", h_S[i]);
+		if(i%h_Px==h_Px-1)
+			printf("...\n");
+	}
+/*	int iter = 0;
 	while(iter < 100000) {
 		update_temporary<<<blocks,threadsperblock>>>(d_T,d_T_tmp,d_S,d_errors,&d_grid_size,&d_Px,&d_Py);
 		cudaDeviceSynchronize();
@@ -103,7 +107,7 @@ int main(int argc, char **argv) {
 			printf("iter = %d\n", iter);
 		}
 		iter++;
-	}
+	}*/
 	printf("Finished\n");
 
 	cudaMemcpy(h_T, d_T, h_grid_size*sizeof(double), cudaMemcpyDeviceToHost);
