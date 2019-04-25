@@ -6,14 +6,15 @@
 #define XRANGE 1
 #define YRANGE 1
 
-#define THRESH 1e-5
+#define THRESH 1e-12
 
 extern "C"
 void VTK_out(const int N, const int M, const double *Xmin, const double *Xmax,
              const double *Ymin, const double *Ymax, const double *T,
              const int index);
 
-__device__ double d_conv_error;
+//__device__ volatile int d_error_mutex = 0;
+//__device__ double * d_conv_error;
 
 __global__
 void prepare_grids(double *T, double * T_tmp, double *S, double * errors, long * grid_size, long * internal_size, int * Px, int * Py) {
@@ -34,7 +35,6 @@ void prepare_grids(double *T, double * T_tmp, double *S, double * errors, long *
 	errors[mapped_id] = 0;
 }
 
-
 __global__
 void update_temporary(double * T, double * T_tmp, double * S, double * errors, long * grid_size, int * Px, int * Py) {
 	long id = blockIdx.x*blockDim.x + threadIdx.x;
@@ -52,10 +52,30 @@ void update_real(double * T, double * T_tmp, double * S, double * errors, long *
 	T[id] = T_tmp[id];
 }
 
-__global__
-void get_error() {
+__global__ 
+void get_abs_error(double *T, double *S, long * grid_size, double * d_abs_error) {	
 	long id = blockIdx.x*blockDim.x + threadIdx.x;
-	if(id==0) d_conv_error = -7;
+	if(id >= grid_size[0])
+		return;
+	if(id==0)
+		*d_abs_error = 0;
+	__syncthreads();
+	double val = fabs(T[id] - S[id]);
+	val = powf(val,3);
+	atomicAdd(d_abs_error, val);
+}
+
+__global__
+void get_error(double *T, double *T_tmp, long * grid_size, int * Px, int * Py, double * d_conv_error) {
+	long id = blockIdx.x*blockDim.x + threadIdx.x;
+	if(id >= grid_size[0])
+		return;
+	if(id==0)
+		*d_conv_error = 0;
+	__syncthreads();
+	double val = fabs(T[id] - T_tmp[id]);
+	val = powf(val,3);
+	atomicAdd(d_conv_error, val);
 }
 
 int main(int argc, char **argv) {
@@ -94,6 +114,10 @@ int main(int argc, char **argv) {
 	cudaMalloc((double**)&d_T, h_grid_size*sizeof(double));	
 	cudaMalloc((double**)&d_T_tmp, h_grid_size*sizeof(double));
 	cudaMalloc((double**)&d_errors, h_internal_size*sizeof(double));
+	double * d_conv_error;
+	double * d_abs_error;
+	cudaMalloc((double**)&d_conv_error, sizeof(double));
+	cudaMalloc((double**)&d_abs_error, sizeof(double));
 
 	int blocks = (ceil((double)(h_Px*h_Py)/1000));
 	int threadsperblock = 1000;
@@ -102,21 +126,26 @@ int main(int argc, char **argv) {
 	prepare_grids<<<blocks, threadsperblock>>>(d_T,d_T_tmp,d_S,d_errors,d_grid_size,d_internal_size,d_Px,d_Py);
 	cudaDeviceSynchronize();
 	int iter = 0;
-	double h_conv_error;
-	while(iter < 100000) {
+	double h_conv_error = THRESH+1;
+	double h_abs_error = 0;
+	while(h_conv_error > THRESH) {
 		update_temporary<<<blocks,threadsperblock>>>(d_T,d_T_tmp,d_S,d_errors,d_grid_size,d_Px,d_Py);
 		cudaDeviceSynchronize();
-		update_real<<<blocks,threadsperblock>>>(d_T,d_T_tmp,d_S,d_errors,d_grid_size,d_Px,d_Py);
-		if(iter%1000==0) {
-			get_error<<<blocks,threadsperblock>>>();
+		if(iter%20000==0) {
+			get_error<<<blocks,threadsperblock>>>(d_T,d_T_tmp,d_grid_size,d_Px,d_Py,d_conv_error);
+			get_abs_error<<<blocks,threadsperblock>>>(d_T,d_S,d_grid_size,d_abs_error);
 			cudaDeviceSynchronize();
-			cudaMemcpy(&h_conv_error, &d_conv_error, sizeof(double), cudaMemcpyDeviceToHost);
-			printf("iter = %d... Error = %lf\n", iter, h_conv_error);
+			cudaMemcpy(&h_conv_error, d_conv_error, sizeof(double), cudaMemcpyDeviceToHost);
+			cudaMemcpy(&h_abs_error, d_abs_error, sizeof(double), cudaMemcpyDeviceToHost);
+			h_abs_error = powf(h_abs_error, 0.333);
+			h_conv_error = powf(h_conv_error, 0.333);
+			printf("iter = %d... conv Error = %.10e ... abs error = %.10e\n", iter, h_conv_error, h_abs_error);
 		}
+		update_real<<<blocks,threadsperblock>>>(d_T,d_T_tmp,d_S,d_errors,d_grid_size,d_Px,d_Py);
 		iter++;
 	}
 	printf("Finished\n");
-
+	
 	cudaMemcpy(h_T, d_T, h_grid_size*sizeof(double), cudaMemcpyDeviceToHost);
 
 	// Output .vtk file for ParaView
@@ -125,5 +154,5 @@ int main(int argc, char **argv) {
 	double Xmax = XRANGE;
 	double Ymax = YRANGE;
 	VTK_out(h_Px, h_Py, &Xmin, &Xmax, &Ymin, &Ymax, h_T, 0);
-
+	
 }
