@@ -4,20 +4,19 @@
 #include "math.h"
 
 #define N 1000000
-#define THREADS 512
+#define THREADS 1024
 
 __global__
-void kernel(double * F, int threads) {
+void kernel(double * F, double * final, int threads) {
 	int id = blockIdx.x*blockDim.x + threadIdx.x;
-	if(id >= N)
-		return;
-	if(id%THREADS==0)
-		for(int i=0; i<THREADS; i++) {
-			F[id + i] = (double)4/(1+powf(((double)id/N),2));
-		}
+	int chunksize = ceil((double)N/THREADS);
+	for(int i=id*chunksize; i<min(id*chunksize+chunksize, N); i++) {
+		F[i] = (double)4/(1+powf(((double)i/N),2));
+	}
 	__syncthreads();
-	
-	
+	for(int i=id*chunksize; i<min(id*chunksize+chunksize, N); i++) {
+		atomicAdd(final, (F[i] + F[i+1])/(2*N));
+	}
 }
 
 int main(int argc, char **argv) {
@@ -35,8 +34,10 @@ int main(int argc, char **argv) {
 	cudaEventRecord(stop);
 
 	cudaMemcpy(&h_value, d_value, sizeof(double), cudaMemcpyDeviceToHost);
-
 	cudaEventSynchronize(stop);
 	float milliseconds = 0;
 	cudaEventElapsedTime(&milliseconds, start, stop);
+
+	printf("VALUE:\t%lf\n", h_value);
+	printf("ELAPSED:\t%f\n", milliseconds);
 }
