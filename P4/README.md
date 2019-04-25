@@ -6,7 +6,7 @@ To run on h2p cluster:
 module load cuda/9.0
 make
 ./main 500 500
-'''
+```
 
 ## Files
 # main.cu
