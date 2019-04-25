@@ -102,9 +102,11 @@ int main(int argc, char **argv) {
 	// Allocate grids in Host to recieve from GPU (pinned memory)
 	double * h_S;
 	double * h_T;
+	double * h_T_tmp;
 	cudaMallocHost((void**)&h_S, h_grid_size*sizeof(double));
-	cudaMallocHost((void**)&h_T, h_grid_size*sizeof(double));
-	
+	cudaMallocHost((void**)&h_T, h_grid_size*sizeof(double));	
+	cudaMallocHost((void**)&h_T_tmp, h_grid_size*sizeof(double));
+
 	// Allocate grids in GPU memory
 	double * d_S;
 	double * d_T;
@@ -127,19 +129,27 @@ int main(int argc, char **argv) {
 	cudaDeviceSynchronize();
 	int iter = 0;
 	double h_conv_error = THRESH+1;
-	double h_abs_error = 0;
+	//double h_abs_error = 0;
 	while(h_conv_error > THRESH) {
 		update_temporary<<<blocks,threadsperblock>>>(d_T,d_T_tmp,d_S,d_errors,d_grid_size,d_Px,d_Py);
 		cudaDeviceSynchronize();
-		if(iter%20000==0) {
-			get_error<<<blocks,threadsperblock>>>(d_T,d_T_tmp,d_grid_size,d_Px,d_Py,d_conv_error);
-			get_abs_error<<<blocks,threadsperblock>>>(d_T,d_S,d_grid_size,d_abs_error);
-			cudaDeviceSynchronize();
-			cudaMemcpy(&h_conv_error, d_conv_error, sizeof(double), cudaMemcpyDeviceToHost);
-			cudaMemcpy(&h_abs_error, d_abs_error, sizeof(double), cudaMemcpyDeviceToHost);
-			h_abs_error = powf(h_abs_error, 0.333);
-			h_conv_error = powf(h_conv_error, 0.333);
-			printf("iter = %d... conv Error = %.10e ... abs error = %.10e\n", iter, h_conv_error, h_abs_error);
+		if(iter%1000==0) {
+			//get_error<<<blocks,threadsperblock>>>(d_T,d_T_tmp,d_grid_size,d_Px,d_Py,d_conv_error);
+			//get_abs_error<<<blocks,threadsperblock>>>(d_T,d_S,d_grid_size,d_abs_error);
+			//cudaDeviceSynchronize();
+			//cudaMemcpy(&h_conv_error, d_conv_error, sizeof(double), cudaMemcpyDeviceToHost);
+			//cudaMemcpy(&h_abs_error, d_abs_error, sizeof(double), cudaMemcpyDeviceToHost);
+			cudaMemcpy(h_T, d_T, h_grid_size*sizeof(double), cudaMemcpyDeviceToHost);
+			cudaMemcpy(h_T_tmp, d_T_tmp, h_grid_size*sizeof(double), cudaMemcpyDeviceToHost);
+			h_conv_error = 0;
+			for(long i=0; i<h_grid_size; i++) {
+				double val = fabs(h_T_tmp[i] - h_T[i]);
+				if(val > h_conv_error)
+					h_conv_error = val;
+			}		
+			//h_abs_error = powf(h_abs_error, 0.333);
+			//h_conv_error = powf(h_conv_error, 0.333);
+			printf("iter = %d... conv Error = %.10e\n", iter, h_conv_error);
 		}
 		update_real<<<blocks,threadsperblock>>>(d_T,d_T_tmp,d_S,d_errors,d_grid_size,d_Px,d_Py);
 		iter++;
@@ -147,7 +157,14 @@ int main(int argc, char **argv) {
 	printf("Finished\n");
 	
 	cudaMemcpy(h_T, d_T, h_grid_size*sizeof(double), cudaMemcpyDeviceToHost);
-
+	cudaMemcpy(h_S, d_S, h_grid_size*sizeof(double), cudaMemcpyDeviceToHost);
+	double max = 0;
+	for(long i=0; i<h_grid_size; i++) {
+		double val = fabs(h_S[i] - h_T[i]);
+		if(val > max)
+			max = val;
+	}
+	printf("ABSLOUTE ERROR = %.10e\n", max);
 	// Output .vtk file for ParaView
 	double Xmin = 0;
 	double Ymin = 0;

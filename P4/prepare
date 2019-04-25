@@ -1,0 +1,6 @@
+#!/bin/bash
+
+crc-interactive.py -t $1 -c 1 -n 1 -g -p gtx1080
+wait $!
+module load cuda/9.0
+
